@@ -1,5 +1,9 @@
 #include "game.h"
 
+#include "imgui.h"
+#include "backends/imgui_impl_sdl.h"
+#include "backends/imgui_impl_sdlrenderer.h"
+
 Game::Game() {
 
 }
@@ -45,6 +49,15 @@ bool Game::Initialise() {
         return false;
     }
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplSDL2_InitForSDLRenderer(m_window);
+    ImGui_ImplSDLRenderer_Init(m_renderer);
+
     SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
     int const imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
@@ -66,13 +79,29 @@ void Game::Update() {
 }
 
 void Game::Draw() {
+    ImGui_ImplSDLRenderer_NewFrame();
+    ImGui_ImplSDL2_NewFrame(m_window);
+    ImGui::NewFrame();
+
+    if (ImGui::Begin("Test")) {
+        ImGui::Text("This is a basic window");
+    }
+    ImGui::End();
+
+    ImGui::Render();
+
     SDL_RenderClear(m_renderer);
     SDL_RenderCopy(m_renderer, m_testTexture, NULL, NULL);
+    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+
     SDL_RenderPresent(m_renderer);
 }
 
 void Game::Shutdown() {
     SDL_DestroyTexture(m_testTexture);
+    ImGui_ImplSDLRenderer_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
     SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     IMG_Quit();
