@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Development\SDL2-2.0.18\include;C:\Development\SDL2_image-2.0.5\include;C:\Development\SDL2_ttf-2.0.15\include;C:\Development\ChristmasProject2021\external\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Development\SDL2-2.0.18\include;C:\Development\SDL2_image-2.0.5\include;C:\Development\SDL2_ttf-2.0.15\include;C:\Development\ChristmasProject2021\external\imgui;C:\Development\ChristmasProject2021\external\entt\single_include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Development\SDL2-2.0.18\lib\x64;C:\Development\SDL2_image-2.0.5\lib\x64;C:\Development\SDL2_ttf-2.0.15\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -122,6 +122,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,10 +160,20 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="game_layer.cpp" />
+    <ClCompile Include="input_system.cpp" />
+    <ClCompile Include="layer_stack.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="menu_layer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="components.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="game_layer.h" />
+    <ClInclude Include="input_system.h" />
+    <ClInclude Include="layer.h" />
+    <ClInclude Include="layer_stack.h" />
+    <ClInclude Include="menu_layer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

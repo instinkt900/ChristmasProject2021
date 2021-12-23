@@ -1,8 +1,12 @@
 #include "game.h"
 
+#include <SDL_image.h>
+
 #include "imgui.h"
 #include "backends/imgui_impl_sdl.h"
 #include "backends/imgui_impl_sdlrenderer.h"
+
+#include "menu_layer.h"
 
 Game::Game() {
 
@@ -17,9 +21,8 @@ int Game::Run() {
         return 1;
     }
 
-    LoadTexture();
-
     m_running = true;
+    m_lastTicks = SDL_GetTicks();
 
     while (m_running) {
         SDL_Event event;
@@ -65,6 +68,11 @@ bool Game::Initialise() {
         return false;
     }
 
+    m_layerStack = std::make_unique<LayerStack>(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    auto menuLayer = std::make_unique<MenuLayer>();
+    m_layerStack->PushLayer(std::move(menuLayer));
+
     return true;
 }
 
@@ -72,10 +80,13 @@ void Game::OnEvent(SDL_Event& event) {
     if (event.type == SDL_QUIT) {
         m_running = false;
     }
+    m_layerStack->OnEvent(event);
 }
 
 void Game::Update() {
-
+    uint32_t nowTicks = SDL_GetTicks();
+    m_layerStack->Update(nowTicks - m_lastTicks);
+    m_lastTicks = nowTicks;
 }
 
 void Game::Draw() {
@@ -83,22 +94,15 @@ void Game::Draw() {
     ImGui_ImplSDL2_NewFrame(m_window);
     ImGui::NewFrame();
 
-    if (ImGui::Begin("Test")) {
-        ImGui::Text("This is a basic window");
-    }
-    ImGui::End();
+    SDL_RenderClear(m_renderer);
+    m_layerStack->Draw(m_renderer);
 
     ImGui::Render();
-
-    SDL_RenderClear(m_renderer);
-    SDL_RenderCopy(m_renderer, m_testTexture, NULL, NULL);
     ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
-
     SDL_RenderPresent(m_renderer);
 }
 
 void Game::Shutdown() {
-    SDL_DestroyTexture(m_testTexture);
     ImGui_ImplSDLRenderer_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
@@ -106,12 +110,4 @@ void Game::Shutdown() {
     SDL_DestroyWindow(m_window);
     IMG_Quit();
     SDL_Quit();
-}
-
-void Game::LoadTexture() {
-    SDL_Surface* imageSurface = IMG_Load("test.jpg");
-    if (nullptr != imageSurface) {
-        m_testTexture = SDL_CreateTextureFromSurface(m_renderer, imageSurface);
-        SDL_FreeSurface(imageSurface);
-    }
 }

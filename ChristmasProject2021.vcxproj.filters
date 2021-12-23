@@ -21,9 +21,19 @@
     <ClCompile Include="external\imgui\backends\imgui_impl_sdlrenderer.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
+    <ClCompile Include="layer_stack.cpp" />
+    <ClCompile Include="menu_layer.cpp" />
+    <ClCompile Include="game_layer.cpp" />
+    <ClCompile Include="input_system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
+    <ClInclude Include="layer.h" />
+    <ClInclude Include="layer_stack.h" />
+    <ClInclude Include="menu_layer.h" />
+    <ClInclude Include="game_layer.h" />
+    <ClInclude Include="components.h" />
+    <ClInclude Include="input_system.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
