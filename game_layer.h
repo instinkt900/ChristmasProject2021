@@ -2,7 +2,6 @@
 
 #include <entt/entt.hpp>
 #include "layer.h"
-#include "input_system.h"
 
 class GameLayer : public Layer
 {
@@ -18,13 +17,13 @@ public:
     void OnRemovedFromStack() override;
 
 private:
-    LayerStack* m_layerStack;
+    SDL_Renderer* m_renderer = nullptr;
+    LayerStack* m_layerStack = nullptr;
     entt::registry m_registry;
-    InputSystem m_inputSystem;
 
-    entt::entity m_cameraEntity = entt::null;
-
-    void Setup(SDL_Renderer* renderer);
+    void Setup();
     int GetLayerWidth() const;
     int GetLayerHeight() const;
+
+    void DestroySprite(entt::registry& registry, entt::entity entity);
 };
