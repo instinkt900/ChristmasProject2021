@@ -87,7 +87,7 @@ void GameLayer::OnRemovedFromStack() {
 void GameLayer::Setup() {
     m_registry.on_destroy<SpriteComponent>().connect<&GameLayer::DestroySprite>(this);
 
-    m_tileMap = std::make_unique<TileMap>(m_renderer, 32, 32);
+    m_tileMap = std::make_unique<TileMap>(m_renderer, 8, 8);
 
     // camera
     auto const cameraEntity = m_registry.create();

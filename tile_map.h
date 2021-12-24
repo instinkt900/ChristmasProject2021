@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include "simplex_noise.h"
 
 class TileMap {
 public:
@@ -10,6 +11,7 @@ public:
     void Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int viewWidth, int viewHeight);
 
 private:
+    SimplexNoise m_noise;
     int m_tileSizeX = 0;
     int m_tileSizeY = 0;
     SDL_Texture* m_tileset = nullptr;

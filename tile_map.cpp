@@ -4,7 +4,8 @@
 #include <cmath>
 
 TileMap::TileMap(SDL_Renderer* renderer, int tileSizeX, int tileSizeY)
-    :m_tileSizeX(tileSizeX)
+    : m_noise(1/16.0f, 10000.0f)
+    , m_tileSizeX(tileSizeX)
     , m_tileSizeY(tileSizeY) {
     auto image = IMG_Load("tileset.png");
     m_tileset = SDL_CreateTextureFromSurface(renderer, image);
@@ -39,8 +40,26 @@ void TileMap::Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int
 
 SDL_Rect TileMap::GetTile(int x, int y)
 {
-    if (y > 3 && y < 6) {
-        return { 0, 64, 64, 64 };
+    float const mapHeight = 480.0f / m_tileSizeY;
+    float const midPoint = mapHeight / 2.0f;
+
+    float const layer1Scale = 50.0f;
+    float const layer1Amp = midPoint / 4.0f;
+    float const mid = std::sin(x / layer1Scale) * layer1Amp + midPoint;
+
+    if (x > 100) {
+        if (y < mid) {
+            float const extra = (mid - 20.0f) + m_noise.fractal(3, x) * 20.0f;
+            if (y < extra) {
+                return { 0,0,64,64 };
+            }
+        }
+        else if (y > mid) {
+            float const extra = (mid + 20.0f) + m_noise.fractal(3, x + 62833.0f) * 20.0f;
+            if (y > extra) {
+                return { 0,0,64,64 };
+            }
+        }
     }
-    return { x % 4 * 64,0,64,64 };
+    return { 0, 64, 64, 64 };
 }

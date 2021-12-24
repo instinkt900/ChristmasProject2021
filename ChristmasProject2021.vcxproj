@@ -167,6 +167,7 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
     <ClCompile Include="lifetime_system.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu_layer.cpp" />
+    <ClCompile Include="simplex_noise.cpp" />
     <ClCompile Include="tile_map.cpp" />
     <ClCompile Include="velocity_system.cpp" />
     <ClCompile Include="weapon_system.cpp" />
@@ -181,6 +182,7 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
     <ClInclude Include="layer_stack.h" />
     <ClInclude Include="lifetime_system.h" />
     <ClInclude Include="menu_layer.h" />
+    <ClInclude Include="simplex_noise.h" />
     <ClInclude Include="tile_map.h" />
     <ClInclude Include="velocity_system.h" />
     <ClInclude Include="weapon_system.h" />
