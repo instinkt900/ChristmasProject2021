@@ -44,7 +44,7 @@ namespace EnemySpawnSystem {
             auto& lifetimeComponent = registry.emplace<LifetimeComponent>(enemy);
             lifetimeComponent.lifetime = 3500;
 
-            SpawnDelay = 0;
+            SpawnDelay = 3000;
         }
         else {
             SpawnDelay -= ticks;

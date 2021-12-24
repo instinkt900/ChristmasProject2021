@@ -16,7 +16,7 @@ GameLayer::GameLayer(SDL_Renderer* renderer)
 }
 
 GameLayer::~GameLayer() {
-
+    SDL_DestroyTexture(m_backgroundTexture);
 }
 
 bool GameLayer::OnEvent(SDL_Event& event) {
@@ -45,16 +45,24 @@ void GameLayer::Update(uint32_t ticks) {
 }
 
 void GameLayer::Draw(SDL_Renderer* renderer) {
+    SDL_RenderCopy(renderer, m_backgroundTexture, nullptr, nullptr);
+
     int viewOffsetX = 0;
     int viewOffsetY = 0;
+    int viewWidth = 0;
+    int viewHeight = 0;
     bool cameraFound = false;
-    m_registry.view<PositionComponent, CameraComponent>().each([&viewOffsetX, &viewOffsetY, &cameraFound](auto const& positionComponent, auto const& cameraComponent) {
+    m_registry.view<PositionComponent, CameraComponent>().each([&](auto const& positionComponent, auto const& cameraComponent) {
         if (!cameraFound && cameraComponent.active) {
-            viewOffsetX = static_cast<int>(positionComponent.x) - cameraComponent.width / 2;
-            viewOffsetY = static_cast<int>(positionComponent.y) - cameraComponent.height / 2;
+            viewWidth = cameraComponent.width;
+            viewHeight = cameraComponent.height;
+            viewOffsetX = static_cast<int>(positionComponent.x) - viewWidth / 2;
+            viewOffsetY = static_cast<int>(positionComponent.y) - viewHeight / 2;
             cameraFound = true;
         }
     });
+
+    m_tileMap->Draw(m_renderer, viewOffsetX + viewWidth / 2, viewOffsetY + viewHeight / 2, GetLayerWidth(), GetLayerHeight());
 
     m_registry.view<PositionComponent, SpriteComponent>().each([&renderer, viewOffsetX, viewOffsetY](auto entity, auto const& position, auto const& sprite) {
         SDL_Rect destRect {
@@ -63,7 +71,7 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
             static_cast<int>(sprite.width),
             static_cast<int>(sprite.height)
         };
-        SDL_RenderCopy(renderer, sprite.texture, nullptr, &destRect);
+        SDL_RenderCopy(renderer, sprite.texture, sprite.source_rect, &destRect);
     });
 }
 
@@ -79,6 +87,8 @@ void GameLayer::OnRemovedFromStack() {
 void GameLayer::Setup() {
     m_registry.on_destroy<SpriteComponent>().connect<&GameLayer::DestroySprite>(this);
 
+    m_tileMap = std::make_unique<TileMap>(m_renderer, 32, 32);
+
     // camera
     auto const cameraEntity = m_registry.create();
     auto& cameraPosition = m_registry.emplace<PositionComponent>(cameraEntity);
@@ -88,18 +98,23 @@ void GameLayer::Setup() {
     cameraDetails.width = GetLayerWidth();
     cameraDetails.height = GetLayerHeight();
     cameraDetails.active = true;
+    auto& cameraVelocity = m_registry.emplace<VelocityComponent>(cameraEntity);
+    cameraVelocity.x = 100.0f;
 
     // player
     auto playerEntity = m_registry.create();
     auto& playerPosition = m_registry.emplace<PositionComponent>(playerEntity);
     playerPosition.x = 0;
     playerPosition.y = 0;
+    auto& playerVelocity = m_registry.emplace<VelocityComponent>(playerEntity);
+    playerVelocity.x = 100.0f;
 
     m_registry.emplace<InputComponent>(playerEntity);
 
     auto& playerSprite = m_registry.emplace<SpriteComponent>(playerEntity);
     SDL_Surface* image = IMG_Load("playership.png");
     playerSprite.texture = SDL_CreateTextureFromSurface(m_renderer, image);
+    SDL_FreeSurface(image);
     playerSprite.width = 100;
     playerSprite.height = 56;
 
@@ -108,6 +123,10 @@ void GameLayer::Setup() {
     playerWeapon.fire_delay = 1000;
     playerWeapon.facing_left = false;
     playerWeapon.velocity = 300.0f;
+
+    SDL_Surface* bg = IMG_Load("background.jpg");
+    m_backgroundTexture = SDL_CreateTextureFromSurface(m_renderer, bg);
+    SDL_FreeSurface(bg);
 }
 
 int GameLayer::GetLayerWidth() const {
@@ -126,5 +145,7 @@ int GameLayer::GetLayerHeight() const {
 
 void GameLayer::DestroySprite(entt::registry& registry, entt::entity entity) {
     auto& spriteComponent = m_registry.get<SpriteComponent>(entity);
-    SDL_DestroyTexture(spriteComponent.texture);
+    if (!spriteComponent.managed_texture) {
+        SDL_DestroyTexture(spriteComponent.texture);
+    }
 }

@@ -19,6 +19,8 @@ struct SpriteComponent {
     SDL_Texture* texture;
     float width = 0.0f;
     float height = 0.0f;
+    SDL_Rect* source_rect = nullptr;
+    bool managed_texture = false;
 };
 
 struct CameraComponent {
