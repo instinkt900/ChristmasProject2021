@@ -2,6 +2,7 @@
 
 #include <SDL_image.h>
 #include <cmath>
+#include "components.h"
 
 TileMap::TileMap(SDL_Renderer* renderer, int tileSizeX, int tileSizeY)
     : m_noise(1/16.0f, 10000.0f)
@@ -27,39 +28,75 @@ void TileMap::Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int
         for (int c = 0; c < cols; ++c) {
             int const tileX = startTileX + c;
             int const tileY = startTileY + r;
-            SDL_Rect sourceRect = GetTile(tileX, tileY);
-            SDL_Rect destRect;
-            destRect.x = startPosX + c * m_tileSizeX;
-            destRect.y = startPosY + r * m_tileSizeY;
-            destRect.w = m_tileSizeX;
-            destRect.h = m_tileSizeY;
-            SDL_RenderCopy(renderer, m_tileset, &sourceRect, &destRect);
+            SDL_Rect sourceRect;
+            if (GetTile(tileX, tileY, &sourceRect)) {
+                SDL_Rect destRect;
+                destRect.x = startPosX + c * m_tileSizeX;
+                destRect.y = startPosY + r * m_tileSizeY;
+                destRect.w = m_tileSizeX;
+                destRect.h = m_tileSizeY;
+                SDL_RenderCopy(renderer, m_tileset, &sourceRect, &destRect);
+            }
         }
     }
 }
 
-SDL_Rect TileMap::GetTile(int x, int y)
-{
+void TileMap::UpdateCollisions(entt::registry& registry) {
+    registry.view<PositionComponent, CollisionComponent>().each([this](auto const& positionComponent, auto& collisionComponent) {
+        int const collisionWidth = static_cast<int>(collisionComponent.width);
+        int const collisionHeight = static_cast<int>(collisionComponent.height);
+        int const collisionX = static_cast<int>(positionComponent.x) - collisionWidth / 2;
+        int const collisionY = static_cast<int>(positionComponent.y) - collisionHeight / 2;
+        int const cols = collisionWidth / m_tileSizeX;
+        int const rows = collisionHeight / m_tileSizeY;
+        int const startTileX = collisionX / m_tileSizeX;
+        int const startTileY = collisionY / m_tileSizeY;
+        int const startPosX = -collisionX % m_tileSizeX;
+        int const startPosY = -collisionY % m_tileSizeY;
+        for (int r = 0; r < rows; ++r) {
+            for (int c = 0; c < cols; ++c) {
+                int const tileX = startTileX + c;
+                int const tileY = startTileY + r;
+                if (GetTile(tileX, tileY, nullptr)) {
+                    collisionComponent.tilemap_collision = true;
+                }
+            }
+        }
+    });
+}
+
+bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) {
     float const mapHeight = 480.0f / m_tileSizeY;
-    float const midPoint = mapHeight / 2.0f;
 
     float const layer1Scale = 50.0f;
-    float const layer1Amp = midPoint / 4.0f;
-    float const mid = std::sin(x / layer1Scale) * layer1Amp + midPoint;
+    float const layer1Amp = mapHeight / 4.0f;
+    float const mid = std::sin(x / layer1Scale) * layer1Amp;
 
-    if (x > 100) {
+    int const caveStartX = 50;
+    float const noiseAmp = 20.0f;
+    int const noiseOctaves = 3;
+    float const topOffset = -20.0f;
+    float const bottomOffset = 20.0f;
+
+    if (x > caveStartX) {
         if (y < mid) {
-            float const extra = (mid - 20.0f) + m_noise.fractal(3, x) * 20.0f;
+            float const extra = (mid + topOffset) + m_noise.fractal(noiseOctaves, static_cast<float>(x)) * noiseAmp;
             if (y < extra) {
-                return { 0,0,64,64 };
+                if (nullptr != tilesetRect) {
+                    *tilesetRect = { 0, 0, 64, 64 };
+                }
+                return true;
             }
         }
         else if (y > mid) {
-            float const extra = (mid + 20.0f) + m_noise.fractal(3, x + 62833.0f) * 20.0f;
+            float const extra = (mid + bottomOffset) + m_noise.fractal(noiseOctaves, static_cast<float>(x) + 62833.0f) * noiseAmp;
             if (y > extra) {
-                return { 0,0,64,64 };
+                if (nullptr != tilesetRect) {
+                    *tilesetRect = { 0, 0, 64, 64 };
+                }
+                return true;
             }
         }
     }
-    return { 0, 64, 64, 64 };
+    return false;
 }

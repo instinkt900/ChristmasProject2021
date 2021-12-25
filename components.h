@@ -40,3 +40,9 @@ struct WeaponComponent {
 struct LifetimeComponent {
     uint32_t lifetime = 0;
 };
+
+struct CollisionComponent {
+    float width = 0;
+    float height = 0;
+    bool tilemap_collision = false;
+};

@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include "simplex_noise.h"
+#include <entt/entt.hpp>
 
 class TileMap {
 public:
@@ -9,6 +10,7 @@ public:
     ~TileMap();
 
     void Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int viewWidth, int viewHeight);
+    void UpdateCollisions(entt::registry& registry);
 
 private:
     SimplexNoise m_noise;
@@ -16,5 +18,5 @@ private:
     int m_tileSizeY = 0;
     SDL_Texture* m_tileset = nullptr;
 
-    SDL_Rect GetTile(int x, int y);
+    bool GetTile(int x, int y, SDL_Rect* tilesetRect);
 };

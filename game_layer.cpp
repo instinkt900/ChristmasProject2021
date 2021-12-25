@@ -42,6 +42,17 @@ void GameLayer::Update(uint32_t ticks) {
     WeaponSystem::Update(ticks, m_registry, m_renderer);
     VelocitySystem::Update(ticks, m_registry);
     LifetimeSystem::Update(ticks, m_registry);
+    m_tileMap->UpdateCollisions(m_registry);
+
+    std::vector<entt::entity> collidedEntities;
+    m_registry.view<CollisionComponent>().each([&collidedEntities](auto entity, auto const& collisionComponent) {
+        if (collisionComponent.tilemap_collision) {
+            collidedEntities.push_back(entity);
+        }
+    });
+    for (auto entity : collidedEntities) {
+        m_registry.destroy(entity);
+    }
 }
 
 void GameLayer::Draw(SDL_Renderer* renderer) {
@@ -62,7 +73,7 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
         }
     });
 
-    m_tileMap->Draw(m_renderer, viewOffsetX + viewWidth / 2, viewOffsetY + viewHeight / 2, GetLayerWidth(), GetLayerHeight());
+    m_tileMap->Draw(m_renderer, viewOffsetX, viewOffsetY, GetLayerWidth(), GetLayerHeight());
 
     m_registry.view<PositionComponent, SpriteComponent>().each([&renderer, viewOffsetX, viewOffsetY](auto entity, auto const& position, auto const& sprite) {
         SDL_Rect destRect {
@@ -110,6 +121,10 @@ void GameLayer::Setup() {
     playerVelocity.x = 100.0f;
 
     m_registry.emplace<InputComponent>(playerEntity);
+
+    auto& collisionComponent = m_registry.emplace<CollisionComponent>(playerEntity);
+    collisionComponent.width = 50;
+    collisionComponent.height = 19;
 
     auto& playerSprite = m_registry.emplace<SpriteComponent>(playerEntity);
     SDL_Surface* image = IMG_Load("playership.png");
