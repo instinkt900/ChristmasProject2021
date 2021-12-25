@@ -153,6 +153,7 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="enemy_behaviour_system.cpp" />
     <ClCompile Include="enemy_spawn_system.cpp" />
     <ClCompile Include="external\imgui\backends\imgui_impl_sdl.cpp" />
     <ClCompile Include="external\imgui\backends\imgui_impl_sdlrenderer.cpp" />
@@ -174,6 +175,7 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="components.h" />
+    <ClInclude Include="enemy_behaviour_system.h" />
     <ClInclude Include="enemy_spawn_system.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_layer.h" />

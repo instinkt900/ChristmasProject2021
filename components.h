@@ -46,3 +46,12 @@ struct CollisionComponent {
     float height = 0;
     bool tilemap_collision = false;
 };
+
+struct EnemySpawnerComponent {
+    uint32_t spawn_delay;
+    float speed = 0;
+    float speed_increase = 0;
+};
+
+struct EnemyComponent {
+};

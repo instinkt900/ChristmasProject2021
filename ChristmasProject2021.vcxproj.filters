@@ -31,6 +31,7 @@
     <ClCompile Include="lifetime_system.cpp" />
     <ClCompile Include="tile_map.cpp" />
     <ClCompile Include="simplex_noise.cpp" />
+    <ClCompile Include="enemy_behaviour_system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="lifetime_system.h" />
     <ClInclude Include="tile_map.h" />
     <ClInclude Include="simplex_noise.h" />
+    <ClInclude Include="enemy_behaviour_system.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

@@ -10,6 +10,7 @@
 #include "weapon_system.h"
 #include "velocity_system.h"
 #include "lifetime_system.h"
+#include "enemy_behaviour_system.h"
 
 GameLayer::GameLayer(SDL_Renderer* renderer)
 :m_renderer(renderer) {
@@ -38,11 +39,12 @@ bool GameLayer::OnEvent(SDL_Event& event) {
 
 void GameLayer::Update(uint32_t ticks) {
     InputSystem::Update(ticks, m_registry);
-    EnemySpawnSystem::Update(ticks, m_registry, m_renderer);
+    EnemySpawnSystem::Update(ticks, m_registry, m_renderer, *m_tileMap);
     WeaponSystem::Update(ticks, m_registry, m_renderer);
     VelocitySystem::Update(ticks, m_registry);
     LifetimeSystem::Update(ticks, m_registry);
     m_tileMap->UpdateCollisions(m_registry);
+    EnemyBehaviourSystem::Update(ticks, m_registry);
 
     std::vector<entt::entity> collidedEntities;
     m_registry.view<CollisionComponent>().each([&collidedEntities](auto entity, auto const& collisionComponent) {
@@ -138,6 +140,12 @@ void GameLayer::Setup() {
     playerWeapon.fire_delay = 1000;
     playerWeapon.facing_left = false;
     playerWeapon.velocity = 300.0f;
+
+    auto enemyBrain = m_registry.create();
+    auto& enemySpawnerComponent = m_registry.emplace<EnemySpawnerComponent>(enemyBrain);
+    enemySpawnerComponent.spawn_delay = 6000;
+    enemySpawnerComponent.speed = 100.0f;
+    enemySpawnerComponent.speed_increase = 5.0f;
 
     SDL_Surface* bg = IMG_Load("background.jpg");
     m_backgroundTexture = SDL_CreateTextureFromSurface(m_renderer, bg);
