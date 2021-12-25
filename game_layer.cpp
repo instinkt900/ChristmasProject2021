@@ -71,7 +71,7 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
             static_cast<int>(sprite.width),
             static_cast<int>(sprite.height)
         };
-        SDL_RenderCopy(renderer, sprite.texture, sprite.source_rect, &destRect);
+        SDL_RenderCopyEx(renderer, sprite.texture, sprite.source_rect, &destRect, 0.0f, nullptr, sprite.flip);
     });
 }
 
@@ -124,17 +124,17 @@ void GameLayer::Setup() {
     };
 
     auto& playerSprite = m_registry.emplace<SpriteComponent>(playerEntity);
-    SDL_Surface* image = IMG_Load("playership.png");
+    SDL_Surface* image = IMG_Load("ship003.png");
     playerSprite.texture = SDL_CreateTextureFromSurface(m_renderer, image);
     SDL_FreeSurface(image);
-    playerSprite.width = 100;
-    playerSprite.height = 56;
+    playerSprite.width = 62;
+    playerSprite.height = 32;
 
     auto& playerWeapon = m_registry.emplace<WeaponComponent>(playerEntity);
     playerWeapon.firing = false;
-    playerWeapon.fire_delay = 1000;
+    playerWeapon.fire_delay = 300;
     playerWeapon.facing_left = false;
-    playerWeapon.velocity = 300.0f;
+    playerWeapon.velocity = 600.0f;
 
     auto enemyBrain = m_registry.create();
     auto& enemySpawnerComponent = m_registry.emplace<EnemySpawnerComponent>(enemyBrain);

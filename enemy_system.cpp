@@ -42,8 +42,8 @@ namespace EnemySystem {
                 }
             }
 
-            int const collisionWidth = 10;
-            int const collisionHeight = 10;
+            int const collisionWidth = 32;
+            int const collisionHeight = 32;
 
             if (tileMap.Collides(spawnX, spawnY, collisionWidth, collisionHeight)) {
                 return;
@@ -55,7 +55,7 @@ namespace EnemySystem {
             positionComponent.y = static_cast<float>(spawnY);
 
             auto& sprite = registry.emplace<SpriteComponent>(enemy);
-            SDL_Surface* image = IMG_Load("dot.png");
+            SDL_Surface* image = IMG_Load("l0_SpaceShip0011.png");
             sprite.texture = SDL_CreateTextureFromSurface(renderer, image);
             sprite.width = collisionWidth;
             sprite.height = collisionHeight;
@@ -74,6 +74,8 @@ namespace EnemySystem {
                 else {
                     auto& velocityComponent = registry.get<VelocityComponent>(enemy);
                     velocityComponent.y = -velocityComponent.y;
+                    auto& spriteComponent = registry.get<SpriteComponent>(enemy);
+                    spriteComponent.flip = spriteComponent.flip == SDL_FLIP_NONE ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE;
                 }
             };
 

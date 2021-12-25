@@ -21,6 +21,7 @@ struct SpriteComponent {
     float height = 0.0f;
     SDL_Rect* source_rect = nullptr;
     bool managed_texture = false;
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
 };
 
 struct CameraComponent {

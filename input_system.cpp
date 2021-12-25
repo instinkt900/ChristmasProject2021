@@ -17,19 +17,19 @@ namespace InputSystem {
     bool OnEvent(SDL_Event& event) {
         if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
-            case SDLK_UP: ControlState[ControlKey::Up] = true; return true;
-            case SDLK_DOWN: ControlState[ControlKey::Down] = true; return true;
-            case SDLK_LEFT: ControlState[ControlKey::Left] = true; return true;
-            case SDLK_RIGHT: ControlState[ControlKey::Right] = true; return true;
+            case SDLK_w: ControlState[ControlKey::Up] = true; return true;
+            case SDLK_s: ControlState[ControlKey::Down] = true; return true;
+            case SDLK_a: ControlState[ControlKey::Left] = true; return true;
+            case SDLK_d: ControlState[ControlKey::Right] = true; return true;
             case SDLK_SPACE: ControlState[ControlKey::Fire] = true; return true;
             }
         }
         else if (event.type == SDL_KEYUP) {
             switch (event.key.keysym.sym) {
-            case SDLK_UP: ControlState[ControlKey::Up] = false; return true;
-            case SDLK_DOWN: ControlState[ControlKey::Down] = false; return true;
-            case SDLK_LEFT: ControlState[ControlKey::Left] = false; return true;
-            case SDLK_RIGHT: ControlState[ControlKey::Right] = false; return true;
+            case SDLK_w: ControlState[ControlKey::Up] = false; return true;
+            case SDLK_s: ControlState[ControlKey::Down] = false; return true;
+            case SDLK_a: ControlState[ControlKey::Left] = false; return true;
+            case SDLK_d: ControlState[ControlKey::Right] = false; return true;
             case SDLK_SPACE: ControlState[ControlKey::Fire] = false; return true;
             }
         }

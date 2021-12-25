@@ -57,6 +57,9 @@ namespace VelocitySystem {
             
             if ((collisionComponent.flag_mask & (COLLISION_FLAG_PLAYER | COLLISION_FLAG_ENEMY | COLLISION_FLAG_BULLET)) != 0) {
                 for (auto otherEntity : previousEntities) {
+                    if (!registry.valid(otherEntity)) {
+                        continue;
+                    }
                     auto& otherCollisionComponent = registry.get<CollisionComponent>(otherEntity);
 
                     if ((otherCollisionComponent.flags & collisionComponent.flag_mask) != 0) {
