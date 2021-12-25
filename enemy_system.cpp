@@ -1,11 +1,22 @@
-#include "enemy_spawn_system.h"
+#include "enemy_system.h"
 #include <random>
 #include "components.h"
 #include <SDL_image.h>
 #include "tile_map.h"
 
-namespace EnemySpawnSystem {
+namespace EnemySystem {
     void Update(uint32_t ticks, entt::registry& registry, SDL_Renderer* renderer, TileMap& tileMap) {
+        std::vector<entt::entity> deadEntities;
+        registry.view<EnemyComponent>().each([&deadEntities](auto entity, auto const& enemyComponent) {
+            if (enemyComponent.dead) {
+                deadEntities.push_back(entity);
+            }
+        });
+
+        for (auto entity : deadEntities) {
+            registry.destroy(entity);
+        }
+
         auto spawnerBrainView = registry.view<EnemySpawnerComponent>();
         if (spawnerBrainView.empty()) {
             return;
@@ -53,6 +64,18 @@ namespace EnemySpawnSystem {
             auto& collisionComponent = registry.emplace<CollisionComponent>(enemy);
             collisionComponent.width = 10;
             collisionComponent.height = 10;
+            collisionComponent.flags = COLLISION_FLAG_ENEMY;
+            collisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_PLAYER | COLLISION_FLAG_BULLET;
+            collisionComponent.on_collision = [enemy, &registry](entt::entity otherEntity) {
+                if (otherEntity != entt::null) {
+                    auto& enemyComponent = registry.get<EnemyComponent>(enemy);
+                    enemyComponent.dead = true;
+                }
+                else {
+                    auto& velocityComponent = registry.get<VelocityComponent>(enemy);
+                    velocityComponent.y = -velocityComponent.y;
+                }
+            };
 
             registry.emplace<EnemyComponent>(enemy);
 

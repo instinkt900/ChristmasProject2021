@@ -6,11 +6,10 @@
 #include "layer_stack.h"
 
 #include "input_system.h"
-#include "enemy_spawn_system.h"
+#include "enemy_system.h"
 #include "weapon_system.h"
 #include "velocity_system.h"
 #include "lifetime_system.h"
-#include "enemy_behaviour_system.h"
 
 GameLayer::GameLayer(SDL_Renderer* renderer)
 :m_renderer(renderer) {
@@ -39,21 +38,10 @@ bool GameLayer::OnEvent(SDL_Event& event) {
 
 void GameLayer::Update(uint32_t ticks) {
     InputSystem::Update(ticks, m_registry);
-    EnemySpawnSystem::Update(ticks, m_registry, m_renderer, *m_tileMap);
+    EnemySystem::Update(ticks, m_registry, m_renderer, *m_tileMap);
     WeaponSystem::Update(ticks, m_registry, m_renderer);
     VelocitySystem::Update(ticks, m_registry, *m_tileMap);
     LifetimeSystem::Update(ticks, m_registry);
-    EnemyBehaviourSystem::Update(ticks, m_registry);
-
-    std::vector<entt::entity> collidedEntities;
-    m_registry.view<CollisionComponent>().each([&collidedEntities](auto entity, auto const& collisionComponent) {
-        if (collisionComponent.tilemap_collision) {
-            collidedEntities.push_back(entity);
-        }
-    });
-    for (auto entity : collidedEntities) {
-        m_registry.destroy(entity);
-    }
 }
 
 void GameLayer::Draw(SDL_Renderer* renderer) {
@@ -126,6 +114,14 @@ void GameLayer::Setup() {
     auto& collisionComponent = m_registry.emplace<CollisionComponent>(playerEntity);
     collisionComponent.width = 50;
     collisionComponent.height = 19;
+    collisionComponent.flags = COLLISION_FLAG_PLAYER;
+    collisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_ENEMY;
+    collisionComponent.on_collision = [this, cameraEntity](entt::entity otherEntity) {
+        // game over
+        auto& cameraVelocityComponent = m_registry.get<VelocityComponent>(cameraEntity);
+        cameraVelocityComponent.x = 0;
+        cameraVelocityComponent.y = 0;
+    };
 
     auto& playerSprite = m_registry.emplace<SpriteComponent>(playerEntity);
     SDL_Surface* image = IMG_Load("playership.png");

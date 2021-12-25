@@ -41,10 +41,19 @@ struct LifetimeComponent {
     uint32_t lifetime = 0;
 };
 
+uint32_t constexpr COLLISION_FLAG_MAP = 1 << 0;
+uint32_t constexpr COLLISION_FLAG_PLAYER = 1 << 1;
+uint32_t constexpr COLLISION_FLAG_ENEMY = 1 << 2;
+uint32_t constexpr COLLISION_FLAG_BULLET = 1 << 3;
+
 struct CollisionComponent {
     float width = 0;
     float height = 0;
+    uint32_t flags = 0;
+    uint32_t flag_mask = 0;
+    uint32_t collision_bits = 0;
     bool tilemap_collision = false;
+    std::function<void(entt::entity)> on_collision;
 };
 
 struct EnemySpawnerComponent {
@@ -54,4 +63,5 @@ struct EnemySpawnerComponent {
 };
 
 struct EnemyComponent {
+    bool dead = false;
 };
