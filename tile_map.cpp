@@ -17,7 +17,7 @@ TileMap::~TileMap() {
     SDL_DestroyTexture(m_tileset);
 }
 
-void TileMap::Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int viewWidth, int viewHeight) {
+void TileMap::Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int viewWidth, int viewHeight) const {
     int const rows = static_cast<int>(std::ceil(viewHeight / static_cast<float>(m_tileSizeX)));
     int const cols = static_cast<int>(std::ceil(viewWidth / static_cast<float>(m_tileSizeY))) + 1;
     int const startTileX = viewOffsetX / m_tileSizeX;
@@ -41,31 +41,40 @@ void TileMap::Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int
     }
 }
 
-void TileMap::UpdateCollisions(entt::registry& registry) {
+void TileMap::UpdateCollisions(entt::registry& registry) const {
     registry.view<PositionComponent, CollisionComponent>().each([this](auto const& positionComponent, auto& collisionComponent) {
-        int const collisionWidth = static_cast<int>(collisionComponent.width);
-        int const collisionHeight = static_cast<int>(collisionComponent.height);
-        int const collisionX = static_cast<int>(positionComponent.x) - collisionWidth / 2;
-        int const collisionY = static_cast<int>(positionComponent.y) - collisionHeight / 2;
-        int const cols = collisionWidth / m_tileSizeX;
-        int const rows = collisionHeight / m_tileSizeY;
-        int const startTileX = collisionX / m_tileSizeX;
-        int const startTileY = collisionY / m_tileSizeY;
-        int const startPosX = -collisionX % m_tileSizeX;
-        int const startPosY = -collisionY % m_tileSizeY;
-        for (int r = 0; r < rows; ++r) {
-            for (int c = 0; c < cols; ++c) {
-                int const tileX = startTileX + c;
-                int const tileY = startTileY + r;
-                if (GetTile(tileX, tileY, nullptr)) {
-                    collisionComponent.tilemap_collision = true;
-                }
-            }
+        int const x = static_cast<int>(positionComponent.x);
+        int const y = static_cast<int>(positionComponent.y);
+        int const width = static_cast<int>(collisionComponent.width);
+        int const height = static_cast<int>(collisionComponent.height);
+        if (Collides(x, y, width, height)) {
+            collisionComponent.tilemap_collision = true;
         }
     });
 }
 
-bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) {
+bool TileMap::Collides(int x, int y, int width, int height) const {
+    int const cols = width / m_tileSizeX;
+    int const rows = height / m_tileSizeY;
+    int const left = x - width / 2;
+    int const top = y - height / 2;
+    int const startTileX = left / m_tileSizeX;
+    int const startTileY = top / m_tileSizeY;
+    int const startPosX = -left % m_tileSizeX;
+    int const startPosY = -top % m_tileSizeY;
+    for (int r = 0; r < rows; ++r) {
+        for (int c = 0; c < cols; ++c) {
+            int const tileX = startTileX + c;
+            int const tileY = startTileY + r;
+            if (GetTile(tileX, tileY, nullptr)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) const {
     float const mapHeight = 480.0f / m_tileSizeY;
 
     float const layer1Scale = 50.0f;

@@ -14,9 +14,10 @@ namespace EnemySpawnSystem {
 
         if (ticks > enemySpawner.spawn_delay) {
             int spawnX = 0;
+            int spawnY = 0;
             int spawnYMin = 0;
             int spawnYMax = 0;
-            
+
             // find the active camera
             auto camerasView = registry.view<CameraComponent, PositionComponent>();
             for (auto cameraEntity : camerasView) {
@@ -30,16 +31,23 @@ namespace EnemySpawnSystem {
                 }
             }
 
+            int const collisionWidth = 10;
+            int const collisionHeight = 10;
+
+            if (tileMap.Collides(spawnX, spawnY, collisionWidth, collisionHeight)) {
+                return;
+            }
+
             auto enemy = registry.create();
             auto& positionComponent = registry.emplace<PositionComponent>(enemy);
             positionComponent.x = static_cast<float>(spawnX);
-            positionComponent.y = static_cast<float>(0);
+            positionComponent.y = static_cast<float>(spawnY);
 
             auto& sprite = registry.emplace<SpriteComponent>(enemy);
             SDL_Surface* image = IMG_Load("dot.png");
             sprite.texture = SDL_CreateTextureFromSurface(renderer, image);
-            sprite.width = 10;
-            sprite.height = 10;
+            sprite.width = collisionWidth;
+            sprite.height = collisionHeight;
             SDL_FreeSurface(image);
 
             auto& collisionComponent = registry.emplace<CollisionComponent>(enemy);
