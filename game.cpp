@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "imgui.h"
 #include "backends/imgui_impl_sdl.h"
@@ -65,6 +66,10 @@ bool Game::Initialise() {
 
     int const imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
     if (imgFlags != IMG_Init(imgFlags)) {
+        return false;
+    }
+
+    if (0 > TTF_Init()) {
         return false;
     }
 

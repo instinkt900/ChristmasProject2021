@@ -24,7 +24,6 @@
     <ClCompile Include="layer_stack.cpp" />
     <ClCompile Include="menu_layer.cpp" />
     <ClCompile Include="game_layer.cpp" />
-    <ClCompile Include="input_system.cpp" />
     <ClCompile Include="enemy_system.cpp" />
     <ClCompile Include="weapon_system.cpp" />
     <ClCompile Include="velocity_system.cpp" />
@@ -39,7 +38,6 @@
     <ClInclude Include="menu_layer.h" />
     <ClInclude Include="game_layer.h" />
     <ClInclude Include="components.h" />
-    <ClInclude Include="input_system.h" />
     <ClInclude Include="enemy_system.h" />
     <ClInclude Include="weapon_system.h" />
     <ClInclude Include="velocity_system.h" />

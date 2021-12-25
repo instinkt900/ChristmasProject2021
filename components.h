@@ -12,9 +12,6 @@ struct VelocityComponent {
     float y = 0;
 };
 
-struct InputComponent {
-};
-
 struct SpriteComponent {
     SDL_Texture* texture;
     float width = 0.0f;

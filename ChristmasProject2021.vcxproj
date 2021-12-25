@@ -162,7 +162,6 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="game_layer.cpp" />
-    <ClCompile Include="input_system.cpp" />
     <ClCompile Include="layer_stack.cpp" />
     <ClCompile Include="lifetime_system.cpp" />
     <ClCompile Include="main.cpp" />
@@ -177,7 +176,6 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
     <ClInclude Include="enemy_system.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="game_layer.h" />
-    <ClInclude Include="input_system.h" />
     <ClInclude Include="layer.h" />
     <ClInclude Include="layer_stack.h" />
     <ClInclude Include="lifetime_system.h" />
