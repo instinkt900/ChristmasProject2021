@@ -10,7 +10,6 @@ public:
     ~TileMap();
 
     void Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int viewWidth, int viewHeight) const;
-    void UpdateCollisions(entt::registry& registry) const;
     bool Collides(int x, int y, int width, int height) const;
 
 private:

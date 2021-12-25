@@ -41,9 +41,8 @@ void GameLayer::Update(uint32_t ticks) {
     InputSystem::Update(ticks, m_registry);
     EnemySpawnSystem::Update(ticks, m_registry, m_renderer, *m_tileMap);
     WeaponSystem::Update(ticks, m_registry, m_renderer);
-    VelocitySystem::Update(ticks, m_registry);
+    VelocitySystem::Update(ticks, m_registry, *m_tileMap);
     LifetimeSystem::Update(ticks, m_registry);
-    m_tileMap->UpdateCollisions(m_registry);
     EnemyBehaviourSystem::Update(ticks, m_registry);
 
     std::vector<entt::entity> collidedEntities;

@@ -41,18 +41,6 @@ void TileMap::Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int
     }
 }
 
-void TileMap::UpdateCollisions(entt::registry& registry) const {
-    registry.view<PositionComponent, CollisionComponent>().each([this](auto const& positionComponent, auto& collisionComponent) {
-        int const x = static_cast<int>(positionComponent.x);
-        int const y = static_cast<int>(positionComponent.y);
-        int const width = static_cast<int>(collisionComponent.width);
-        int const height = static_cast<int>(collisionComponent.height);
-        if (Collides(x, y, width, height)) {
-            collisionComponent.tilemap_collision = true;
-        }
-    });
-}
-
 bool TileMap::Collides(int x, int y, int width, int height) const {
     int const cols = width / m_tileSizeX;
     int const rows = height / m_tileSizeY;
