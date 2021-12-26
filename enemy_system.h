@@ -3,8 +3,8 @@
 #include <entt/entt.hpp>
 #include <SDL.h>
 
-class TileMap;
+class GameLayer;
 
 namespace EnemySystem {
-    void Update(uint32_t ticks, entt::registry& registry, SDL_Renderer* renderer, TileMap& tileMap);
+    void Update(uint32_t ticks, GameLayer& gameLayer);
 }

@@ -2,8 +2,8 @@
 
 #include <entt/entt.hpp>
 
-class TileMap;
+class GameLayer;
 
 namespace VelocitySystem {
-    void Update(uint32_t ticks, entt::registry& registry, TileMap& tilemap);
+    void Update(uint32_t ticks, GameLayer& gameLayer);
 }

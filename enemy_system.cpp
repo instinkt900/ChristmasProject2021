@@ -3,9 +3,11 @@
 #include "components.h"
 #include <SDL_image.h>
 #include "tile_map.h"
+#include "game_layer.h"
 
 namespace EnemySystem {
-    void Update(uint32_t ticks, entt::registry& registry, SDL_Renderer* renderer, TileMap& tileMap) {
+    void Update(uint32_t ticks, GameLayer& gameLayer) {
+        auto& registry = gameLayer.GetRegistry();
         std::vector<entt::entity> deadEntities;
         registry.view<EnemyComponent>().each([&deadEntities](auto entity, auto const& enemyComponent) {
             if (enemyComponent.dead) {
@@ -17,34 +19,20 @@ namespace EnemySystem {
             registry.destroy(entity);
         }
 
-        auto spawnerBrainView = registry.view<EnemySpawnerComponent>();
-        if (spawnerBrainView.empty()) {
-            return;
-        }
-        auto& enemySpawner = spawnerBrainView.get<EnemySpawnerComponent>(*spawnerBrainView.begin());
-
-        if (ticks > enemySpawner.spawn_delay) {
-            int spawnX = 0;
-            int spawnY = 0;
-            int spawnYMin = 0;
-            int spawnYMax = 0;
-
-            // find the active camera
-            auto camerasView = registry.view<CameraComponent, PositionComponent>();
-            for (auto cameraEntity : camerasView) {
-                auto const& cameraComponent = camerasView.get<CameraComponent>(cameraEntity);
-                if (cameraComponent.active) {
-                    auto const& positionComponent = camerasView.get<PositionComponent>(cameraEntity);
-                    spawnX = static_cast<int>(positionComponent.x) + static_cast<int>(cameraComponent.width / 2);
-                    spawnYMin = static_cast<int>(positionComponent.y) - static_cast<int>(cameraComponent.height / 2);
-                    spawnYMax = static_cast<int>(positionComponent.y) + static_cast<int>(cameraComponent.height / 2);
-                    break;
-                }
-            }
+        auto& worldParameters = gameLayer.GetWorldParameters();
+        if (ticks > worldParameters.m_enemySpawnTimer) {
+            auto cameraEntity = gameLayer.GetCameraEntity();
+            auto const& cameraPositionComponent = registry.get<PositionComponent>(cameraEntity);
+            auto const& cameraCameraComponent = registry.get<CameraComponent>(cameraEntity);
+            int const spawnY = 0;
+            int const spawnX = static_cast<int>(cameraPositionComponent.x) + static_cast<int>(cameraCameraComponent.width / 2);
+            int const spawnYMin = static_cast<int>(cameraPositionComponent.y) - static_cast<int>(cameraCameraComponent.height / 2);
+            int const spawnYMax = static_cast<int>(cameraPositionComponent.y) + static_cast<int>(cameraCameraComponent.height / 2);
 
             int const collisionWidth = 32;
             int const collisionHeight = 32;
 
+            auto& tileMap = gameLayer.GetTileMap();
             if (tileMap.Collides(spawnX, spawnY, collisionWidth, collisionHeight)) {
                 return;
             }
@@ -54,16 +42,17 @@ namespace EnemySystem {
             positionComponent.x = static_cast<float>(spawnX);
             positionComponent.y = static_cast<float>(spawnY);
 
+            auto& renderer = gameLayer.GetRenderer();
             auto& sprite = registry.emplace<SpriteComponent>(enemy);
-            SDL_Surface* image = IMG_Load("l0_SpaceShip0011.png");
-            sprite.texture = SDL_CreateTextureFromSurface(renderer, image);
-            sprite.width = collisionWidth;
-            sprite.height = collisionHeight;
+            SDL_Surface* image = IMG_Load(worldParameters.m_enemySpritePath.c_str());
+            sprite.texture = SDL_CreateTextureFromSurface(&renderer, image);
+            sprite.width = worldParameters.m_enemySpriteWidth;
+            sprite.height = worldParameters.m_enemySpriteHeight;
             SDL_FreeSurface(image);
 
             auto& collisionComponent = registry.emplace<CollisionComponent>(enemy);
-            collisionComponent.width = 10;
-            collisionComponent.height = 10;
+            collisionComponent.width = worldParameters.m_enemyCollisionWidth;
+            collisionComponent.height = worldParameters.m_enemyCollisionHeight;
             collisionComponent.flags = COLLISION_FLAG_ENEMY;
             collisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_PLAYER | COLLISION_FLAG_BULLET;
             collisionComponent.on_collision = [enemy, &registry](entt::entity otherEntity) {
@@ -82,15 +71,19 @@ namespace EnemySystem {
             registry.emplace<EnemyComponent>(enemy);
 
             auto& velocityComponent = registry.emplace<VelocityComponent>(enemy);
-            velocityComponent.y = -enemySpawner.speed;
+            velocityComponent.y = -worldParameters.m_enemyCurrentSpeed;
 
-            enemySpawner.spawn_delay = 6000;
+            auto& random = gameLayer.GetRandom();
+            worldParameters.m_enemySpawnTimer = random.Range(worldParameters.m_enemySpawnDelayMin, worldParameters.m_enemySpawnDelayMax);
         }
         else {
-            enemySpawner.spawn_delay -= ticks;
+            worldParameters.m_enemySpawnTimer -= ticks;
         }
 
-        enemySpawner.speed += enemySpawner.speed_increase * ticks / 1000.0f;
+        float const seconds = ticks / 1000.0f;
+        worldParameters.m_enemyCurrentSpeed += worldParameters.m_enemySpeedIncrease * seconds;
+        worldParameters.m_enemySpawnDelayMin -= static_cast<uint32_t>(worldParameters.m_enemySpawnDelayDecrease * seconds);
+        worldParameters.m_enemySpawnDelayMax -= static_cast<uint32_t>(worldParameters.m_enemySpawnDelayDecrease * seconds);
     }
 }
 

@@ -1,11 +1,15 @@
 #include "weapon_system.h"
-
 #include "components.h"
+#include "game_layer.h"
+
 #include <SDL_image.h>
 
 namespace WeaponSystem {
-    void Update(uint32_t ticks, entt::registry& registry, SDL_Renderer* renderer) {
-        registry.view<WeaponComponent, PositionComponent>().each([ticks, &registry, renderer](auto& weaponComponent, auto const& positionComponent) {
+    void Update(uint32_t ticks, GameLayer& gameLayer) {
+        auto& renderer = gameLayer.GetRenderer();
+        auto& registry = gameLayer.GetRegistry();
+        auto const& worldParameters = gameLayer.GetWorldParameters();
+        registry.view<WeaponComponent, PositionComponent>().each([ticks, &registry, &renderer, &worldParameters](auto& weaponComponent, auto const& positionComponent) {
             if (weaponComponent.timer > 0) {
                 weaponComponent.timer -= ticks;
             }
@@ -21,13 +25,13 @@ namespace WeaponSystem {
                 projectilePositionComponent.y = positionComponent.y;
                 projectileVelocityComponent.x = weaponComponent.velocity * (weaponComponent.facing_left ? -1.0f : 1.0f);
                 projectileVelocityComponent.y = 0;
-                SDL_Surface* image = IMG_Load("laser.png");
-                projectileSpriteComponent.texture = SDL_CreateTextureFromSurface(renderer, image);
+                SDL_Surface* image = IMG_Load(worldParameters.m_playerBulletSpritePath.c_str());
+                projectileSpriteComponent.texture = SDL_CreateTextureFromSurface(&renderer, image);
                 SDL_FreeSurface(image);
-                projectileSpriteComponent.width = 42;
-                projectileSpriteComponent.height = 40;
-                collisionComponent.width = 15;
-                collisionComponent.height = 15;
+                projectileSpriteComponent.width = worldParameters.m_playerBulletSpriteWidth;
+                projectileSpriteComponent.height = worldParameters.m_playerBulletSpriteHeight;
+                collisionComponent.width = worldParameters.m_playerBulletCollisionWidth;
+                collisionComponent.height = worldParameters.m_playerBulletCollisionHeight;
                 collisionComponent.flags = COLLISION_FLAG_BULLET;
                 collisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_ENEMY;
                 collisionComponent.on_collision = [&registry, projectile](entt::entity otherEntity) {

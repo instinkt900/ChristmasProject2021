@@ -2,6 +2,8 @@
 
 #include <entt/entt.hpp>
 
+class GameLayer;
+
 namespace LifetimeSystem {
-    void Update(uint32_t ticks, entt::registry& registry);
+    void Update(uint32_t ticks, GameLayer& gameLayer);
 }

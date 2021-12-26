@@ -53,6 +53,7 @@
     <ClInclude Include="state_pre_game.h" />
     <ClInclude Include="state_game.h" />
     <ClInclude Include="state_post_game.h" />
+    <ClInclude Include="random.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

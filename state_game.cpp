@@ -2,6 +2,11 @@
 #include "components.h"
 #include "game_layer.h"
 
+#include "enemy_system.h"
+#include "weapon_system.h"
+#include "velocity_system.h"
+#include "lifetime_system.h"
+
 StateGame::StateGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)
 , m_gameLayer(gameLayer) {
@@ -48,11 +53,17 @@ bool StateGame::OnEvent(SDL_Event const& event) {
 void StateGame::Update(uint32_t ticks, entt::registry& registry) {
     auto playerEntity = m_gameLayer.GetPlayerEntity();
     auto& playerPositionComponent = registry.get<PositionComponent>(playerEntity);
-    if (m_controlState[ControlKey::Up]) playerPositionComponent.y -= ticks * 0.1f;
-    if (m_controlState[ControlKey::Down]) playerPositionComponent.y += ticks * 0.1f;
-    if (m_controlState[ControlKey::Left]) playerPositionComponent.x -= ticks * 0.1f;
-    if (m_controlState[ControlKey::Right]) playerPositionComponent.x += ticks * 0.1f;
+    float const seconds = ticks / 1000.0f;
+    if (m_controlState[ControlKey::Up]) playerPositionComponent.y -= 100 * seconds;
+    if (m_controlState[ControlKey::Down]) playerPositionComponent.y += 100 * seconds;
+    if (m_controlState[ControlKey::Left]) playerPositionComponent.x -= 100 * seconds;
+    if (m_controlState[ControlKey::Right]) playerPositionComponent.x += 100 * seconds;
     if (auto weaponComponent = registry.try_get<WeaponComponent>(playerEntity)) {
         weaponComponent->firing = m_controlState[ControlKey::Fire];
     }
+
+    EnemySystem::Update(ticks, m_gameLayer);
+    WeaponSystem::Update(ticks, m_gameLayer);
+    VelocitySystem::Update(ticks, m_gameLayer);
+    LifetimeSystem::Update(ticks, m_gameLayer);
 }

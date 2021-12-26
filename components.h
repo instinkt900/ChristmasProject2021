@@ -14,8 +14,8 @@ struct VelocityComponent {
 
 struct SpriteComponent {
     SDL_Texture* texture;
-    float width = 0.0f;
-    float height = 0.0f;
+    int width = 0;
+    int height = 0;
     SDL_Rect* source_rect = nullptr;
     bool managed_texture = false;
     SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -45,19 +45,13 @@ uint32_t constexpr COLLISION_FLAG_ENEMY = 1 << 2;
 uint32_t constexpr COLLISION_FLAG_BULLET = 1 << 3;
 
 struct CollisionComponent {
-    float width = 0;
-    float height = 0;
+    int width = 0;
+    int height = 0;
     uint32_t flags = 0;
     uint32_t flag_mask = 0;
     uint32_t collision_bits = 0;
     bool tilemap_collision = false;
     std::function<void(entt::entity)> on_collision;
-};
-
-struct EnemySpawnerComponent {
-    uint32_t spawn_delay;
-    float speed = 0;
-    float speed_increase = 0;
 };
 
 struct EnemyComponent {

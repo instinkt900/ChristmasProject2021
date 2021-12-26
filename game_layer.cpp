@@ -6,17 +6,13 @@
 #include "components.h"
 #include "layer_stack.h"
 
-#include "enemy_system.h"
-#include "weapon_system.h"
-#include "velocity_system.h"
-#include "lifetime_system.h"
-
 #include "state_pre_game.h"
 #include "state_game.h"
 #include "state_post_game.h"
 
 GameLayer::GameLayer(SDL_Renderer* renderer)
-:m_renderer(renderer) {
+:m_renderer(renderer)
+,m_random(m_worldParameters.m_seed) {
     m_registry.on_destroy<SpriteComponent>().connect<&GameLayer::DestroySprite>(this);
 
     SDL_Surface* bg = IMG_Load("background.jpg");
@@ -38,10 +34,9 @@ bool GameLayer::OnEvent(SDL_Event& event) {
     if (event.type == SDL_WINDOWEVENT) {
         switch (event.window.event) {
         case SDL_WINDOWEVENT_SIZE_CHANGED:
-            m_registry.view<CameraComponent>().each([&event](auto& cameraComponent) {
-                cameraComponent.width = event.window.data1;
-                cameraComponent.height = event.window.data2;
-                });
+            auto& cameraComponent = m_registry.get<CameraComponent>(m_cameraEntity);
+            cameraComponent.width = event.window.data1;
+            cameraComponent.height = event.window.data2;
             break;
         }
     }
@@ -51,31 +46,19 @@ bool GameLayer::OnEvent(SDL_Event& event) {
 
 void GameLayer::Update(uint32_t ticks) {
     m_stateMachine.Update(ticks, m_registry);
-    EnemySystem::Update(ticks, m_registry, m_renderer, *m_tileMap);
-    WeaponSystem::Update(ticks, m_registry, m_renderer);
-    VelocitySystem::Update(ticks, m_registry, *m_tileMap);
-    LifetimeSystem::Update(ticks, m_registry);
 }
 
 void GameLayer::Draw(SDL_Renderer* renderer) {
     SDL_RenderCopy(renderer, m_backgroundTexture, nullptr, nullptr);
 
-    int viewOffsetX = 0;
-    int viewOffsetY = 0;
-    int viewWidth = 0;
-    int viewHeight = 0;
-    bool cameraFound = false;
-    m_registry.view<PositionComponent, CameraComponent>().each([&](auto const& positionComponent, auto const& cameraComponent) {
-        if (!cameraFound && cameraComponent.active) {
-            viewWidth = cameraComponent.width;
-            viewHeight = cameraComponent.height;
-            viewOffsetX = static_cast<int>(positionComponent.x) - viewWidth / 2;
-            viewOffsetY = static_cast<int>(positionComponent.y) - viewHeight / 2;
-            cameraFound = true;
-        }
-    });
+    auto const& cameraPositionComponent = m_registry.get<PositionComponent>(m_cameraEntity);
+    auto const& cameraCameraComponent = m_registry.get<CameraComponent>(m_cameraEntity);
+    int const viewWidth = cameraCameraComponent.width;
+    int const viewHeight = cameraCameraComponent.height;
+    int const viewOffsetX = static_cast<int>(cameraPositionComponent.x) - viewWidth / 2;
+    int const viewOffsetY = static_cast<int>(cameraPositionComponent.y) - viewHeight / 2;
 
-    m_tileMap->Draw(m_renderer, viewOffsetX, viewOffsetY, GetLayerWidth(), GetLayerHeight());
+    m_tileMap->Draw(m_renderer, viewOffsetX, viewOffsetY, viewWidth, viewHeight);
 
     m_registry.view<PositionComponent, SpriteComponent>().each([&renderer, viewOffsetX, viewOffsetY](auto entity, auto const& position, auto const& sprite) {
         SDL_Rect destRect {
@@ -123,34 +106,28 @@ void GameLayer::SetupLevel() {
     auto& playerSpriteComponent = m_registry.emplace<SpriteComponent>(m_playerEntity);
     auto& playerWeaponComponent = m_registry.emplace<WeaponComponent>(m_playerEntity);
 
-    SDL_Surface* playerImage = IMG_Load("ship003.png");
+    SDL_Surface* playerImage = IMG_Load(m_worldParameters.m_playerSpritePath.c_str());
     playerSpriteComponent.texture = SDL_CreateTextureFromSurface(m_renderer, playerImage);
     SDL_FreeSurface(playerImage);
-    playerSpriteComponent.width = 62;
-    playerSpriteComponent.height = 32;
+    playerSpriteComponent.width = m_worldParameters.m_playerSpriteWidth;
+    playerSpriteComponent.height = m_worldParameters.m_playerSpriteHeight;
 
     playerPositionComponent.x = 0;
     playerPositionComponent.y = 0;
 
-    playerCollisionComponent.width = 50;
-    playerCollisionComponent.height = 19;
+    playerCollisionComponent.width = m_worldParameters.m_playerCollisionWidth;
+    playerCollisionComponent.height = m_worldParameters.m_playerCollisionHeight;
     playerCollisionComponent.flags = COLLISION_FLAG_PLAYER;
     playerCollisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_ENEMY;
     playerCollisionComponent.on_collision = [this](entt::entity otherEntity) {
         // game over
         m_stateMachine.StateTransition<StatePostGame>();
-        //StateTransition(GameState::PostGame);
     };
 
-    playerWeaponComponent.fire_delay = 300;
-    playerWeaponComponent.velocity = 600.0f;
+    playerWeaponComponent.fire_delay = m_worldParameters.m_playerFireDelay;
+    playerWeaponComponent.velocity = m_worldParameters.m_playerBulletSpeed;
 
-    // enemy spawner state (probably move this to a world state object)
-    auto enemyBrain = m_registry.create();
-    auto& enemySpawnerComponent = m_registry.emplace<EnemySpawnerComponent>(enemyBrain);
-    enemySpawnerComponent.spawn_delay = 6000;
-    enemySpawnerComponent.speed = 100.0f;
-    enemySpawnerComponent.speed_increase = 5.0f;
+    m_worldParameters.m_enemySpawnTimer = m_random.Range(m_worldParameters.m_enemySpawnDelayMin, m_worldParameters.m_enemySpawnDelayMax);
 }
 
 int GameLayer::GetLayerWidth() const {

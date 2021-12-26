@@ -1,7 +1,7 @@
 #include "velocity_system.h"
-
 #include "components.h"
 #include "tile_map.h"
+#include "game_layer.h"
 
 namespace {
     bool TestOverlap(int collider1X, int collider1Y, int collider1Width, int collider1Height,
@@ -22,8 +22,11 @@ namespace {
     }
 }
 namespace VelocitySystem {
-    void Update(uint32_t ticks, entt::registry& registry, TileMap& tileMap) {
+    void Update(uint32_t ticks, GameLayer& gameLayer) {
         float const seconds = ticks / 1000.0f;
+
+        auto& registry = gameLayer.GetRegistry();
+        auto& tileMap = gameLayer.GetTileMap();
 
         // first update anything without collision
         registry.view<VelocityComponent, PositionComponent>(entt::exclude<CollisionComponent>).each([seconds](auto const& velocityComponent, auto& positionComponent) {
