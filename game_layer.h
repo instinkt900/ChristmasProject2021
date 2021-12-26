@@ -4,13 +4,7 @@
 #include "layer.h"
 #include "tile_map.h"
 #include <tuple>
-
-enum class GameState {
-    None,
-    PreGame,
-    Game,
-    PostGame
-};
+#include "state_machine.h"
 
 class GameLayer : public Layer
 {
@@ -25,15 +19,20 @@ public:
     void OnAddedToStack(LayerStack* layerStack) override;
     void OnRemovedFromStack() override;
 
-    void StateTransition(GameState newState);
+    SDL_Renderer& GetRenderer() const { return *m_renderer; }
+    int GetLayerWidth() const;
+    int GetLayerHeight() const;
+
+    auto& GetRegistry() { return m_registry; }
+    auto GetPlayerEntity() const { return m_playerEntity; }
+    auto GetCameraEntity() const { return m_cameraEntity; }
+
+    void SetupLevel();
 
 private:
     SDL_Renderer* m_renderer = nullptr;
     LayerStack* m_layerStack = nullptr;
-
-    GameState m_currentState = GameState::None;
-
-    uint32_t m_pregameTimer = 0;
+    StateMachine m_stateMachine;
 
     entt::registry m_registry;
     entt::entity m_playerEntity = entt::null;
@@ -41,25 +40,6 @@ private:
 
     std::unique_ptr<TileMap> m_tileMap;
     SDL_Texture* m_backgroundTexture = nullptr;
-
-    SDL_Texture* m_countDownText[3] = { nullptr, nullptr, nullptr };
-    std::tuple<int, int> m_countDownTextDim[3];
-    SDL_Texture* m_gameOverText = nullptr;
-    std::tuple<int, int> m_gameOverTextDim;
-
-    enum class ControlKey {
-        Up,
-        Down,
-        Left,
-        Right,
-        Fire
-    };
-
-    std::map<ControlKey, bool> m_controlState;
-
-    void Setup();
-    int GetLayerWidth() const;
-    int GetLayerHeight() const;
 
     void DestroySprite(entt::registry& registry, entt::entity entity);
 };

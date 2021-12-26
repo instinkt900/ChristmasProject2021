@@ -11,6 +11,10 @@
 #include "velocity_system.h"
 #include "lifetime_system.h"
 
+#include "state_pre_game.h"
+#include "state_game.h"
+#include "state_post_game.h"
+
 GameLayer::GameLayer(SDL_Renderer* renderer)
 :m_renderer(renderer) {
     m_registry.on_destroy<SpriteComponent>().connect<&GameLayer::DestroySprite>(this);
@@ -21,30 +25,13 @@ GameLayer::GameLayer(SDL_Renderer* renderer)
 
     m_tileMap = std::make_unique<TileMap>(m_renderer, 8, 8);
 
-    TTF_Font* font = TTF_OpenFont("pilotcommand.ttf", 80);
-    SDL_Color textColor{ 255, 255, 255, 255 };
-    SDL_Surface* countText[3] = { nullptr, nullptr, nullptr };
-    SDL_Surface* gameOverText = nullptr;
-    countText[0] = TTF_RenderText_Solid(font, "1", textColor);
-    countText[1] = TTF_RenderText_Solid(font, "2", textColor);
-    countText[2] = TTF_RenderText_Solid(font, "3", textColor);
-    gameOverText = TTF_RenderText_Solid(font, "Game Over", textColor);
-    for (int i = 0; i < 3; ++i) {
-        m_countDownText[i] = SDL_CreateTextureFromSurface(m_renderer, countText[i]);
-        m_countDownTextDim[i] = std::make_tuple(countText[i]->w, countText[i]->h);
-        SDL_FreeSurface(countText[i]);
-    }
-    m_gameOverText = SDL_CreateTextureFromSurface(m_renderer, gameOverText);
-    m_gameOverTextDim = std::make_tuple(gameOverText->w, gameOverText->h);
-    SDL_FreeSurface(gameOverText);
+    m_stateMachine.AddState<StatePreGame>(*this);
+    m_stateMachine.AddState<StateGame>(*this);
+    m_stateMachine.AddState<StatePostGame>(*this);
 }
 
 GameLayer::~GameLayer() {
     SDL_DestroyTexture(m_backgroundTexture);
-    SDL_DestroyTexture(m_gameOverText);
-    for (int i = 0; i < 3; ++i) {
-        SDL_DestroyTexture(m_countDownText[i]);
-    }
 }
 
 bool GameLayer::OnEvent(SDL_Event& event) {
@@ -59,53 +46,15 @@ bool GameLayer::OnEvent(SDL_Event& event) {
         }
     }
 
-    if (event.type == SDL_KEYDOWN) {
-        switch (event.key.keysym.sym) {
-        case SDLK_w: m_controlState[ControlKey::Up] = true; return true;
-        case SDLK_s: m_controlState[ControlKey::Down] = true; return true;
-        case SDLK_a: m_controlState[ControlKey::Left] = true; return true;
-        case SDLK_d: m_controlState[ControlKey::Right] = true; return true;
-        case SDLK_SPACE: m_controlState[ControlKey::Fire] = true; return true;
-        }
-    }
-    else if (event.type == SDL_KEYUP) {
-        switch (event.key.keysym.sym) {
-        case SDLK_w: m_controlState[ControlKey::Up] = false; return true;
-        case SDLK_s: m_controlState[ControlKey::Down] = false; return true;
-        case SDLK_a: m_controlState[ControlKey::Left] = false; return true;
-        case SDLK_d: m_controlState[ControlKey::Right] = false; return true;
-        case SDLK_SPACE: m_controlState[ControlKey::Fire] = false; return true;
-        }
-    }
-
-    return false;
+    return m_stateMachine.OnEvent(event);
 }
 
 void GameLayer::Update(uint32_t ticks) {
-    switch (m_currentState) {
-    case GameState::PreGame:
-        m_pregameTimer -= ticks;
-        if (m_pregameTimer <= 0) {
-            StateTransition(GameState::Game);
-        }
-        break;
-    case GameState::Game:
-
-        auto& playerPositionComponent = m_registry.get<PositionComponent>(m_playerEntity);
-        if (m_controlState[ControlKey::Up]) playerPositionComponent.y -= ticks * 0.1f;
-        if (m_controlState[ControlKey::Down]) playerPositionComponent.y += ticks * 0.1f;
-        if (m_controlState[ControlKey::Left]) playerPositionComponent.x -= ticks * 0.1f;
-        if (m_controlState[ControlKey::Right]) playerPositionComponent.x += ticks * 0.1f;
-        if (auto weaponComponent = m_registry.try_get<WeaponComponent>(m_playerEntity)) {
-            weaponComponent->firing = m_controlState[ControlKey::Fire];
-        }
-
-        EnemySystem::Update(ticks, m_registry, m_renderer, *m_tileMap);
-        WeaponSystem::Update(ticks, m_registry, m_renderer);
-        VelocitySystem::Update(ticks, m_registry, *m_tileMap);
-        LifetimeSystem::Update(ticks, m_registry);
-        break;
-    }
+    m_stateMachine.Update(ticks, m_registry);
+    EnemySystem::Update(ticks, m_registry, m_renderer, *m_tileMap);
+    WeaponSystem::Update(ticks, m_registry, m_renderer);
+    VelocitySystem::Update(ticks, m_registry, *m_tileMap);
+    LifetimeSystem::Update(ticks, m_registry);
 }
 
 void GameLayer::Draw(SDL_Renderer* renderer) {
@@ -138,59 +87,19 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
         SDL_RenderCopyEx(renderer, sprite.texture, sprite.source_rect, &destRect, 0.0f, nullptr, sprite.flip);
     });
 
-    if (m_currentState == GameState::PreGame) {
-        int const index = static_cast<int>(std::floor(m_pregameTimer / 1000));
-        SDL_Rect destRect{
-            (GetLayerWidth() - std::get<0>(m_countDownTextDim[index])) / 2,
-            (GetLayerHeight() - std::get<1>(m_countDownTextDim[index])) / 2,
-            std::get<0>(m_countDownTextDim[index]),
-            std::get<1>(m_countDownTextDim[index])
-        };
-        SDL_RenderCopy(renderer, m_countDownText[index], nullptr, &destRect);
-    }
-    else if (m_currentState == GameState::PostGame) {
-        SDL_Rect destRect{
-            (GetLayerWidth() - std::get<0>(m_gameOverTextDim)) / 2,
-            (GetLayerHeight() - std::get<1>(m_gameOverTextDim)) / 2,
-            std::get<0>(m_gameOverTextDim),
-            std::get<1>(m_gameOverTextDim)
-        };
-        SDL_RenderCopy(renderer, m_gameOverText, nullptr, &destRect);
-    }
+    m_stateMachine.Draw(renderer);
 }
 
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
     m_layerStack = layerStack;
-    StateTransition(GameState::PreGame);
+    m_stateMachine.StateTransition<StatePreGame>();
 }
 
 void GameLayer::OnRemovedFromStack() {
     m_layerStack = nullptr;
 }
 
-void GameLayer::StateTransition(GameState newState) {
-    m_currentState = newState;
-    switch (m_currentState) {
-    case GameState::PreGame: {
-            m_pregameTimer = 3000;
-            Setup();
-        }
-        break;
-    case GameState::Game: {
-            auto& cameraVelocityComponent = m_registry.get<VelocityComponent>(m_cameraEntity);
-            auto& playerVelocityComponent = m_registry.get<VelocityComponent>(m_playerEntity);
-            cameraVelocityComponent.x = playerVelocityComponent.x = 100.0f;
-        }
-        break;
-    case GameState::PostGame: {
-            auto& cameraVelocityComponent = m_registry.get<VelocityComponent>(m_cameraEntity);
-            cameraVelocityComponent.x = 0.0f;
-        }
-        break;
-    }
-}
-
-void GameLayer::Setup() {
+void GameLayer::SetupLevel() {
     m_registry.clear();
 
     // camera
@@ -229,7 +138,8 @@ void GameLayer::Setup() {
     playerCollisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_ENEMY;
     playerCollisionComponent.on_collision = [this](entt::entity otherEntity) {
         // game over
-        StateTransition(GameState::PostGame);
+        m_stateMachine.StateTransition<StatePostGame>();
+        //StateTransition(GameState::PostGame);
     };
 
     playerWeaponComponent.fire_delay = 300;
