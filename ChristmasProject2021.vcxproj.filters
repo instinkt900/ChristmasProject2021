@@ -34,6 +34,7 @@
     <ClCompile Include="state_pre_game.cpp" />
     <ClCompile Include="state_game.cpp" />
     <ClCompile Include="state_post_game.cpp" />
+    <ClCompile Include="SDL_FontCache.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -54,6 +55,7 @@
     <ClInclude Include="state_game.h" />
     <ClInclude Include="state_post_game.h" />
     <ClInclude Include="random.h" />
+    <ClInclude Include="SDL_FontCache.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

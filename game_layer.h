@@ -6,9 +6,12 @@
 #include <tuple>
 #include "state_machine.h"
 #include "random.h"
+#include "SDL_FontCache.h"
 
 struct WorldParameters {
     uint32_t m_seed = 0xF00DF00D;
+
+    std::string m_gameFontPath = "pilotcommand.ttf";
 
     float m_levelSpeedInit = 100.0f;
     float m_levelSpeedIncrease = 1.0f;
@@ -37,7 +40,11 @@ struct WorldParameters {
     int m_enemySpawnDelayMaxInit = 8000;
     float m_enemySpawnDelayDecrease = 50.0f;
     float m_enemySpeedInit = 100.0f;
-    float m_enemySpeedIncrease = 1.0f;
+    float m_enemySpeedIncrease = 3.0f;
+
+    int m_scorePerSecond = 100;
+    int m_scorePerKill = 5000;
+    int m_scoreShootPenalty = 10;
 };
 
 struct WorldState {
@@ -48,6 +55,9 @@ struct WorldState {
     
     uint32_t m_enemySpawnTimer = 0;
     float m_enemyCurrentSpeed = 0.0f;
+
+    int m_score = 0;
+    int m_highScore = 0;
 };
 
 class GameLayer : public Layer
@@ -91,6 +101,8 @@ private:
 
     std::unique_ptr<TileMap> m_tileMap;
     SDL_Texture* m_backgroundTexture = nullptr;
+
+    FC_Font* m_scoreFont;
 
     void DestroySprite(entt::registry& registry, entt::entity entity);
 };

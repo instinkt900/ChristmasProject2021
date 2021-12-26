@@ -10,11 +10,10 @@
 StateGame::StateGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)
 , m_gameLayer(gameLayer) {
-
 }
 
 StateGame::~StateGame() {
-
+    
 }
 
 void StateGame::OnEnter() {
@@ -44,10 +43,22 @@ bool StateGame::OnEvent(SDL_Event const& event) {
 }
 
 void StateGame::Update(uint32_t ticks, entt::registry& registry) {
+    float const seconds = ticks / 1000.0f;
     auto const& worldParameters = m_gameLayer.GetWorldParameters();
+    auto& worldState = m_gameLayer.GetWorldState();
+
+    // update score
+    worldState.m_score += static_cast<int>(worldParameters.m_scorePerSecond * seconds);
+
+    // update move speed
+    worldState.m_levelSpeed += worldParameters.m_levelSpeedIncrease * seconds;
+    auto& playerVelocityComponent = registry.get<VelocityComponent>(m_gameLayer.GetPlayerEntity());
+    auto& cameraVelocityComponent = registry.get<VelocityComponent>(m_gameLayer.GetCameraEntity());
+    playerVelocityComponent.x = cameraVelocityComponent.x = worldState.m_levelSpeed;
+   
+    // input handling
     auto playerEntity = m_gameLayer.GetPlayerEntity();
     auto& playerPositionComponent = registry.get<PositionComponent>(playerEntity);
-    float const seconds = ticks / 1000.0f;
     if (m_controlState[ControlKey::Up]) playerPositionComponent.y -= worldParameters.m_playerMoveSpeed * seconds;
     if (m_controlState[ControlKey::Down]) playerPositionComponent.y += worldParameters.m_playerMoveSpeed * seconds;
     if (m_controlState[ControlKey::Left]) playerPositionComponent.x -= worldParameters.m_playerMoveSpeed * seconds;
@@ -56,6 +67,7 @@ void StateGame::Update(uint32_t ticks, entt::registry& registry) {
         weaponComponent->firing = m_controlState[ControlKey::Fire];
     }
 
+    // game systems
     EnemySystem::Update(ticks, m_gameLayer);
     WeaponSystem::Update(ticks, m_gameLayer);
     VelocitySystem::Update(ticks, m_gameLayer);

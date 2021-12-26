@@ -9,7 +9,8 @@ namespace WeaponSystem {
         auto& renderer = gameLayer.GetRenderer();
         auto& registry = gameLayer.GetRegistry();
         auto const& worldParameters = gameLayer.GetWorldParameters();
-        registry.view<WeaponComponent, PositionComponent>().each([ticks, &registry, &renderer, &worldParameters](auto& weaponComponent, auto const& positionComponent) {
+        auto& worldState = gameLayer.GetWorldState();
+        registry.view<WeaponComponent, PositionComponent>().each([ticks, &registry, &renderer, &worldParameters, &worldState](auto& weaponComponent, auto const& positionComponent) {
             if (weaponComponent.timer > 0) {
                 weaponComponent.timer -= ticks;
             }
@@ -40,6 +41,8 @@ namespace WeaponSystem {
                     healthComponent.alive = false;
                 };
                 weaponComponent.timer = weaponComponent.fire_delay;
+
+                worldState.m_score -= worldParameters.m_scoreShootPenalty;
             }
         });
     }

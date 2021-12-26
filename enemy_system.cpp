@@ -46,10 +46,11 @@ namespace EnemySystem {
             collisionComponent.height = worldParameters.m_enemyCollisionHeight;
             collisionComponent.flags = COLLISION_FLAG_ENEMY;
             collisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_PLAYER | COLLISION_FLAG_BULLET;
-            collisionComponent.on_collision = [enemy, &registry](entt::entity otherEntity) {
+            collisionComponent.on_collision = [enemy, &registry, &gameLayer](entt::entity otherEntity) {
                 if (otherEntity != entt::null) {
                     auto& healthComponent = registry.get<HealthComponent>(enemy);
                     healthComponent.alive = false;
+                    gameLayer.GetWorldState().m_score += gameLayer.GetWorldParameters().m_scorePerKill;
                 }
                 else {
                     auto& velocityComponent = registry.get<VelocityComponent>(enemy);
@@ -62,7 +63,9 @@ namespace EnemySystem {
             registry.emplace<EnemyComponent>(enemy);
 
             auto& velocityComponent = registry.emplace<VelocityComponent>(enemy);
-            velocityComponent.y = -worldState.m_enemyCurrentSpeed;
+            int const directionChance = gameLayer.GetRandom().Range(0, 99);
+            velocityComponent.y = worldState.m_enemyCurrentSpeed * ((directionChance >= 50) ? 1.0f : -1.0f);
+            sprite.flip = (velocityComponent.y > 0) ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE;
 
             auto& random = gameLayer.GetRandom();
             worldState.m_enemySpawnTimer = static_cast<uint32_t>(random.Range(worldState.m_enemySpawnDelayMin, worldState.m_enemySpawnDelayMax));

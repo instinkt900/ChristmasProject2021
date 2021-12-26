@@ -24,10 +24,14 @@ GameLayer::GameLayer(SDL_Renderer* renderer)
     m_stateMachine.AddState<StatePreGame>(*this);
     m_stateMachine.AddState<StateGame>(*this);
     m_stateMachine.AddState<StatePostGame>(*this);
+
+    m_scoreFont = FC_CreateFont();
+    FC_LoadFont(m_scoreFont, m_renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
 }
 
 GameLayer::~GameLayer() {
     SDL_DestroyTexture(m_backgroundTexture);
+    FC_FreeFont(m_scoreFont);
 }
 
 bool GameLayer::OnEvent(SDL_Event& event) {
@@ -47,13 +51,6 @@ bool GameLayer::OnEvent(SDL_Event& event) {
 void GameLayer::Update(uint32_t ticks) {
     m_stateMachine.Update(ticks, m_registry);
 
-    // update move speed
-    float const seconds = ticks / 1000.0f;
-    m_worldState.m_levelSpeed += m_worldParameters.m_levelSpeedIncrease * seconds;
-    auto& playerVelocityComponent = m_registry.get<VelocityComponent>(m_playerEntity);
-    auto& cameraVelocityComponent = m_registry.get<VelocityComponent>(m_cameraEntity);
-    playerVelocityComponent.x = cameraVelocityComponent.x = m_worldState.m_levelSpeed;
-
     // clean up dead entities
     std::vector<entt::entity> deadEntities;
     m_registry.view<HealthComponent>().each([&deadEntities](auto entity, auto const& healthComponent) {
@@ -64,6 +61,12 @@ void GameLayer::Update(uint32_t ticks) {
 
     for (auto entity : deadEntities) {
         m_registry.destroy(entity);
+    }
+
+    if (!m_registry.valid(m_playerEntity))
+    {
+        // game over
+        m_stateMachine.StateTransition<StatePostGame>();
     }
 }
 
@@ -96,6 +99,9 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
     });
 
     m_stateMachine.Draw(renderer);
+
+    FC_Draw(m_scoreFont, renderer, 3, 0, "Score: %d", m_worldState.m_score);
+    FC_Draw(m_scoreFont, renderer, 3, GetLayerHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
 }
 
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
@@ -147,8 +153,8 @@ void GameLayer::SetupLevel() {
     playerCollisionComponent.flags = COLLISION_FLAG_PLAYER;
     playerCollisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_ENEMY;
     playerCollisionComponent.on_collision = [this](entt::entity otherEntity) {
-        // game over
-        m_stateMachine.StateTransition<StatePostGame>();
+        auto& healthComponent = m_registry.get<HealthComponent>(m_playerEntity);
+        healthComponent.alive = false;
     };
 
     playerWeaponComponent.fire_delay = m_worldParameters.m_playerFireDelay;
@@ -159,6 +165,7 @@ void GameLayer::SetupLevel() {
     m_worldState.m_enemySpawnDelayMax = static_cast<float>(m_worldParameters.m_enemySpawnDelayMaxInit);
     m_worldState.m_enemySpawnTimer = static_cast<uint32_t>(m_random.Range(m_worldState.m_enemySpawnDelayMin, m_worldState.m_enemySpawnDelayMax));
     m_worldState.m_enemyCurrentSpeed = m_worldParameters.m_enemySpeedInit;
+    m_worldState.m_score = 0;
 }
 
 int GameLayer::GetLayerWidth() const {
