@@ -20,7 +20,8 @@ namespace EnemySystem {
         }
 
         auto& worldParameters = gameLayer.GetWorldParameters();
-        if (ticks > worldParameters.m_enemySpawnTimer) {
+        auto& worldState = gameLayer.GetWorldState();
+        if (ticks > worldState.m_enemySpawnTimer) {
             auto cameraEntity = gameLayer.GetCameraEntity();
             auto const& cameraPositionComponent = registry.get<PositionComponent>(cameraEntity);
             auto const& cameraCameraComponent = registry.get<CameraComponent>(cameraEntity);
@@ -64,26 +65,26 @@ namespace EnemySystem {
                     auto& velocityComponent = registry.get<VelocityComponent>(enemy);
                     velocityComponent.y = -velocityComponent.y;
                     auto& spriteComponent = registry.get<SpriteComponent>(enemy);
-                    spriteComponent.flip = spriteComponent.flip == SDL_FLIP_NONE ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE;
+                    spriteComponent.flip = (spriteComponent.flip == SDL_FLIP_NONE) ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE;
                 }
             };
 
             registry.emplace<EnemyComponent>(enemy);
 
             auto& velocityComponent = registry.emplace<VelocityComponent>(enemy);
-            velocityComponent.y = -worldParameters.m_enemyCurrentSpeed;
+            velocityComponent.y = -worldState.m_enemyCurrentSpeed;
 
             auto& random = gameLayer.GetRandom();
-            worldParameters.m_enemySpawnTimer = random.Range(worldParameters.m_enemySpawnDelayMin, worldParameters.m_enemySpawnDelayMax);
+            worldState.m_enemySpawnTimer = static_cast<uint32_t>(random.Range(worldState.m_enemySpawnDelayMin, worldState.m_enemySpawnDelayMax));
         }
         else {
-            worldParameters.m_enemySpawnTimer -= ticks;
+            worldState.m_enemySpawnTimer -= ticks;
         }
 
         float const seconds = ticks / 1000.0f;
-        worldParameters.m_enemyCurrentSpeed += worldParameters.m_enemySpeedIncrease * seconds;
-        worldParameters.m_enemySpawnDelayMin -= static_cast<uint32_t>(worldParameters.m_enemySpawnDelayDecrease * seconds);
-        worldParameters.m_enemySpawnDelayMax -= static_cast<uint32_t>(worldParameters.m_enemySpawnDelayDecrease * seconds);
+        worldState.m_enemyCurrentSpeed += worldParameters.m_enemySpeedIncrease * seconds;
+        worldState.m_enemySpawnDelayMin = std::max(0.0f, worldState.m_enemySpawnDelayMin - worldParameters.m_enemySpawnDelayDecrease * seconds);
+        worldState.m_enemySpawnDelayMax = std::max(0.0f, worldState.m_enemySpawnDelayMax - worldParameters.m_enemySpawnDelayDecrease * seconds);
     }
 }
 

@@ -51,13 +51,14 @@ bool StateGame::OnEvent(SDL_Event const& event) {
 }
 
 void StateGame::Update(uint32_t ticks, entt::registry& registry) {
+    auto const& worldParameters = m_gameLayer.GetWorldParameters();
     auto playerEntity = m_gameLayer.GetPlayerEntity();
     auto& playerPositionComponent = registry.get<PositionComponent>(playerEntity);
     float const seconds = ticks / 1000.0f;
-    if (m_controlState[ControlKey::Up]) playerPositionComponent.y -= 100 * seconds;
-    if (m_controlState[ControlKey::Down]) playerPositionComponent.y += 100 * seconds;
-    if (m_controlState[ControlKey::Left]) playerPositionComponent.x -= 100 * seconds;
-    if (m_controlState[ControlKey::Right]) playerPositionComponent.x += 100 * seconds;
+    if (m_controlState[ControlKey::Up]) playerPositionComponent.y -= worldParameters.m_playerMoveSpeed * seconds;
+    if (m_controlState[ControlKey::Down]) playerPositionComponent.y += worldParameters.m_playerMoveSpeed * seconds;
+    if (m_controlState[ControlKey::Left]) playerPositionComponent.x -= worldParameters.m_playerMoveSpeed * seconds;
+    if (m_controlState[ControlKey::Right]) playerPositionComponent.x += worldParameters.m_playerMoveSpeed * seconds;
     if (auto weaponComponent = registry.try_get<WeaponComponent>(playerEntity)) {
         weaponComponent->firing = m_controlState[ControlKey::Fire];
     }

@@ -127,7 +127,10 @@ void GameLayer::SetupLevel() {
     playerWeaponComponent.fire_delay = m_worldParameters.m_playerFireDelay;
     playerWeaponComponent.velocity = m_worldParameters.m_playerBulletSpeed;
 
-    m_worldParameters.m_enemySpawnTimer = m_random.Range(m_worldParameters.m_enemySpawnDelayMin, m_worldParameters.m_enemySpawnDelayMax);
+    m_worldState.m_enemySpawnDelayMin = static_cast<float>(m_worldParameters.m_enemySpawnDelayMinInit);
+    m_worldState.m_enemySpawnDelayMax = static_cast<float>(m_worldParameters.m_enemySpawnDelayMaxInit);
+    m_worldState.m_enemySpawnTimer = static_cast<uint32_t>(m_random.Range(m_worldState.m_enemySpawnDelayMin, m_worldState.m_enemySpawnDelayMax));
+    m_worldState.m_enemyCurrentSpeed = m_worldParameters.m_enemySpeedInit;
 }
 
 int GameLayer::GetLayerWidth() const {
