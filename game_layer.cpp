@@ -63,7 +63,7 @@ void GameLayer::Update(uint32_t ticks) {
         m_registry.destroy(entity);
     }
 
-    if (!m_registry.valid(m_playerEntity))
+    if (m_stateMachine.IsInState<StateGame>() && !m_registry.valid(m_playerEntity))
     {
         // game over
         m_stateMachine.StateTransition<StatePostGame>();

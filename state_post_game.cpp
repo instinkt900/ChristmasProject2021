@@ -76,6 +76,8 @@ void StatePostGame::Draw(SDL_Renderer* renderer) {
     SDL_Rect destRect1{ text1X, text1Y, text1Width, text1Height };
     SDL_RenderCopy(renderer, m_gameOverText, nullptr, &destRect1);
 
-    SDL_Rect destRect2{ text2X, text2Y, text2Width, text2Height };
-    SDL_RenderCopy(renderer, m_highScoreText, nullptr, &destRect2);
+    if (m_newHighScore) {
+        SDL_Rect destRect2{ text2X, text2Y, text2Width, text2Height };
+        SDL_RenderCopy(renderer, m_highScoreText, nullptr, &destRect2);
+    }
 }

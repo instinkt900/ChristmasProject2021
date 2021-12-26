@@ -75,7 +75,7 @@ bool Game::Initialise() {
 
     m_layerStack = std::make_unique<LayerStack>(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    auto menuLayer = std::make_unique<MenuLayer>();
+    auto menuLayer = std::make_unique<MenuLayer>(m_renderer);
     m_layerStack->PushLayer(std::move(menuLayer));
 
     return true;

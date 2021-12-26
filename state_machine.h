@@ -24,6 +24,12 @@ public:
         }
     }
 
+    template<typename T>
+    bool IsInState() const {
+        auto const stateId = entt::type_index<T>::value();
+        return m_currentStateId == stateId;
+    }
+
     bool OnEvent(SDL_Event const& event);
     void Update(uint32_t ticks, entt::registry& registry);
     void Draw(SDL_Renderer* renderer);
