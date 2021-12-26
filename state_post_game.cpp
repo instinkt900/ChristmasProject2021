@@ -23,10 +23,6 @@ StatePostGame::~StatePostGame() {
 }
 
 void StatePostGame::OnEnter() {
-    auto& registry = m_gameLayer.GetRegistry();
-    auto cameraEntity = m_gameLayer.GetCameraEntity();
-    auto& cameraVelocityComponent = registry.get<VelocityComponent>(cameraEntity);
-    cameraVelocityComponent.x = 0.0f;
 }
 
 bool StatePostGame::OnEvent(SDL_Event const& event) {

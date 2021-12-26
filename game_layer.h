@@ -10,6 +10,9 @@
 struct WorldParameters {
     uint32_t m_seed = 0xF00DF00D;
 
+    float m_levelSpeedInit = 100.0f;
+    float m_levelSpeedIncrease = 1.0f;
+
     std::string m_playerSpritePath = "ship003.png";
     int m_playerSpriteWidth = 62;
     int m_playerSpriteHeight = 32;
@@ -30,14 +33,16 @@ struct WorldParameters {
     int m_enemyCollisionWidth = 32;
     int m_enemyCollisionHeight = 32;
 
-    int m_enemySpawnDelayMinInit = 3000;
-    int m_enemySpawnDelayMaxInit = 6000;
-    float m_enemySpawnDelayDecrease = 100.0f;
+    int m_enemySpawnDelayMinInit = 6000;
+    int m_enemySpawnDelayMaxInit = 8000;
+    float m_enemySpawnDelayDecrease = 50.0f;
     float m_enemySpeedInit = 100.0f;
-    float m_enemySpeedIncrease = 5.0f;
+    float m_enemySpeedIncrease = 1.0f;
 };
 
 struct WorldState {
+    float m_levelSpeed = 0.0f;
+
     float m_enemySpawnDelayMin = 0.0f;
     float m_enemySpawnDelayMax = 0.0f;
     

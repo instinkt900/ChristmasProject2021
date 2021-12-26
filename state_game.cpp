@@ -18,13 +18,6 @@ StateGame::~StateGame() {
 }
 
 void StateGame::OnEnter() {
-    auto& registry = m_gameLayer.GetRegistry();
-    auto cameraEntity = m_gameLayer.GetCameraEntity();
-    auto playerEntity = m_gameLayer.GetPlayerEntity();
-    auto& cameraVelocityComponent = registry.get<VelocityComponent>(cameraEntity);
-    auto& playerVelocityComponent = registry.get<VelocityComponent>(playerEntity);
-    cameraVelocityComponent.x = playerVelocityComponent.x = 100.0f;
-
     m_controlState.clear();
 }
 
