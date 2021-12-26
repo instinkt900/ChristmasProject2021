@@ -10,7 +10,7 @@
 #include "menu_layer.h"
 
 Game::Game() {
-
+    m_updateTicks = 1000 / 60;
 }
 
 Game::~Game() {
@@ -23,7 +23,7 @@ int Game::Run() {
     }
 
     m_running = true;
-    m_lastTicks = SDL_GetTicks();
+    m_lastUpdateTicks = SDL_GetTicks();
 
     while (m_running) {
         SDL_Event event;
@@ -89,9 +89,13 @@ void Game::OnEvent(SDL_Event& event) {
 }
 
 void Game::Update() {
-    uint32_t nowTicks = SDL_GetTicks();
-    m_layerStack->Update(nowTicks - m_lastTicks);
-    m_lastTicks = nowTicks;
+    uint32_t const nowTicks = SDL_GetTicks();
+    uint32_t deltaTicks = nowTicks - m_lastUpdateTicks;
+    while (deltaTicks > m_updateTicks) {
+        m_layerStack->Update(m_updateTicks);
+        m_lastUpdateTicks += m_updateTicks;
+        deltaTicks -= m_updateTicks;
+    }
 }
 
 void Game::Draw() {

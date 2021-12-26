@@ -9,6 +9,10 @@ public:
 
     }
 
+    void Reset(uint32_t seed) {
+        m_generator.seed(seed);
+    }
+
     template<typename T>
     typename std::enable_if_t<std::is_integral_v<T>, T> Range(T min, T max) {
         std::uniform_int_distribution<> distr(min, max);

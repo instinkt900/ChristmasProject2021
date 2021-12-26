@@ -12,7 +12,7 @@
 
 GameLayer::GameLayer(SDL_Renderer* renderer)
 :m_renderer(renderer)
-,m_random(m_worldParameters.m_seed) {
+,m_random(0) {
     m_registry.on_destroy<SpriteComponent>().connect<&GameLayer::DestroySprite>(this);
 
     SDL_Surface* bg = IMG_Load("background.jpg");
@@ -46,6 +46,18 @@ bool GameLayer::OnEvent(SDL_Event& event) {
 
 void GameLayer::Update(uint32_t ticks) {
     m_stateMachine.Update(ticks, m_registry);
+
+    // clean up dead entities
+    std::vector<entt::entity> deadEntities;
+    m_registry.view<HealthComponent>().each([&deadEntities](auto entity, auto const& healthComponent) {
+        if (!healthComponent.alive) {
+            deadEntities.push_back(entity);
+        }
+        });
+
+    for (auto entity : deadEntities) {
+        m_registry.destroy(entity);
+    }
 }
 
 void GameLayer::Draw(SDL_Renderer* renderer) {
@@ -60,7 +72,13 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
 
     m_tileMap->Draw(m_renderer, viewOffsetX, viewOffsetY, viewWidth, viewHeight);
 
-    m_registry.view<PositionComponent, SpriteComponent>().each([&renderer, viewOffsetX, viewOffsetY](auto entity, auto const& position, auto const& sprite) {
+    m_registry.view<PositionComponent, SpriteComponent>().each([this, &renderer, viewOffsetX, viewOffsetY](auto entity, auto const& position, auto const& sprite) {
+        if (auto healthComponent = m_registry.try_get<HealthComponent>(entity)) {
+            if (!healthComponent->alive) {
+                return;
+            }
+        }
+
         SDL_Rect destRect {
             static_cast<int>(position.x) - viewOffsetX - static_cast<int>(sprite.width / 2),
             static_cast<int>(position.y) - viewOffsetY - static_cast<int>(sprite.height / 2),
@@ -84,6 +102,7 @@ void GameLayer::OnRemovedFromStack() {
 
 void GameLayer::SetupLevel() {
     m_registry.clear();
+    m_random.Reset(m_worldParameters.m_seed);
 
     // camera
     m_cameraEntity = m_registry.create();
@@ -100,6 +119,7 @@ void GameLayer::SetupLevel() {
 
     // player
     m_playerEntity = m_registry.create();
+    m_registry.emplace<HealthComponent>(m_playerEntity);
     m_registry.emplace<VelocityComponent>(m_playerEntity);
     auto& playerPositionComponent = m_registry.emplace<PositionComponent>(m_playerEntity);
     auto& playerCollisionComponent = m_registry.emplace<CollisionComponent>(m_playerEntity);

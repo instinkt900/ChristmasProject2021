@@ -24,7 +24,8 @@ private:
     static int constexpr WINDOW_HEIGHT = 480;
 
     bool m_running = false;
-    uint32_t m_lastTicks = 0;
+    uint32_t m_updateTicks = 0;
+    uint32_t m_lastUpdateTicks = 0;
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
 

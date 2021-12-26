@@ -55,5 +55,8 @@ struct CollisionComponent {
 };
 
 struct EnemyComponent {
-    bool dead = false;
+};
+
+struct HealthComponent {
+    bool alive = true;
 };

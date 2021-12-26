@@ -8,17 +8,6 @@
 namespace EnemySystem {
     void Update(uint32_t ticks, GameLayer& gameLayer) {
         auto& registry = gameLayer.GetRegistry();
-        std::vector<entt::entity> deadEntities;
-        registry.view<EnemyComponent>().each([&deadEntities](auto entity, auto const& enemyComponent) {
-            if (enemyComponent.dead) {
-                deadEntities.push_back(entity);
-            }
-        });
-
-        for (auto entity : deadEntities) {
-            registry.destroy(entity);
-        }
-
         auto& worldParameters = gameLayer.GetWorldParameters();
         auto& worldState = gameLayer.GetWorldState();
         if (ticks > worldState.m_enemySpawnTimer) {
@@ -39,6 +28,7 @@ namespace EnemySystem {
             }
 
             auto enemy = registry.create();
+            registry.emplace<HealthComponent>(enemy);
             auto& positionComponent = registry.emplace<PositionComponent>(enemy);
             positionComponent.x = static_cast<float>(spawnX);
             positionComponent.y = static_cast<float>(spawnY);
@@ -58,8 +48,8 @@ namespace EnemySystem {
             collisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_PLAYER | COLLISION_FLAG_BULLET;
             collisionComponent.on_collision = [enemy, &registry](entt::entity otherEntity) {
                 if (otherEntity != entt::null) {
-                    auto& enemyComponent = registry.get<EnemyComponent>(enemy);
-                    enemyComponent.dead = true;
+                    auto& healthComponent = registry.get<HealthComponent>(enemy);
+                    healthComponent.alive = false;
                 }
                 else {
                     auto& velocityComponent = registry.get<VelocityComponent>(enemy);

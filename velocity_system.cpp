@@ -37,6 +37,12 @@ namespace VelocitySystem {
         // then anything with collisions
         std::vector<entt::entity> previousEntities;
         registry.view<VelocityComponent, PositionComponent, CollisionComponent>().each([seconds, &registry, &tileMap, &previousEntities](auto entity, auto const& velocityComponent, auto& positionComponent, auto& collisionComponent) {
+            if (auto healthComponent = registry.try_get<HealthComponent>(entity)) {
+                if (!healthComponent->alive) {
+                    return;
+                }
+            }
+
             float const newPositionX = positionComponent.x + velocityComponent.x * seconds;
             float const newPositionY = positionComponent.y + velocityComponent.y * seconds;
             bool move = true;

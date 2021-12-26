@@ -34,16 +34,15 @@ void StatePreGame::OnEnter() {
 }
 
 void StatePreGame::Update(uint32_t ticks, entt::registry& registry) {
-    m_timer -= ticks;
-    if (m_timer <= 0) {
+    if (ticks > m_timer) {
         m_stateMachine->StateTransition<StateGame>();
         return;
     }
-
+    m_timer -= ticks;
 }
 
 void StatePreGame::Draw(SDL_Renderer* renderer) {
-    int const index = static_cast<int>(std::floor(m_timer / 1000));
+    int const index = std::min(2, static_cast<int>(std::floor(m_timer / 1000)));
     SDL_Rect destRect{
         (m_gameLayer.GetLayerWidth() - std::get<0>(m_countDownTextDim[index])) / 2,
         (m_gameLayer.GetLayerHeight() - std::get<1>(m_countDownTextDim[index])) / 2,

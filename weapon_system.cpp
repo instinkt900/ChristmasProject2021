@@ -17,6 +17,7 @@ namespace WeaponSystem {
             if (weaponComponent.timer <= 0 && weaponComponent.firing) {
                 // spawn projectile
                 auto projectile = registry.create();
+                registry.emplace<HealthComponent>(projectile);
                 auto& projectilePositionComponent = registry.emplace<PositionComponent>(projectile);
                 auto& projectileVelocityComponent = registry.emplace<VelocityComponent>(projectile);
                 auto& projectileSpriteComponent = registry.emplace<SpriteComponent>(projectile);
@@ -35,7 +36,8 @@ namespace WeaponSystem {
                 collisionComponent.flags = COLLISION_FLAG_BULLET;
                 collisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_ENEMY;
                 collisionComponent.on_collision = [&registry, projectile](entt::entity otherEntity) {
-                    registry.destroy(projectile);
+                    auto& healthComponent = registry.get<HealthComponent>(projectile);
+                    healthComponent.alive = false;
                 };
                 weaponComponent.timer = weaponComponent.fire_delay;
             }
