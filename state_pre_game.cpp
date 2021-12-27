@@ -4,6 +4,7 @@
 #include "game_layer.h"
 
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 
 StatePreGame::StatePreGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)
@@ -30,6 +31,7 @@ StatePreGame::~StatePreGame() {
 
 void StatePreGame::OnEnter() {
     m_timer = 3000;
+    m_sfxTimer = 0;
     m_gameLayer.SetupLevel();
 }
 
@@ -39,6 +41,12 @@ void StatePreGame::Update(uint32_t ticks, entt::registry& registry) {
         return;
     }
     m_timer -= ticks;
+
+    if (ticks > m_sfxTimer) {
+        Mix_PlayChannel(-1, m_gameLayer.GetCountSFX(), 0);
+        m_sfxTimer += 1000;
+    }
+    m_sfxTimer -= ticks;
 }
 
 void StatePreGame::Draw(SDL_Renderer* renderer) {

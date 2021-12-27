@@ -7,6 +7,7 @@
 #include "state_machine.h"
 #include "random.h"
 #include "SDL_FontCache.h"
+#include <SDL_mixer.h>
 
 struct WorldParameters {
     uint32_t m_seed = 0xF00DF00D;
@@ -86,6 +87,10 @@ public:
     auto& GetTileMap() const { return *m_tileMap; }
     void SpawnExplosion(int x, int y);
 
+    auto GetWeaponSFX() { return m_weaponSFX; }
+    auto GetCountSFX() { return m_countSFX; }
+    auto GetStartSFX() { return m_startSFX; }
+
     void SetupLevel();
 
 private:
@@ -105,6 +110,13 @@ private:
     SDL_Texture* m_explosionTexture = nullptr;
 
     FC_Font* m_scoreFont;
+
+    Mix_Music* m_music = nullptr;
+    Mix_Chunk* m_weaponSFX = nullptr;
+    Mix_Chunk* m_explosionSFX = nullptr;
+    Mix_Chunk* m_playerDiedSFX = nullptr;
+    Mix_Chunk* m_countSFX = nullptr;
+    Mix_Chunk* m_startSFX = nullptr;
 
     void DestroySprite(entt::registry& registry, entt::entity entity);
 };

@@ -7,6 +7,8 @@
 #include "velocity_system.h"
 #include "lifetime_system.h"
 
+#include <SDL_mixer.h>
+
 StateGame::StateGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)
 , m_gameLayer(gameLayer) {
@@ -18,6 +20,7 @@ StateGame::~StateGame() {
 
 void StateGame::OnEnter() {
     m_controlState.clear();
+    Mix_PlayChannel(-1, m_gameLayer.GetStartSFX(), 0);
 }
 
 bool StateGame::OnEvent(SDL_Event const& event) {

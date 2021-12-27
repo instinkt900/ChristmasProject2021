@@ -2,6 +2,7 @@
 
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 
 #include "imgui.h"
 #include "backends/imgui_impl_sdl.h"
@@ -70,6 +71,10 @@ bool Game::Initialise() {
     }
 
     if (0 > TTF_Init()) {
+        return false;
+    }
+
+    if (0 > Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048)) {
         return false;
     }
 

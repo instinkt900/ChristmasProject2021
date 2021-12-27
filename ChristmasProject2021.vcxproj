@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Development\SDL2-2.0.18\include;C:\Development\SDL2_image-2.0.5\include;C:\Development\SDL2_ttf-2.0.15\include;C:\Development\ChristmasProject2021\external\imgui;C:\Development\ChristmasProject2021\external\entt\single_include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Development\SDL2-2.0.18\lib\x64;C:\Development\SDL2_image-2.0.5\lib\x64;C:\Development\SDL2_ttf-2.0.15\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Development\SDL2-2.0.18\include;C:\Development\SDL2_image-2.0.5\include;C:\Development\SDL2_ttf-2.0.15\include;C:\Development\SDL2_mixer-2.0.4\include;C:\Development\ChristmasProject2021\external\imgui;C:\Development\ChristmasProject2021\external\entt\single_include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Development\SDL2-2.0.18\lib\x64;C:\Development\SDL2_image-2.0.5\lib\x64;C:\Development\SDL2_ttf-2.0.15\lib\x64;C:\Development\SDL2_mixer-2.0.4\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -130,12 +130,13 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y C:\Development\SDL2-2.0.18\lib\x64\SDL2.dll $(OutDirFullPath)
 xcopy /y C:\Development\SDL2_image-2.0.5\lib\x64\*.dll $(OutDirFullPath)
-xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command>
+xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)
+xcopy /y C:\Development\SDL2_mixer-2.0.4\lib\x64\*.dll $(OutDirFullPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

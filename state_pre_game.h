@@ -17,6 +17,7 @@ public:
 private:
     GameLayer& m_gameLayer;
     uint32_t m_timer = 0;
+    uint32_t m_sfxTimer = 0;
     SDL_Texture* m_countDownText[3] = { nullptr, nullptr, nullptr };
     std::tuple<int, int> m_countDownTextDim[3];
 };

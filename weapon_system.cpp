@@ -3,6 +3,7 @@
 #include "game_layer.h"
 
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 
 namespace WeaponSystem {
     void Update(uint32_t ticks, GameLayer& gameLayer) {
@@ -10,7 +11,7 @@ namespace WeaponSystem {
         auto& registry = gameLayer.GetRegistry();
         auto const& worldParameters = gameLayer.GetWorldParameters();
         auto& worldState = gameLayer.GetWorldState();
-        registry.view<WeaponComponent, PositionComponent>().each([ticks, &registry, &renderer, &worldParameters, &worldState](auto& weaponComponent, auto const& positionComponent) {
+        registry.view<WeaponComponent, PositionComponent>().each([ticks, &registry, &renderer, &worldParameters, &worldState, &gameLayer](auto& weaponComponent, auto const& positionComponent) {
             if (weaponComponent.timer > 0) {
                 weaponComponent.timer -= ticks;
             }
@@ -41,6 +42,7 @@ namespace WeaponSystem {
                     healthComponent.alive = false;
                 };
                 weaponComponent.timer = weaponComponent.fire_delay;
+                Mix_PlayChannel(-1, gameLayer.GetWeaponSFX(), 0);
 
                 worldState.m_score -= worldParameters.m_scoreShootPenalty;
             }

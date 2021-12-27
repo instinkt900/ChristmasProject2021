@@ -33,11 +33,29 @@ GameLayer::GameLayer(SDL_Renderer* renderer)
 
     m_scoreFont = FC_CreateFont();
     FC_LoadFont(m_scoreFont, m_renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
+
+    m_weaponSFX = Mix_LoadWAV("Pew__006.wav");
+    Mix_VolumeChunk(m_weaponSFX, 16);
+
+    m_explosionSFX = Mix_LoadWAV("Explosion2__006.wav");
+    m_playerDiedSFX = Mix_LoadWAV("Explosion2__007.wav");
+    Mix_VolumeChunk(m_playerDiedSFX, 16);
+
+    m_countSFX = Mix_LoadWAV("Pickup__010.wav");
+    m_startSFX = Mix_LoadWAV("Pickup__003.wav");
+
+    m_music = Mix_LoadMUS("OutThere.ogg");
 }
 
 GameLayer::~GameLayer() {
     SDL_DestroyTexture(m_backgroundTexture);
     FC_FreeFont(m_scoreFont);
+    Mix_FreeMusic(m_music);
+    Mix_FreeChunk(m_weaponSFX);
+    Mix_FreeChunk(m_explosionSFX);
+    Mix_FreeChunk(m_playerDiedSFX);
+    Mix_FreeChunk(m_countSFX);
+    Mix_FreeChunk(m_startSFX);
 }
 
 bool GameLayer::OnEvent(SDL_Event& event) {
@@ -74,6 +92,7 @@ void GameLayer::Update(uint32_t ticks) {
     if (m_stateMachine.IsInState<StateGame>() && !m_registry.valid(m_playerEntity))
     {
         // game over
+        Mix_PlayChannel(-1, m_playerDiedSFX, 0);
         m_stateMachine.StateTransition<StatePostGame>();
     }
 }
@@ -101,10 +120,12 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
     m_layerStack = layerStack;
     m_stateMachine.StateTransition<StatePreGame>();
+    Mix_PlayMusic(m_music, -1);
 }
 
 void GameLayer::OnRemovedFromStack() {
     m_layerStack = nullptr;
+    Mix_PauseMusic();
 }
 
 void GameLayer::SpawnExplosion(int x, int y) {
@@ -139,6 +160,8 @@ void GameLayer::SpawnExplosion(int x, int y) {
     }
     auto& lifetimeComponent = m_registry.emplace<LifetimeComponent>(entity);
     lifetimeComponent.lifetime = spriteComponent.ticks_per_frame * spriteComponent.frames;
+
+    Mix_PlayChannel(-1, m_explosionSFX, 0);
 }
 
 void GameLayer::SetupLevel() {
