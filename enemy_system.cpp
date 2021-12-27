@@ -51,6 +51,9 @@ namespace EnemySystem {
                     auto& healthComponent = registry.get<HealthComponent>(enemy);
                     healthComponent.alive = false;
                     gameLayer.GetWorldState().m_score += gameLayer.GetWorldParameters().m_scorePerKill;
+                    // spawn an explosion
+                    auto const& enemyPositionComponent = registry.get<PositionComponent>(enemy);
+                    gameLayer.SpawnExplosion(static_cast<int>(enemyPositionComponent.x), static_cast<int>(enemyPositionComponent.y));
                 }
                 else {
                     auto& velocityComponent = registry.get<VelocityComponent>(enemy);

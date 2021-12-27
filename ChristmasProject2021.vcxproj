@@ -177,6 +177,7 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="simplex_noise.cpp" />
+    <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="state_game.cpp" />
     <ClCompile Include="state_post_game.cpp" />
     <ClCompile Include="state_pre_game.cpp" />
@@ -197,6 +198,7 @@ xcopy /y C:\Development\SDL2_ttf-2.0.15\lib\x64\*.dll $(OutDirFullPath)</Command
     <ClInclude Include="random.h" />
     <ClInclude Include="SDL_FontCache.h" />
     <ClInclude Include="simplex_noise.h" />
+    <ClInclude Include="sprite_system.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="state_game.h" />
     <ClInclude Include="state_machine.h" />

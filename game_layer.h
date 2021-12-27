@@ -84,6 +84,7 @@ public:
     auto GetPlayerEntity() const { return m_playerEntity; }
     auto GetCameraEntity() const { return m_cameraEntity; }
     auto& GetTileMap() const { return *m_tileMap; }
+    void SpawnExplosion(int x, int y);
 
     void SetupLevel();
 
@@ -101,6 +102,7 @@ private:
 
     std::unique_ptr<TileMap> m_tileMap;
     SDL_Texture* m_backgroundTexture = nullptr;
+    SDL_Texture* m_explosionTexture = nullptr;
 
     FC_Font* m_scoreFont;
 

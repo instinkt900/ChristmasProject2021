@@ -10,6 +10,8 @@
 #include "state_game.h"
 #include "state_post_game.h"
 
+#include "sprite_system.h"
+
 GameLayer::GameLayer(SDL_Renderer* renderer)
 :m_renderer(renderer)
 ,m_random(0) {
@@ -18,6 +20,10 @@ GameLayer::GameLayer(SDL_Renderer* renderer)
     SDL_Surface* bg = IMG_Load("background.jpg");
     m_backgroundTexture = SDL_CreateTextureFromSurface(m_renderer, bg);
     SDL_FreeSurface(bg);
+
+    SDL_Surface* explosion = IMG_Load("exp2_0.png");
+    m_explosionTexture = SDL_CreateTextureFromSurface(m_renderer, explosion);
+    SDL_FreeSurface(explosion);
 
     m_tileMap = std::make_unique<TileMap>(m_renderer, 8, 8);
 
@@ -51,6 +57,8 @@ bool GameLayer::OnEvent(SDL_Event& event) {
 void GameLayer::Update(uint32_t ticks) {
     m_stateMachine.Update(ticks, m_registry);
 
+    SpriteSystem::Update(ticks, *this);
+
     // clean up dead entities
     std::vector<entt::entity> deadEntities;
     m_registry.view<HealthComponent>().each([&deadEntities](auto entity, auto const& healthComponent) {
@@ -82,21 +90,7 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
 
     m_tileMap->Draw(m_renderer, viewOffsetX, viewOffsetY, viewWidth, viewHeight);
 
-    m_registry.view<PositionComponent, SpriteComponent>().each([this, &renderer, viewOffsetX, viewOffsetY](auto entity, auto const& position, auto const& sprite) {
-        if (auto healthComponent = m_registry.try_get<HealthComponent>(entity)) {
-            if (!healthComponent->alive) {
-                return;
-            }
-        }
-
-        SDL_Rect destRect {
-            static_cast<int>(position.x) - viewOffsetX - static_cast<int>(sprite.width / 2),
-            static_cast<int>(position.y) - viewOffsetY - static_cast<int>(sprite.height / 2),
-            static_cast<int>(sprite.width),
-            static_cast<int>(sprite.height)
-        };
-        SDL_RenderCopyEx(renderer, sprite.texture, sprite.source_rect, &destRect, 0.0f, nullptr, sprite.flip);
-    });
+    SpriteSystem::Draw(m_renderer, m_registry, viewOffsetX, viewOffsetY, viewWidth, viewHeight);
 
     m_stateMachine.Draw(renderer);
 
@@ -111,6 +105,40 @@ void GameLayer::OnAddedToStack(LayerStack* layerStack) {
 
 void GameLayer::OnRemovedFromStack() {
     m_layerStack = nullptr;
+}
+
+void GameLayer::SpawnExplosion(int x, int y) {
+    auto entity = m_registry.create();
+    auto& positionComponent = m_registry.emplace<PositionComponent>(entity);
+    positionComponent.x = static_cast<float>(x);
+    positionComponent.y = static_cast<float>(y);
+    auto& spriteComponent = m_registry.emplace<SpriteComponent>(entity);
+    spriteComponent.texture = m_explosionTexture;
+    spriteComponent.managed_texture = true;
+    spriteComponent.width = 64;
+    spriteComponent.height = 64;
+    spriteComponent.frames = 16;
+    spriteComponent.ticks_per_frame = 1000 / spriteComponent.frames;
+    spriteComponent.playing = true;
+    spriteComponent.anim_type = AnimType::Stop;
+    int srcTop = 0;
+    int srcLeft = 0;
+    spriteComponent.source_rects.resize(spriteComponent.frames);
+    for (int i = 0; i < spriteComponent.frames; ++i) {
+        auto& rect = spriteComponent.source_rects[i];
+        rect.x = srcLeft;
+        rect.y = srcTop;
+        rect.w = 64;
+        rect.h = 64;
+
+        srcLeft += 64;
+        if (((i + 1) % 4) == 0) {
+            srcLeft = 0;
+            srcTop += 64;
+        }
+    }
+    auto& lifetimeComponent = m_registry.emplace<LifetimeComponent>(entity);
+    lifetimeComponent.lifetime = spriteComponent.ticks_per_frame * spriteComponent.frames;
 }
 
 void GameLayer::SetupLevel() {

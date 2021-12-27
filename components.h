@@ -12,12 +12,24 @@ struct VelocityComponent {
     float y = 0;
 };
 
+enum class AnimType {
+    Stop,
+    Loop,
+    Reset
+};
+
 struct SpriteComponent {
     SDL_Texture* texture;
     int width = 0;
     int height = 0;
-    SDL_Rect* source_rect = nullptr;
+    int frames = 0;
+    int ticks_per_frame = 0;
+    int anim_time = 0;
+    bool playing = false;
+    bool visible = true;
     bool managed_texture = false;
+    AnimType anim_type = AnimType::Stop;
+    std::vector<SDL_Rect> source_rects;
     SDL_RendererFlip flip = SDL_FLIP_NONE;
 };
 
