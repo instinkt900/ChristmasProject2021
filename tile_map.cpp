@@ -66,8 +66,8 @@ bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) const {
     float const mapHeight = 480.0f / m_tileSizeY;
 
     float const layer1Scale = 50.0f;
-    float const layer1Amp = mapHeight / 4.0f;
-    float const mid = std::sin(x / layer1Scale) * layer1Amp;
+    float const layer1Amp = mapHeight / 6.0f;
+    float const mid = std::sin((x + 100)/ layer1Scale) * layer1Amp;
 
     int const caveStartX = 50;
     float const noiseAmp = 20.0f;
@@ -75,9 +75,12 @@ bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) const {
     float const topOffset = -20.0f;
     float const bottomOffset = 20.0f;
 
+    float const topNoiseSeed    = 411250.0f;
+    float const bottomNoiseSeed = 918321.0f;
+
     if (x > caveStartX) {
         if (y < mid) {
-            float const extra = (mid + topOffset) + m_noise.fractal(noiseOctaves, static_cast<float>(x)) * noiseAmp;
+            float const extra = (mid + topOffset) + m_noise.fractal(noiseOctaves, static_cast<float>(x) + topNoiseSeed) * noiseAmp;
             if (y < extra) {
                 if (nullptr != tilesetRect) {
                     *tilesetRect = { 0, 0, 64, 64 };
@@ -86,7 +89,7 @@ bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) const {
             }
         }
         else if (y > mid) {
-            float const extra = (mid + bottomOffset) + m_noise.fractal(noiseOctaves, static_cast<float>(x) + 62833.0f) * noiseAmp;
+            float const extra = (mid + bottomOffset) + m_noise.fractal(noiseOctaves, static_cast<float>(x) + bottomNoiseSeed) * noiseAmp;
             if (y > extra) {
                 if (nullptr != tilesetRect) {
                     *tilesetRect = { 0, 0, 64, 64 };
