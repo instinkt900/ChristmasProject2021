@@ -12,6 +12,7 @@
 struct WorldParameters {
     uint32_t m_seed = 0xF00DF00D;
 
+    std::string m_dataFile = "data.bin";
     std::string m_gameFontPath = "pilotcommand.ttf";
 
     float m_levelSpeedInit = 100.0f;
@@ -92,6 +93,7 @@ public:
     auto GetStartSFX() { return m_startSFX; }
 
     void SetupLevel();
+    void SaveScore();
 
 private:
     SDL_Renderer* m_renderer = nullptr;

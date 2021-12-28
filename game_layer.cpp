@@ -2,6 +2,8 @@
 
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <fstream>
+#include <filesystem>
 
 #include "components.h"
 #include "layer_stack.h"
@@ -45,6 +47,12 @@ GameLayer::GameLayer(SDL_Renderer* renderer)
     m_startSFX = Mix_LoadWAV("Pickup__003.wav");
 
     m_music = Mix_LoadMUS("OutThere.ogg");
+
+    if (std::filesystem::exists(m_worldParameters.m_dataFile)) {
+        std::fstream scoreData(m_worldParameters.m_dataFile, std::ios_base::in | std::ios_base::binary);
+        scoreData.read(reinterpret_cast<char*>(&m_worldState.m_highScore), sizeof(m_worldState.m_highScore));
+        scoreData.close();
+    }
 }
 
 GameLayer::~GameLayer() {
@@ -206,6 +214,8 @@ void GameLayer::SetupLevel() {
     playerCollisionComponent.on_collision = [this](entt::entity otherEntity) {
         auto& healthComponent = m_registry.get<HealthComponent>(m_playerEntity);
         healthComponent.alive = false;
+        auto const& positionComponent = m_registry.get<PositionComponent>(m_playerEntity);
+        SpawnExplosion(static_cast<int>(positionComponent.x), static_cast<int>(positionComponent.y));
     };
 
     playerWeaponComponent.fire_delay = m_worldParameters.m_playerFireDelay;
@@ -219,6 +229,13 @@ void GameLayer::SetupLevel() {
     m_worldState.m_score = 0;
 }
 
+void GameLayer::SaveScore() {
+    std::fstream scoreData(m_worldParameters.m_dataFile, std::fstream::out | std::fstream::binary | std::fstream::trunc);
+    if (scoreData.is_open()) {
+        scoreData.write(reinterpret_cast<char const*>(&m_worldState.m_highScore), sizeof(m_worldState.m_highScore));
+        scoreData.close();
+    }
+}
 int GameLayer::GetLayerWidth() const {
     if (nullptr == m_layerStack) {
         return 0;

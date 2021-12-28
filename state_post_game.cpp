@@ -37,6 +37,7 @@ void StatePostGame::OnEnter() {
     if (worldState.m_score > worldState.m_highScore) {
         worldState.m_highScore = worldState.m_score;
         m_newHighScore = true;
+        m_gameLayer.SaveScore();
     }
 }
 
