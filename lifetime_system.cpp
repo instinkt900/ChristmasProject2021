@@ -1,3 +1,4 @@
+#include "game_pch.h"
 #include "lifetime_system.h"
 #include "components.h"
 #include "game_layer.h"

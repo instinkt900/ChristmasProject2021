@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SDL.h>
-
 struct PositionComponent {
     float x = 0;
     float y = 0;

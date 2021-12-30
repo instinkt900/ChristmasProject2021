@@ -1,12 +1,5 @@
+#include "game_pch.h"
 #include "game.h"
-
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#include <SDL_mixer.h>
-
-#include "imgui.h"
-#include "backends/imgui_impl_sdl.h"
-#include "backends/imgui_impl_sdlrenderer.h"
 
 #include "menu_layer.h"
 
@@ -46,9 +39,11 @@ bool Game::Initialise() {
         return false;
     }
 
-    if (nullptr == (m_window = SDL_CreateWindow("Xmas Game 2021", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN))) {
+    if (nullptr == (m_window = SDL_CreateWindow("Xmas Game 2021", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT, SDL_WINDOW_SHOWN))) {
         return false;
     }
+
+    SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight);
 
     if (nullptr == (m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED))) {
         return false;
@@ -78,7 +73,7 @@ bool Game::Initialise() {
         return false;
     }
 
-    m_layerStack = std::make_unique<LayerStack>(WINDOW_WIDTH, WINDOW_HEIGHT);
+    m_layerStack = std::make_unique<LayerStack>(m_windowWidth, m_windowHeight);
 
     auto menuLayer = std::make_unique<MenuLayer>(m_renderer);
     m_layerStack->PushLayer(std::move(menuLayer));
@@ -86,9 +81,17 @@ bool Game::Initialise() {
     return true;
 }
 
-void Game::OnEvent(SDL_Event& event) {
+void Game::OnEvent(SDL_Event const& event) {
     if (event.type == SDL_QUIT) {
         m_running = false;
+    }
+    else if (event.type == SDL_WINDOWEVENT) {
+        switch (event.window.event) {
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+            m_windowWidth = event.window.data1;
+            m_windowHeight = event.window.data2;
+            break;
+        }
     }
     m_layerStack->OnEvent(event);
 }

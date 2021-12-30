@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SDL.h>
-
 #include "layer_stack.h"
 
 class Game
@@ -14,14 +12,17 @@ public:
 
 protected:
     bool Initialise();
-    void OnEvent(SDL_Event& event);
+    void OnEvent(SDL_Event const& event);
     void Update();
     void Draw();
     void Shutdown();
 
 private:
-    static int constexpr WINDOW_WIDTH = 640;
-    static int constexpr WINDOW_HEIGHT = 480;
+    static int constexpr INIT_WINDOW_WIDTH = 640;
+    static int constexpr INIT_WINDOW_HEIGHT = 480;
+
+    int m_windowWidth = 0;
+    int m_windowHeight = 0;
 
     bool m_running = false;
     uint32_t m_updateTicks = 0;

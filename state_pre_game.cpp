@@ -1,10 +1,8 @@
+#include "game_pch.h"
 #include "state_pre_game.h"
 #include "state_machine.h"
 #include "state_game.h"
 #include "game_layer.h"
-
-#include <SDL_ttf.h>
-#include <SDL_mixer.h>
 
 StatePreGame::StatePreGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)
@@ -52,8 +50,8 @@ void StatePreGame::Update(uint32_t ticks, entt::registry& registry) {
 void StatePreGame::Draw(SDL_Renderer* renderer) {
     int const index = std::min(2, static_cast<int>(std::floor(m_timer / 1000)));
     SDL_Rect destRect{
-        (m_gameLayer.GetLayerWidth() - std::get<0>(m_countDownTextDim[index])) / 2,
-        (m_gameLayer.GetLayerHeight() - std::get<1>(m_countDownTextDim[index])) / 2,
+        (m_gameLayer.GetWidth() - std::get<0>(m_countDownTextDim[index])) / 2,
+        (m_gameLayer.GetHeight() - std::get<1>(m_countDownTextDim[index])) / 2,
         std::get<0>(m_countDownTextDim[index]),
         std::get<1>(m_countDownTextDim[index])
     };

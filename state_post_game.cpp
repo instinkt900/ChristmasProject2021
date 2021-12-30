@@ -1,9 +1,8 @@
+#include "game_pch.h"
 #include "state_post_game.h"
 #include "game_layer.h"
 #include "components.h"
 #include "state_pre_game.h"
-
-#include <SDL_ttf.h>
 
 StatePostGame::StatePostGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)
@@ -61,8 +60,8 @@ bool StatePostGame::OnEvent(SDL_Event const& event) {
 }
 
 void StatePostGame::Draw(SDL_Renderer* renderer) {
-    int const displayWidth = m_gameLayer.GetLayerWidth();
-    int const displayHeight = m_gameLayer.GetLayerHeight();
+    int const displayWidth = m_gameLayer.GetWidth();
+    int const displayHeight = m_gameLayer.GetHeight();
 
     int const text1Width = std::get<0>(m_gameOverTextDim);
     int const text1Height = std::get<1>(m_gameOverTextDim);

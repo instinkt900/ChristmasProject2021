@@ -1,9 +1,7 @@
+#include "game_pch.h"
 #include "weapon_system.h"
 #include "components.h"
 #include "game_layer.h"
-
-#include <SDL_image.h>
-#include <SDL_mixer.h>
 
 namespace WeaponSystem {
     void Update(uint32_t ticks, GameLayer& gameLayer) {

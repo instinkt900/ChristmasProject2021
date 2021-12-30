@@ -1,18 +1,12 @@
+#include "game_pch.h"
 #include "game_layer.h"
-
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#include <fstream>
-#include <filesystem>
-
 #include "components.h"
 #include "layer_stack.h"
-
 #include "state_pre_game.h"
 #include "state_game.h"
 #include "state_post_game.h"
-
 #include "sprite_system.h"
+#include "utils.h"
 
 GameLayer::GameLayer(SDL_Renderer* renderer)
 :m_renderer(renderer)
@@ -66,7 +60,7 @@ GameLayer::~GameLayer() {
     Mix_FreeChunk(m_startSFX);
 }
 
-bool GameLayer::OnEvent(SDL_Event& event) {
+bool GameLayer::OnEvent(SDL_Event const& event) {
     if (event.type == SDL_WINDOWEVENT) {
         switch (event.window.event) {
         case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -110,29 +104,30 @@ void GameLayer::Draw(SDL_Renderer* renderer) {
 
     auto const& cameraPositionComponent = m_registry.get<PositionComponent>(m_cameraEntity);
     auto const& cameraCameraComponent = m_registry.get<CameraComponent>(m_cameraEntity);
-    int const viewWidth = cameraCameraComponent.width;
-    int const viewHeight = cameraCameraComponent.height;
-    int const viewOffsetX = static_cast<int>(cameraPositionComponent.x) - viewWidth / 2;
-    int const viewOffsetY = static_cast<int>(cameraPositionComponent.y) - viewHeight / 2;
+    ViewParameters viewParameters;
+    viewParameters.m_width = cameraCameraComponent.width;
+    viewParameters.m_height = cameraCameraComponent.height;
+    viewParameters.m_offsetX = static_cast<int>(cameraPositionComponent.x) - viewParameters.m_width / 2;
+    viewParameters.m_offsetY = static_cast<int>(cameraPositionComponent.y) - viewParameters.m_height / 2;
 
-    m_tileMap->Draw(m_renderer, viewOffsetX, viewOffsetY, viewWidth, viewHeight);
+    m_tileMap->Draw(m_renderer, viewParameters);
 
-    SpriteSystem::Draw(m_renderer, m_registry, viewOffsetX, viewOffsetY, viewWidth, viewHeight);
+    SpriteSystem::Draw(m_renderer, m_registry, viewParameters);
 
     m_stateMachine.Draw(renderer);
 
     FC_Draw(m_scoreFont, renderer, 3, 0, "Score: %d", m_worldState.m_score);
-    FC_Draw(m_scoreFont, renderer, 3, GetLayerHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
+    FC_Draw(m_scoreFont, renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
 }
 
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
-    m_layerStack = layerStack;
+    Layer::OnAddedToStack(layerStack);
     m_stateMachine.StateTransition<StatePreGame>();
     Mix_PlayMusic(m_music, -1);
 }
 
 void GameLayer::OnRemovedFromStack() {
-    m_layerStack = nullptr;
+    Layer::OnRemovedFromStack();
     Mix_PauseMusic();
 }
 
@@ -185,8 +180,8 @@ void GameLayer::SetupLevel() {
     cameraPosition.x = 0;
     cameraPosition.y = 0;
     
-    cameraDetails.width = GetLayerWidth();
-    cameraDetails.height = GetLayerHeight();
+    cameraDetails.width = 640;
+    cameraDetails.height = 480;
     cameraDetails.active = true;
 
     // player
@@ -235,19 +230,6 @@ void GameLayer::SaveScore() {
         scoreData.write(reinterpret_cast<char const*>(&m_worldState.m_highScore), sizeof(m_worldState.m_highScore));
         scoreData.close();
     }
-}
-int GameLayer::GetLayerWidth() const {
-    if (nullptr == m_layerStack) {
-        return 0;
-    }
-    return m_layerStack->GetWidth();
-}
-
-int GameLayer::GetLayerHeight() const {
-    if (nullptr == m_layerStack) {
-        return 0;
-    }
-    return m_layerStack->GetHeight();
 }
 
 void GameLayer::DestroySprite(entt::registry& registry, entt::entity entity) {

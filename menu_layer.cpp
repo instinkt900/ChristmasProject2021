@@ -1,8 +1,5 @@
+#include "game_pch.h"
 #include "menu_layer.h"
-
-#include <imgui.h>
-#include <SDL_image.h>
-
 #include "game_layer.h"
 #include "layer_stack.h"
 
@@ -45,7 +42,7 @@ MenuLayer::~MenuLayer() {
     SDL_DestroyTexture(m_promptTextDrop);
 }
 
-bool MenuLayer::OnEvent(SDL_Event& event) {
+bool MenuLayer::OnEvent(SDL_Event const& event) {
     if (event.type == SDL_KEYUP) {
         switch (event.key.keysym.sym) {
         case SDLK_SPACE:
@@ -65,8 +62,8 @@ void MenuLayer::Update(uint32_t ticks) {
 void MenuLayer::Draw(SDL_Renderer* renderer) {
     SDL_RenderCopy(renderer, m_splashTexture, nullptr, nullptr);
 
-    int const displayWidth = 640; // TODO
-    int const displayHeight = 480;
+    int const displayWidth = GetWidth();
+    int const displayHeight = GetHeight();
 
     int const text1Width = std::get<0>(m_titleTextDim);
     int const text1Height = std::get<1>(m_titleTextDim);
@@ -89,11 +86,4 @@ void MenuLayer::Draw(SDL_Renderer* renderer) {
 
     SDL_Rect destRect2{ text2X, text2Y, text2Width, text2Height };
     SDL_RenderCopy(renderer, m_promptText, nullptr, &destRect2);
-}
-
-void MenuLayer::OnAddedToStack(LayerStack* layerStack) {
-    m_layerStack = layerStack;
-}
-void MenuLayer::OnRemovedFromStack() {
-    m_layerStack = nullptr;
 }

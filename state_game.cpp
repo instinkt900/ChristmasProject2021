@@ -1,13 +1,11 @@
+#include "game_pch.h"
 #include "state_game.h"
 #include "components.h"
 #include "game_layer.h"
-
 #include "enemy_system.h"
 #include "weapon_system.h"
 #include "velocity_system.h"
 #include "lifetime_system.h"
-
-#include <SDL_mixer.h>
 
 StateGame::StateGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)

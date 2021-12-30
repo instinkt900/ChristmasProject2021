@@ -1,7 +1,6 @@
+#include "game_pch.h"
 #include "enemy_system.h"
-#include <random>
 #include "components.h"
-#include <SDL_image.h>
 #include "tile_map.h"
 #include "game_layer.h"
 

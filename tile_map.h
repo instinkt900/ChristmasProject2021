@@ -1,15 +1,15 @@
 #pragma once
 
-#include <SDL.h>
 #include "simplex_noise.h"
-#include <entt/entt.hpp>
+
+struct ViewParameters;
 
 class TileMap {
 public:
     TileMap(SDL_Renderer* renderer, int tileSizeX, int tileSizeY);
     ~TileMap();
 
-    void Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int viewWidth, int viewHeight) const;
+    void Draw(SDL_Renderer* renderer, ViewParameters const& view) const;
     bool Collides(int x, int y, int width, int height) const;
 
 private:

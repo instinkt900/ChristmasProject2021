@@ -36,6 +36,8 @@
     <ClCompile Include="state_post_game.cpp" />
     <ClCompile Include="SDL_FontCache.c" />
     <ClCompile Include="sprite_system.cpp" />
+    <ClCompile Include="layer.cpp" />
+    <ClCompile Include="game_pch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -58,6 +60,8 @@
     <ClInclude Include="random.h" />
     <ClInclude Include="SDL_FontCache.h" />
     <ClInclude Include="sprite_system.h" />
+    <ClInclude Include="utils.h" />
+    <ClInclude Include="game_pch.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">

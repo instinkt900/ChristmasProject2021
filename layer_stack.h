@@ -1,9 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-#include <SDL.h>
-
 class Layer;
 
 class LayerStack
@@ -16,7 +12,7 @@ public:
     std::unique_ptr<Layer> PopLayer();
     void RemoveLayer(Layer* layer);
 
-    void OnEvent(SDL_Event& event);
+    void OnEvent(SDL_Event const& event);
     void Update(uint32_t ticks);
     void Draw(SDL_Renderer* renderer);
 

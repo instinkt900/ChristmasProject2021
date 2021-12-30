@@ -1,8 +1,5 @@
 #pragma once
 
-#include <SDL.h>
-#include <entt/entt.hpp>
-
 class StateMachine;
 
 class State {

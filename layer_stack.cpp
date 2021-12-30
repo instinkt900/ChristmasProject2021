@@ -1,5 +1,5 @@
+#include "game_pch.h"
 #include "layer_stack.h"
-
 #include "layer.h"
 
 LayerStack::LayerStack(int width, int height)
@@ -34,7 +34,7 @@ void LayerStack::RemoveLayer(Layer* layer) {
     }
 }
 
-void LayerStack::OnEvent(SDL_Event& event) {
+void LayerStack::OnEvent(SDL_Event const& event) {
     if (event.type == SDL_WINDOWEVENT) {
         switch (event.window.event) {
         case SDL_WINDOWEVENT_SIZE_CHANGED:

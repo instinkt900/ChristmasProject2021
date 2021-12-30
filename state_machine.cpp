@@ -1,5 +1,5 @@
+#include "game_pch.h"
 #include "state_machine.h"
-
 #include "state.h"
 
 StateMachine::StateMachine() {

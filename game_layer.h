@@ -1,13 +1,10 @@
 #pragma once
 
-#include <entt/entt.hpp>
 #include "layer.h"
 #include "tile_map.h"
-#include <tuple>
 #include "state_machine.h"
 #include "random.h"
 #include "SDL_FontCache.h"
-#include <SDL_mixer.h>
 
 struct WorldParameters {
     uint32_t m_seed = 0xF00DF00D;
@@ -68,7 +65,7 @@ public:
     GameLayer(SDL_Renderer* renderer);
     ~GameLayer();
 
-    bool OnEvent(SDL_Event& event) override;
+    bool OnEvent(SDL_Event const& event) override;
     void Update(uint32_t ticks) override;
     void Draw(SDL_Renderer* renderer) override;
 
@@ -76,8 +73,6 @@ public:
     void OnRemovedFromStack() override;
 
     SDL_Renderer& GetRenderer() const { return *m_renderer; }
-    int GetLayerWidth() const;
-    int GetLayerHeight() const;
 
     auto& GetRandom() { return m_random; }
     auto& GetWorldParameters() const { return m_worldParameters; }
@@ -97,7 +92,6 @@ public:
 
 private:
     SDL_Renderer* m_renderer = nullptr;
-    LayerStack* m_layerStack = nullptr;
     StateMachine m_stateMachine;
 
     WorldParameters const m_worldParameters;

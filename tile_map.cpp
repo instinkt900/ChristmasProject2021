@@ -1,8 +1,7 @@
+#include "game_pch.h"
 #include "tile_map.h"
-
-#include <SDL_image.h>
-#include <cmath>
 #include "components.h"
+#include "utils.h"
 
 TileMap::TileMap(SDL_Renderer* renderer, int tileSizeX, int tileSizeY)
     : m_noise(1/16.0f, 10000.0f)
@@ -17,13 +16,13 @@ TileMap::~TileMap() {
     SDL_DestroyTexture(m_tileset);
 }
 
-void TileMap::Draw(SDL_Renderer* renderer, int viewOffsetX, int viewOffsetY, int viewWidth, int viewHeight) const {
-    int const rows = static_cast<int>(std::ceil(viewHeight / static_cast<float>(m_tileSizeX)));
-    int const cols = static_cast<int>(std::ceil(viewWidth / static_cast<float>(m_tileSizeY))) + 1;
-    int const startTileX = viewOffsetX / m_tileSizeX;
-    int const startTileY = viewOffsetY / m_tileSizeY;
-    int const startPosX = -viewOffsetX % m_tileSizeX;
-    int const startPosY = -viewOffsetY % m_tileSizeY;
+void TileMap::Draw(SDL_Renderer* renderer, ViewParameters const& view) const {
+    int const rows = static_cast<int>(std::ceil(view.m_height / static_cast<float>(m_tileSizeX)));
+    int const cols = static_cast<int>(std::ceil(view.m_width / static_cast<float>(m_tileSizeY))) + 1;
+    int const startTileX = view.m_offsetX / m_tileSizeX;
+    int const startTileY = view.m_offsetY / m_tileSizeY;
+    int const startPosX = -view.m_offsetX % m_tileSizeX;
+    int const startPosY = -view.m_offsetY % m_tileSizeY;
     for (int r = 0; r < rows; ++r) {
         for (int c = 0; c < cols; ++c) {
             int const tileX = startTileX + c;
