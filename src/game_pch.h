@@ -18,3 +18,4 @@
 #include <SDL_mixer.h>
 
 #include <entt/entt.hpp>
+#include <spdlog/spdlog.h>
