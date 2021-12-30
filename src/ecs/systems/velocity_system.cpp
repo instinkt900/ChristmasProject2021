@@ -1,8 +1,8 @@
 #include "game_pch.h"
 #include "velocity_system.h"
-#include "components.h"
 #include "tile_map.h"
-#include "game_layer.h"
+#include "layers/game_layer.h"
+#include "ecs/components/components.h"
 
 namespace {
     bool TestOverlap(int collider1X, int collider1Y, int collider1Width, int collider1Height,

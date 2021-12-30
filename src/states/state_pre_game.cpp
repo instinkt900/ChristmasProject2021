@@ -2,7 +2,7 @@
 #include "state_pre_game.h"
 #include "state_machine.h"
 #include "state_game.h"
-#include "game_layer.h"
+#include "layers/game_layer.h"
 
 StatePreGame::StatePreGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)

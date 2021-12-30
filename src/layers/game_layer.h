@@ -2,7 +2,7 @@
 
 #include "layer.h"
 #include "tile_map.h"
-#include "state_machine.h"
+#include "states/state_machine.h"
 #include "random.h"
 #include "SDL_FontCache.h"
 

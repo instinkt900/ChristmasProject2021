@@ -1,7 +1,7 @@
 #include "game_pch.h"
 #include "animation_system.h"
-#include "components.h"
-#include "game_layer.h"
+#include "ecs/components/components.h"
+#include "layers/game_layer.h"
 
 namespace AnimationSystem {
     void Update(uint32_t ticks, GameLayer& gameLayer) {

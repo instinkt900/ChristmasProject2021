@@ -1,7 +1,7 @@
 #include "game_pch.h"
 #include "lifetime_system.h"
-#include "components.h"
-#include "game_layer.h"
+#include "ecs/components/components.h"
+#include "layers/game_layer.h"
 
 namespace LifetimeSystem {
     void Update(uint32_t ticks, GameLayer& gameLayer) {

@@ -1,13 +1,13 @@
 #include "game_pch.h"
 #include "game_layer.h"
-#include "components.h"
 #include "layer_stack.h"
-#include "state_pre_game.h"
-#include "state_game.h"
-#include "state_post_game.h"
-#include "sprite_system.h"
-#include "animation_system.h"
 #include "utils.h"
+#include "ecs/components/components.h"
+#include "ecs/systems/sprite_system.h"
+#include "ecs/systems/animation_system.h"
+#include "states/state_pre_game.h"
+#include "states/state_game.h"
+#include "states/state_post_game.h"
 
 GameLayer::GameLayer(SDL_Renderer* renderer)
 :m_renderer(renderer)

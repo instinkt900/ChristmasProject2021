@@ -1,8 +1,8 @@
 #include "game_pch.h"
 #include "sprite_system.h"
-#include "game_layer.h"
-#include "components.h"
 #include "utils.h"
+#include "layers/game_layer.h"
+#include "ecs/components/components.h"
 
 namespace SpriteSystem {
     void Draw(SDL_Renderer* renderer, entt::registry& registry, ViewParameters const& view) {

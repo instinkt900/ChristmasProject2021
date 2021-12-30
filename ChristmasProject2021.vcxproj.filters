@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="game.cpp" />
     <ClCompile Include="external\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -21,54 +19,131 @@
     <ClCompile Include="external\imgui\backends\imgui_impl_sdlrenderer.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="layer_stack.cpp" />
-    <ClCompile Include="menu_layer.cpp" />
-    <ClCompile Include="game_layer.cpp" />
-    <ClCompile Include="enemy_system.cpp" />
-    <ClCompile Include="weapon_system.cpp" />
-    <ClCompile Include="velocity_system.cpp" />
-    <ClCompile Include="lifetime_system.cpp" />
-    <ClCompile Include="tile_map.cpp" />
-    <ClCompile Include="simplex_noise.cpp" />
-    <ClCompile Include="state_machine.cpp" />
-    <ClCompile Include="state_pre_game.cpp" />
-    <ClCompile Include="state_game.cpp" />
-    <ClCompile Include="state_post_game.cpp" />
-    <ClCompile Include="SDL_FontCache.c" />
-    <ClCompile Include="sprite_system.cpp" />
-    <ClCompile Include="layer.cpp" />
-    <ClCompile Include="game_pch.cpp" />
-    <ClCompile Include="animation_system.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="game.h" />
-    <ClInclude Include="layer.h" />
-    <ClInclude Include="layer_stack.h" />
-    <ClInclude Include="menu_layer.h" />
-    <ClInclude Include="game_layer.h" />
-    <ClInclude Include="components.h" />
-    <ClInclude Include="enemy_system.h" />
-    <ClInclude Include="weapon_system.h" />
-    <ClInclude Include="velocity_system.h" />
-    <ClInclude Include="lifetime_system.h" />
-    <ClInclude Include="tile_map.h" />
-    <ClInclude Include="simplex_noise.h" />
-    <ClInclude Include="state_machine.h" />
-    <ClInclude Include="state.h" />
-    <ClInclude Include="state_pre_game.h" />
-    <ClInclude Include="state_game.h" />
-    <ClInclude Include="state_post_game.h" />
-    <ClInclude Include="random.h" />
-    <ClInclude Include="SDL_FontCache.h" />
-    <ClInclude Include="sprite_system.h" />
-    <ClInclude Include="utils.h" />
-    <ClInclude Include="game_pch.h" />
-    <ClInclude Include="animation_system.h" />
+    <ClCompile Include="src\ecs\systems\animation_system.cpp">
+      <Filter>ecs\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\systems\enemy_system.cpp">
+      <Filter>ecs\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\systems\lifetime_system.cpp">
+      <Filter>ecs\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\systems\sprite_system.cpp">
+      <Filter>ecs\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\systems\velocity_system.cpp">
+      <Filter>ecs\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\systems\weapon_system.cpp">
+      <Filter>ecs\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\game_layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\layer_stack.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\menu_layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\states\state_game.cpp">
+      <Filter>states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\states\state_machine.cpp">
+      <Filter>states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\states\state_post_game.cpp">
+      <Filter>states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\states\state_pre_game.cpp">
+      <Filter>states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\game.cpp" />
+    <ClCompile Include="src\game_pch.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\SDL_FontCache.c" />
+    <ClCompile Include="src\simplex_noise.cpp" />
+    <ClCompile Include="src\tile_map.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
       <UniqueIdentifier>{1d5e9893-3369-4d10-93f4-03567cf2c360}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ecs">
+      <UniqueIdentifier>{0351c7ff-485a-4cc5-aabb-e5a0e1b3b52d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="layers">
+      <UniqueIdentifier>{798419d6-14c8-4b8d-9b58-ad8e77c8d352}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="states">
+      <UniqueIdentifier>{f363894a-b5ff-446e-af23-7b820791a54e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ecs\systems">
+      <UniqueIdentifier>{e7bc7a5a-d440-48fa-844d-3a64d1c0e8af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ecs\components">
+      <UniqueIdentifier>{b1c6c4ea-68ea-4d23-a414-5aea59fccb53}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ecs\components\components.h">
+      <Filter>ecs\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\systems\animation_system.h">
+      <Filter>ecs\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\systems\enemy_system.h">
+      <Filter>ecs\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\systems\lifetime_system.h">
+      <Filter>ecs\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\systems\sprite_system.h">
+      <Filter>ecs\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\systems\velocity_system.h">
+      <Filter>ecs\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\systems\weapon_system.h">
+      <Filter>ecs\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\game_layer.h">
+      <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\layer.h">
+      <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\layer_stack.h">
+      <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\menu_layer.h">
+      <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\state.h">
+      <Filter>states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\state_game.h">
+      <Filter>states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\state_machine.h">
+      <Filter>states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\state_post_game.h">
+      <Filter>states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\state_pre_game.h">
+      <Filter>states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\game.h" />
+    <ClInclude Include="src\game_pch.h" />
+    <ClInclude Include="src\random.h" />
+    <ClInclude Include="src\SDL_FontCache.h" />
+    <ClInclude Include="src\simplex_noise.h" />
+    <ClInclude Include="src\tile_map.h" />
+    <ClInclude Include="src\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

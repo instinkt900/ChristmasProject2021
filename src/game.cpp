@@ -1,7 +1,6 @@
 #include "game_pch.h"
 #include "game.h"
-
-#include "menu_layer.h"
+#include "layers/menu_layer.h"
 
 Game::Game() {
     m_updateTicks = 1000 / 60;

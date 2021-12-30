@@ -1,8 +1,8 @@
 #include "game_pch.h"
 #include "enemy_system.h"
-#include "components.h"
 #include "tile_map.h"
-#include "game_layer.h"
+#include "layers/game_layer.h"
+#include "ecs/components/components.h"
 
 namespace EnemySystem {
     void Update(uint32_t ticks, GameLayer& gameLayer) {

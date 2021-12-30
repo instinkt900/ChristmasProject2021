@@ -1,6 +1,6 @@
 #include "game_pch.h"
 #include "tile_map.h"
-#include "components.h"
+#include "ecs/components/components.h"
 #include "utils.h"
 
 TileMap::TileMap(SDL_Renderer* renderer, int tileSizeX, int tileSizeY)

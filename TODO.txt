@@ -6,3 +6,6 @@
 - standardize sound loading/playing etc.
 - Wrap SDL stuff.
 - animation data files.
+- shared_ptr sdl_textures. (probably comes under wrapping SDL stuff)
+- asset loading/cachine
+- load screens

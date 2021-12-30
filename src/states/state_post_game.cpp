@@ -1,8 +1,8 @@
 #include "game_pch.h"
 #include "state_post_game.h"
-#include "game_layer.h"
-#include "components.h"
 #include "state_pre_game.h"
+#include "layers/game_layer.h"
+#include "ecs/components/components.h"
 
 StatePostGame::StatePostGame(StateMachine* stateMachine, GameLayer& gameLayer)
 : State(stateMachine)
