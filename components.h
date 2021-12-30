@@ -16,18 +16,21 @@ enum class AnimType {
     Reset
 };
 
+struct AnimationComponent {
+    std::vector<SDL_Rect> frames;
+    int ticks_per_frame = 0;
+    AnimType anim_type = AnimType::Stop;
+    int current_time = 0;
+    bool playing = false;
+};
+
 struct SpriteComponent {
     SDL_Texture* texture;
+    SDL_Rect* source_rect = nullptr;
     int width = 0;
     int height = 0;
-    int frames = 0;
-    int ticks_per_frame = 0;
-    int anim_time = 0;
-    bool playing = false;
     bool visible = true;
     bool managed_texture = false;
-    AnimType anim_type = AnimType::Stop;
-    std::vector<SDL_Rect> source_rects;
     SDL_RendererFlip flip = SDL_FLIP_NONE;
 };
 

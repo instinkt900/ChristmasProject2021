@@ -6,6 +6,7 @@
 #include "state_game.h"
 #include "state_post_game.h"
 #include "sprite_system.h"
+#include "animation_system.h"
 #include "utils.h"
 
 GameLayer::GameLayer(SDL_Renderer* renderer)
@@ -77,7 +78,7 @@ bool GameLayer::OnEvent(SDL_Event const& event) {
 void GameLayer::Update(uint32_t ticks) {
     m_stateMachine.Update(ticks, m_registry);
 
-    SpriteSystem::Update(ticks, *this);
+    AnimationSystem::Update(ticks, *this);
 
     // clean up dead entities
     std::vector<entt::entity> deadEntities;
@@ -141,15 +142,16 @@ void GameLayer::SpawnExplosion(int x, int y) {
     spriteComponent.managed_texture = true;
     spriteComponent.width = 64;
     spriteComponent.height = 64;
-    spriteComponent.frames = 16;
-    spriteComponent.ticks_per_frame = 1000 / spriteComponent.frames;
-    spriteComponent.playing = true;
-    spriteComponent.anim_type = AnimType::Stop;
+    auto& animComponent = m_registry.emplace<AnimationComponent>(entity);
+    int const frameCount = 16;
+    animComponent.ticks_per_frame = 1000 / frameCount;
+    animComponent.playing = true;
+    animComponent.anim_type = AnimType::Stop;
     int srcTop = 0;
     int srcLeft = 0;
-    spriteComponent.source_rects.resize(spriteComponent.frames);
-    for (int i = 0; i < spriteComponent.frames; ++i) {
-        auto& rect = spriteComponent.source_rects[i];
+    animComponent.frames.resize(frameCount);
+    for (int i = 0; i < frameCount; ++i) {
+        auto& rect = animComponent.frames[i];
         rect.x = srcLeft;
         rect.y = srcTop;
         rect.w = 64;
@@ -162,7 +164,7 @@ void GameLayer::SpawnExplosion(int x, int y) {
         }
     }
     auto& lifetimeComponent = m_registry.emplace<LifetimeComponent>(entity);
-    lifetimeComponent.lifetime = spriteComponent.ticks_per_frame * spriteComponent.frames;
+    lifetimeComponent.lifetime = animComponent.ticks_per_frame * frameCount;
 
     Mix_PlayChannel(-1, m_explosionSFX, 0);
 }

@@ -38,6 +38,7 @@
     <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="layer.cpp" />
     <ClCompile Include="game_pch.cpp" />
+    <ClCompile Include="animation_system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -62,10 +63,14 @@
     <ClInclude Include="sprite_system.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="game_pch.h" />
+    <ClInclude Include="animation_system.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
       <UniqueIdentifier>{1d5e9893-3369-4d10-93f4-03567cf2c360}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt" />
   </ItemGroup>
 </Project>
