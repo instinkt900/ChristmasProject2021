@@ -7,12 +7,12 @@ public:
     StateMachine();
     ~StateMachine();
 
-    template<class T, class... Args>
+    template <class T, class... Args>
     void AddState(Args&&... args) {
         m_states.insert(std::make_pair(entt::type_index<T>::value(), std::make_unique<T>(this, std::forward<Args>(args)...)));
     }
 
-    template<class T>
+    template <class T>
     void StateTransition() {
         auto const stateId = entt::type_index<T>::value();
         auto const it = m_states.find(stateId);
@@ -21,7 +21,7 @@ public:
         }
     }
 
-    template<typename T>
+    template <typename T>
     bool IsInState() const {
         auto const stateId = entt::type_index<T>::value();
         return m_currentStateId == stateId;

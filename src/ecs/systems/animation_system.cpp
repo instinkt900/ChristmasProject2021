@@ -29,6 +29,6 @@ namespace AnimationSystem {
             }
             int const frameIndex = std::min(frameCount - 1, animationComponent.current_time / animationComponent.ticks_per_frame);
             spriteComponent.source_rect = &animationComponent.frames[frameIndex];
-            });
+        });
     }
 }

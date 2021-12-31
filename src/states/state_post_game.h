@@ -15,10 +15,10 @@ public:
 
 private:
     GameLayer& m_gameLayer;
-    SDL_Texture* m_gameOverText = nullptr;
-    SDL_Texture* m_highScoreText = nullptr;
-    std::tuple<int, int> m_gameOverTextDim;
-    std::tuple<int, int> m_highScoreTextDim;
+    TextureRef m_gameOverText;
+    TextureRef m_highScoreText;
+    IntVec2 m_gameOverTextDim;
+    IntVec2 m_highScoreTextDim;
     bool m_exitPending = false;
     bool m_newHighScore = false;
 };

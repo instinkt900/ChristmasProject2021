@@ -6,7 +6,7 @@
 
 namespace {
     bool TestOverlap(int collider1X, int collider1Y, int collider1Width, int collider1Height,
-        int collider2X, int collider2Y, int collider2Width, int collider2Height) {
+                     int collider2X, int collider2Y, int collider2Width, int collider2Height) {
         int const left1 = collider1X - collider1Width / 2;
         int const right1 = collider1X + collider1Width / 2;
         int const top1 = collider1Y - collider1Height / 2;
@@ -17,8 +17,10 @@ namespace {
         int const top2 = collider2Y - collider2Height / 2;
         int const bottom2 = collider2Y + collider2Height / 2;
 
-        if (left1 > right2 || right1 < left2) return false;
-        if (top1 > bottom2 || bottom1 < top2) return false;
+        if (left1 > right2 || right1 < left2)
+            return false;
+        if (top1 > bottom2 || bottom1 < top2)
+            return false;
         return true;
     }
 }
@@ -64,7 +66,7 @@ namespace VelocitySystem {
                     }
                 }
             }
-            
+
             if ((collisionComponent.flag_mask & (COLLISION_FLAG_PLAYER | COLLISION_FLAG_ENEMY | COLLISION_FLAG_BULLET)) != 0) {
                 for (auto otherEntity : previousEntities) {
                     if (!registry.valid(otherEntity)) {
@@ -80,7 +82,7 @@ namespace VelocitySystem {
                         int const otherColliderHeight = static_cast<int>(otherCollisionComponent.height);
 
                         if (TestOverlap(colliderX, colliderY, colliderWidth, colliderHeight,
-                            otherColliderX, otherColliderY, otherColliderWidth, otherColliderHeight)) {
+                                        otherColliderX, otherColliderY, otherColliderWidth, otherColliderHeight)) {
                             collisionComponent.collision_bits |= otherCollisionComponent.flags;
                             otherCollisionComponent.collision_bits |= collisionComponent.flags;
                             if (collisionComponent.on_collision) {

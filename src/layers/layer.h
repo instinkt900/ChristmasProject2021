@@ -3,8 +3,7 @@
 class LayerStack;
 struct RenderContext;
 
-class Layer
-{
+class Layer {
 public:
     Layer();
     virtual ~Layer();

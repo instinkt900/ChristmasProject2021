@@ -17,7 +17,7 @@ private:
     SimplexNoise m_noise;
     int m_tileSizeX = 0;
     int m_tileSizeY = 0;
-    SDL_Texture* m_tileset = nullptr;
+    TextureRef m_tileset;
 
     bool GetTile(int x, int y, SDL_Rect* tilesetRect) const;
 };

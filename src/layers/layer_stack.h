@@ -3,8 +3,7 @@
 class Layer;
 struct RenderContext;
 
-class LayerStack
-{
+class LayerStack {
 public:
     LayerStack(int width, int height);
     ~LayerStack();

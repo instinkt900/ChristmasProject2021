@@ -3,7 +3,6 @@
 #include <random>
 #include <fstream>
 #include <filesystem>
-#include <tuple>
 #include <memory>
 #include <vector>
 #include <cmath>
@@ -21,3 +20,6 @@
 #include <spdlog/spdlog.h>
 #include <nlohmann/json.hpp>
 #include <glm/glm.hpp>
+
+#include "smart_sdl.h"
+#include "utils.h"

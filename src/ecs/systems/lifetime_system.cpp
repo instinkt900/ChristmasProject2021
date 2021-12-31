@@ -11,8 +11,7 @@ namespace LifetimeSystem {
         registry.view<LifetimeComponent>().each([ticks, &deadEntities](auto entity, auto& lifetimeComponent) {
             if (ticks > lifetimeComponent.lifetime) {
                 deadEntities.push_back(entity);
-            }
-            else {
+            } else {
                 lifetimeComponent.lifetime -= ticks;
             }
         });

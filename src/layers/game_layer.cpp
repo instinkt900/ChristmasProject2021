@@ -13,15 +13,8 @@
 GameLayer::GameLayer(SDL_Renderer& renderer)
     : m_renderer(renderer)
     , m_random(0) {
-    m_registry.on_destroy<SpriteComponent>().connect<&GameLayer::DestroySprite>(this);
-
-    SDL_Surface* bg = IMG_Load("background.jpg");
-    m_backgroundTexture = SDL_CreateTextureFromSurface(&m_renderer, bg);
-    SDL_FreeSurface(bg);
-
-    SDL_Surface* explosion = IMG_Load("exp2_0.png");
-    m_explosionTexture = SDL_CreateTextureFromSurface(&m_renderer, explosion);
-    SDL_FreeSurface(explosion);
+    m_backgroundTexture = CreateTextureRef(&m_renderer, "background.jpg");
+    m_explosionTexture = CreateTextureRef(&m_renderer, "exp2_0.png");
 
     m_tileMap = std::make_unique<TileMap>(m_renderer, 8, 8);
 
@@ -29,20 +22,19 @@ GameLayer::GameLayer(SDL_Renderer& renderer)
     m_stateMachine.AddState<StateGame>(*this);
     m_stateMachine.AddState<StatePostGame>(*this);
 
-    m_scoreFont = FC_CreateFont();
-    FC_LoadFont(m_scoreFont, &m_renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
+    m_scoreFont = CreateCachedFontRef(&m_renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
 
-    m_weaponSFX = Mix_LoadWAV("Pew__006.wav");
-    Mix_VolumeChunk(m_weaponSFX, 16);
+    m_weaponSFX = CreateAudioRef("Pew__006.wav");
+    Mix_VolumeChunk(m_weaponSFX.get(), 16);
 
-    m_explosionSFX = Mix_LoadWAV("Explosion2__006.wav");
-    m_playerDiedSFX = Mix_LoadWAV("Explosion2__007.wav");
-    Mix_VolumeChunk(m_playerDiedSFX, 16);
+    m_explosionSFX = CreateAudioRef("Explosion2__006.wav");
+    m_playerDiedSFX = CreateAudioRef("Explosion2__007.wav");
+    Mix_VolumeChunk(m_playerDiedSFX.get(), 16);
 
-    m_countSFX = Mix_LoadWAV("Pickup__010.wav");
-    m_startSFX = Mix_LoadWAV("Pickup__003.wav");
+    m_countSFX = CreateAudioRef("Pickup__010.wav");
+    m_startSFX = CreateAudioRef("Pickup__003.wav");
 
-    m_music = Mix_LoadMUS("OutThere.ogg");
+    m_music = CreateMusicRef("OutThere.ogg");
 
     if (std::filesystem::exists(m_worldParameters.m_dataFile)) {
         std::fstream scoreData(m_worldParameters.m_dataFile, std::ios_base::in | std::ios_base::binary);
@@ -52,14 +44,6 @@ GameLayer::GameLayer(SDL_Renderer& renderer)
 }
 
 GameLayer::~GameLayer() {
-    SDL_DestroyTexture(m_backgroundTexture);
-    FC_FreeFont(m_scoreFont);
-    Mix_FreeMusic(m_music);
-    Mix_FreeChunk(m_weaponSFX);
-    Mix_FreeChunk(m_explosionSFX);
-    Mix_FreeChunk(m_playerDiedSFX);
-    Mix_FreeChunk(m_countSFX);
-    Mix_FreeChunk(m_startSFX);
 }
 
 bool GameLayer::OnEvent(SDL_Event const& event) {
@@ -85,13 +69,13 @@ void GameLayer::Update(uint32_t ticks) {
 
     if (m_stateMachine.IsInState<StateGame>() && !m_registry.valid(m_playerEntity)) {
         // game over
-        Mix_PlayChannel(-1, m_playerDiedSFX, 0);
+        Mix_PlayChannel(-1, m_playerDiedSFX.get(), 0);
         m_stateMachine.StateTransition<StatePostGame>();
     }
 }
 
 void GameLayer::Draw(SDL_Renderer& renderer) {
-    SDL_RenderCopy(&m_renderer, m_backgroundTexture, nullptr, nullptr);
+    SDL_RenderCopy(&m_renderer, m_backgroundTexture.get(), nullptr, nullptr);
 
     auto const& cameraPositionComponent = m_registry.get<PositionComponent>(m_cameraEntity);
     auto const& cameraCameraComponent = m_registry.get<CameraComponent>(m_cameraEntity);
@@ -107,14 +91,14 @@ void GameLayer::Draw(SDL_Renderer& renderer) {
 
     m_stateMachine.Draw(m_renderer);
 
-    FC_Draw(m_scoreFont, &m_renderer, 3, 0, "Score: %d", m_worldState.m_score);
-    FC_Draw(m_scoreFont, &m_renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
+    FC_Draw(m_scoreFont.get(), &m_renderer, 3, 0, "Score: %d", m_worldState.m_score);
+    FC_Draw(m_scoreFont.get(), &m_renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
 }
 
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
     Layer::OnAddedToStack(layerStack);
     m_stateMachine.StateTransition<StatePreGame>();
-    Mix_PlayMusic(m_music, -1);
+    Mix_PlayMusic(m_music.get(), -1);
 }
 
 void GameLayer::OnRemovedFromStack() {
@@ -129,7 +113,6 @@ void GameLayer::SpawnExplosion(int x, int y, bool playSound) {
     positionComponent.y = static_cast<float>(y);
     auto& spriteComponent = m_registry.emplace<SpriteComponent>(entity);
     spriteComponent.texture = m_explosionTexture;
-    spriteComponent.managed_texture = true;
     spriteComponent.width = 64;
     spriteComponent.height = 64;
     auto& animComponent = m_registry.emplace<AnimationComponent>(entity);
@@ -157,7 +140,7 @@ void GameLayer::SpawnExplosion(int x, int y, bool playSound) {
     lifetimeComponent.lifetime = animComponent.ticks_per_frame * frameCount;
 
     if (playSound) {
-        Mix_PlayChannel(-1, m_explosionSFX, 0);
+        Mix_PlayChannel(-1, m_explosionSFX.get(), 0);
     }
 }
 
@@ -185,9 +168,7 @@ void GameLayer::SetupLevel() {
     auto& playerSpriteComponent = m_registry.emplace<SpriteComponent>(m_playerEntity);
     auto& playerWeaponComponent = m_registry.emplace<WeaponComponent>(m_playerEntity);
 
-    SDL_Surface* playerImage = IMG_Load(m_worldParameters.m_playerSpritePath.c_str());
-    playerSpriteComponent.texture = SDL_CreateTextureFromSurface(&m_renderer, playerImage);
-    SDL_FreeSurface(playerImage);
+    playerSpriteComponent.texture = CreateTextureRef(&m_renderer, m_worldParameters.m_playerSpritePath.c_str());
     playerSpriteComponent.width = m_worldParameters.m_playerSpriteWidth;
     playerSpriteComponent.height = m_worldParameters.m_playerSpriteHeight;
 
@@ -221,12 +202,5 @@ void GameLayer::SaveScore() {
     if (scoreData.is_open()) {
         scoreData.write(reinterpret_cast<char const*>(&m_worldState.m_highScore), sizeof(m_worldState.m_highScore));
         scoreData.close();
-    }
-}
-
-void GameLayer::DestroySprite(entt::registry& registry, entt::entity entity) {
-    auto& spriteComponent = m_registry.get<SpriteComponent>(entity);
-    if (!spriteComponent.managed_texture) {
-        SDL_DestroyTexture(spriteComponent.texture);
     }
 }

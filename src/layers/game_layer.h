@@ -3,7 +3,6 @@
 #include "layer.h"
 #include "states/state_machine.h"
 #include "random.h"
-#include "SDL_FontCache.h"
 
 class TileMap;
 
@@ -97,22 +96,22 @@ private:
     WorldParameters const m_worldParameters;
     WorldState m_worldState;
     Random m_random;
+
     entt::registry m_registry;
     entt::entity m_playerEntity = entt::null;
     entt::entity m_cameraEntity = entt::null;
 
     std::unique_ptr<TileMap> m_tileMap;
-    SDL_Texture* m_backgroundTexture = nullptr;
-    SDL_Texture* m_explosionTexture = nullptr;
 
-    FC_Font* m_scoreFont;
+    TextureRef m_backgroundTexture;
+    TextureRef m_explosionTexture;
 
-    Mix_Music* m_music = nullptr;
-    Mix_Chunk* m_weaponSFX = nullptr;
-    Mix_Chunk* m_explosionSFX = nullptr;
-    Mix_Chunk* m_playerDiedSFX = nullptr;
-    Mix_Chunk* m_countSFX = nullptr;
-    Mix_Chunk* m_startSFX = nullptr;
+    CachedFontRef m_scoreFont;
 
-    void DestroySprite(entt::registry& registry, entt::entity entity);
+    MusicRef m_music;
+    AudioRef m_weaponSFX;
+    AudioRef m_explosionSFX;
+    AudioRef m_playerDiedSFX;
+    AudioRef m_countSFX;
+    AudioRef m_startSFX;
 };

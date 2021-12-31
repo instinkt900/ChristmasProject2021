@@ -144,6 +144,7 @@
     <ClInclude Include="src\simplex_noise.h" />
     <ClInclude Include="src\tile_map.h" />
     <ClInclude Include="src\utils.h" />
+    <ClInclude Include="src\smart_sdl.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

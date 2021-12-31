@@ -25,12 +25,11 @@ struct AnimationComponent {
 };
 
 struct SpriteComponent {
-    SDL_Texture* texture;
+    TextureRef texture;
     SDL_Rect* source_rect = nullptr;
     int width = 0;
     int height = 0;
     bool visible = true;
-    bool managed_texture = false;
     SDL_RendererFlip flip = SDL_FLIP_NONE;
 };
 

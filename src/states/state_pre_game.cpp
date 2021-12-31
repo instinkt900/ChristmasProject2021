@@ -5,26 +5,21 @@
 #include "layers/game_layer.h"
 
 StatePreGame::StatePreGame(StateMachine* stateMachine, GameLayer& gameLayer)
-: State(stateMachine)
-, m_gameLayer(gameLayer) {
-    TTF_Font* font = TTF_OpenFont("pilotcommand.ttf", 80);
+    : State(stateMachine)
+    , m_gameLayer(gameLayer) {
+    FontRef font = CreateFontRef("pilotcommand.ttf", 80);
     SDL_Color textColor{ 255, 255, 255, 255 };
-    SDL_Surface* countText[3] = { nullptr, nullptr, nullptr };
-    countText[0] = TTF_RenderText_Solid(font, "1", textColor);
-    countText[1] = TTF_RenderText_Solid(font, "2", textColor);
-    countText[2] = TTF_RenderText_Solid(font, "3", textColor);
+    SurfaceRef countText[3];
+    countText[0] = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "1", textColor));
+    countText[1] = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "2", textColor));
+    countText[2] = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "3", textColor));
     for (int i = 0; i < 3; ++i) {
-        m_countDownText[i] = SDL_CreateTextureFromSurface(&m_gameLayer.GetRenderer(), countText[i]);
-        m_countDownTextDim[i] = std::make_tuple(countText[i]->w, countText[i]->h);
-        SDL_FreeSurface(countText[i]);
+        m_countDownText[i] = CreateTextureRef(&m_gameLayer.GetRenderer(), countText[i]);
+        m_countDownTextDim[i] = { countText[i]->w, countText[i]->h };
     }
-    TTF_CloseFont(font);
 }
 
 StatePreGame::~StatePreGame() {
-    for (int i = 0; i < 3; ++i) {
-        SDL_DestroyTexture(m_countDownText[i]);
-    }
 }
 
 void StatePreGame::OnEnter() {
@@ -41,7 +36,7 @@ void StatePreGame::Update(uint32_t ticks, entt::registry& registry) {
     m_timer -= ticks;
 
     if (ticks > m_sfxTimer) {
-        Mix_PlayChannel(-1, m_gameLayer.GetCountSFX(), 0);
+        Mix_PlayChannel(-1, m_gameLayer.GetCountSFX().get(), 0);
         m_sfxTimer += 1000;
     }
     m_sfxTimer -= ticks;
@@ -50,10 +45,10 @@ void StatePreGame::Update(uint32_t ticks, entt::registry& registry) {
 void StatePreGame::Draw(SDL_Renderer& renderer) {
     int const index = std::min(2, static_cast<int>(std::floor(m_timer / 1000)));
     SDL_Rect destRect{
-        (m_gameLayer.GetWidth() - std::get<0>(m_countDownTextDim[index])) / 2,
-        (m_gameLayer.GetHeight() - std::get<1>(m_countDownTextDim[index])) / 2,
-        std::get<0>(m_countDownTextDim[index]),
-        std::get<1>(m_countDownTextDim[index])
+        (m_gameLayer.GetWidth() - m_countDownTextDim[index].x) / 2,
+        (m_gameLayer.GetHeight() - m_countDownTextDim[index].y) / 2,
+        m_countDownTextDim[index].x,
+        m_countDownTextDim[index].y
     };
-    SDL_RenderCopy(&renderer, m_countDownText[index], nullptr, &destRect);
+    SDL_RenderCopy(&renderer, m_countDownText[index].get(), nullptr, &destRect);
 }

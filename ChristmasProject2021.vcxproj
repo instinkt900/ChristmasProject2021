@@ -176,6 +176,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\random.h" />
     <ClInclude Include="src\SDL_FontCache.h" />
     <ClInclude Include="src\simplex_noise.h" />
+    <ClInclude Include="src\smart_sdl.h" />
     <ClInclude Include="src\states\state.h" />
     <ClInclude Include="src\states\state_game.h" />
     <ClInclude Include="src\states\state_machine.h" />

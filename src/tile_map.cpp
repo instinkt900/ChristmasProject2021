@@ -5,16 +5,13 @@
 
 TileMap::TileMap(SDL_Renderer& renderer, int tileSizeX, int tileSizeY)
     : m_renderer(renderer)
-    , m_noise(1/16.0f, 10000.0f)
+    , m_noise(1 / 16.0f, 10000.0f)
     , m_tileSizeX(tileSizeX)
     , m_tileSizeY(tileSizeY) {
-    auto image = IMG_Load("tileset.png");
-    m_tileset = SDL_CreateTextureFromSurface(&m_renderer, image);
-    SDL_FreeSurface(image);
+    m_tileset = CreateTextureRef(&m_renderer, "tileset.png");
 }
 
 TileMap::~TileMap() {
-    SDL_DestroyTexture(m_tileset);
 }
 
 void TileMap::Draw(ViewParameters const& view) const {
@@ -35,7 +32,7 @@ void TileMap::Draw(ViewParameters const& view) const {
                 destRect.y = startPosY + r * m_tileSizeY;
                 destRect.w = m_tileSizeX;
                 destRect.h = m_tileSizeY;
-                SDL_RenderCopy(&m_renderer, m_tileset, &sourceRect, &destRect);
+                SDL_RenderCopy(&m_renderer, m_tileset.get(), &sourceRect, &destRect);
             }
         }
     }
@@ -67,7 +64,7 @@ bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) const {
 
     float const layer1Scale = 50.0f;
     float const layer1Amp = mapHeight / 6.0f;
-    float const mid = std::sin((x + 100)/ layer1Scale) * layer1Amp;
+    float const mid = std::sin((x + 100) / layer1Scale) * layer1Amp;
 
     int const caveStartX = 50;
     float const noiseAmp = 20.0f;
@@ -75,7 +72,7 @@ bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) const {
     float const topOffset = -20.0f;
     float const bottomOffset = 20.0f;
 
-    float const topNoiseSeed    = 411250.0f;
+    float const topNoiseSeed = 411250.0f;
     float const bottomNoiseSeed = 918321.0f;
 
     if (x > caveStartX) {
@@ -87,8 +84,7 @@ bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) const {
                 }
                 return true;
             }
-        }
-        else if (y > mid) {
+        } else if (y > mid) {
             float const extra = (mid + bottomOffset) + m_noise.fractal(noiseOctaves, static_cast<float>(x) + bottomNoiseSeed) * noiseAmp;
             if (y > extra) {
                 if (nullptr != tilesetRect) {

@@ -34,11 +34,9 @@ namespace EnemySystem {
 
             auto& renderer = gameLayer.GetRenderer();
             auto& sprite = registry.emplace<SpriteComponent>(enemy);
-            SDL_Surface* image = IMG_Load(worldParameters.m_enemySpritePath.c_str());
-            sprite.texture = SDL_CreateTextureFromSurface(&renderer, image);
+            sprite.texture = CreateTextureRef(&renderer, worldParameters.m_enemySpritePath.c_str());
             sprite.width = worldParameters.m_enemySpriteWidth;
             sprite.height = worldParameters.m_enemySpriteHeight;
-            SDL_FreeSurface(image);
 
             auto& collisionComponent = registry.emplace<CollisionComponent>(enemy);
             collisionComponent.width = worldParameters.m_enemyCollisionWidth;
@@ -53,8 +51,7 @@ namespace EnemySystem {
                     // spawn an explosion
                     auto const& enemyPositionComponent = registry.get<PositionComponent>(enemy);
                     gameLayer.SpawnExplosion(static_cast<int>(enemyPositionComponent.x), static_cast<int>(enemyPositionComponent.y), true);
-                }
-                else {
+                } else {
                     auto& velocityComponent = registry.get<VelocityComponent>(enemy);
                     velocityComponent.y = -velocityComponent.y;
                     auto& spriteComponent = registry.get<SpriteComponent>(enemy);
@@ -71,8 +68,7 @@ namespace EnemySystem {
 
             auto& random = gameLayer.GetRandom();
             worldState.m_enemySpawnTimer = static_cast<uint32_t>(random.Range(worldState.m_enemySpawnDelayMin, worldState.m_enemySpawnDelayMax));
-        }
-        else {
+        } else {
             worldState.m_enemySpawnTimer -= ticks;
         }
 
@@ -82,4 +78,3 @@ namespace EnemySystem {
         worldState.m_enemySpawnDelayMax = std::max(0.0f, worldState.m_enemySpawnDelayMax - worldParameters.m_enemySpawnDelayDecrease * seconds);
     }
 }
-

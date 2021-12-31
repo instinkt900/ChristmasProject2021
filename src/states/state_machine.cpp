@@ -3,11 +3,9 @@
 #include "state.h"
 
 StateMachine::StateMachine() {
-
 }
 
 StateMachine::~StateMachine() {
-
 }
 
 bool StateMachine::OnEvent(SDL_Event const& event) {
@@ -29,8 +27,7 @@ void StateMachine::Draw(SDL_Renderer& renderer) {
     }
 }
 
-void StateMachine::StateTransition(entt::id_type id, State* newState)
-{
+void StateMachine::StateTransition(entt::id_type id, State* newState) {
     if (nullptr != m_currentState) {
         m_currentState->OnLeave();
     }

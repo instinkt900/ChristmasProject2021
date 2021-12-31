@@ -26,9 +26,7 @@ namespace WeaponSystem {
                 projectilePositionComponent.y = positionComponent.y;
                 projectileVelocityComponent.x = weaponComponent.velocity * (weaponComponent.facing_left ? -1.0f : 1.0f);
                 projectileVelocityComponent.y = 0;
-                SDL_Surface* image = IMG_Load(worldParameters.m_playerBulletSpritePath.c_str());
-                projectileSpriteComponent.texture = SDL_CreateTextureFromSurface(&renderer, image);
-                SDL_FreeSurface(image);
+                projectileSpriteComponent.texture = CreateTextureRef(&renderer, worldParameters.m_playerBulletSpritePath.c_str());
                 projectileSpriteComponent.width = worldParameters.m_playerBulletSpriteWidth;
                 projectileSpriteComponent.height = worldParameters.m_playerBulletSpriteHeight;
                 collisionComponent.width = worldParameters.m_playerBulletCollisionWidth;
@@ -40,7 +38,7 @@ namespace WeaponSystem {
                     healthComponent.alive = false;
                 };
                 weaponComponent.timer = weaponComponent.fire_delay;
-                Mix_PlayChannel(-1, gameLayer.GetWeaponSFX(), 0);
+                Mix_PlayChannel(-1, gameLayer.GetWeaponSFX().get(), 0);
 
                 worldState.m_score -= worldParameters.m_scoreShootPenalty;
             }

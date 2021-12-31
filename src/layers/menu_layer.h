@@ -4,8 +4,7 @@
 
 struct RenderContext;
 
-class MenuLayer : public Layer
-{
+class MenuLayer : public Layer {
 public:
     MenuLayer(SDL_Renderer& renderer);
     virtual ~MenuLayer();
@@ -16,12 +15,13 @@ public:
 
 private:
     SDL_Renderer& m_renderer;
-    SDL_Texture* m_splashTexture = nullptr;
 
-    SDL_Texture* m_titleText = nullptr;
-    SDL_Texture* m_titleTextDrop = nullptr;
-    SDL_Texture* m_promptText = nullptr;
-    SDL_Texture* m_promptTextDrop = nullptr;
+    TextureRef m_splashTexture;
+    TextureRef m_titleText;
+    TextureRef m_titleTextDrop;
+    TextureRef m_promptText;
+    TextureRef m_promptTextDrop;
+
     std::tuple<int, int> m_titleTextDim;
     std::tuple<int, int> m_promptTextDim;
 };

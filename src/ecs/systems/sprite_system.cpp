@@ -13,7 +13,7 @@ namespace SpriteSystem {
                 int const top = static_cast<int>(positionComponent.y - view.m_offsetY - halfHeight);
                 int const left = static_cast<int>(positionComponent.x - view.m_offsetX - halfWidth);
                 SDL_Rect destRect{ left, top, spriteComponent.width, spriteComponent.height };
-                SDL_RenderCopyEx(&renderer, spriteComponent.texture, spriteComponent.source_rect, &destRect, 0.0f, nullptr, spriteComponent.flip);
+                SDL_RenderCopyEx(&renderer, spriteComponent.texture.get(), spriteComponent.source_rect, &destRect, 0.0f, nullptr, spriteComponent.flip);
             }
         });
     }
