@@ -2,18 +2,20 @@
 
 #include "layer.h"
 
+struct RenderContext;
+
 class MenuLayer : public Layer
 {
 public:
-    MenuLayer(SDL_Renderer* renderer);
+    MenuLayer(SDL_Renderer& renderer);
     virtual ~MenuLayer();
 
     bool OnEvent(SDL_Event const& event) override;
     void Update(uint32_t ticks) override;
-    void Draw(SDL_Renderer* renderer) override;
+    void Draw(SDL_Renderer& renderer) override;
 
 private:
-    SDL_Renderer* m_renderer = nullptr;
+    SDL_Renderer& m_renderer;
     SDL_Texture* m_splashTexture = nullptr;
 
     SDL_Texture* m_titleText = nullptr;

@@ -36,8 +36,6 @@ struct SpriteComponent {
 
 struct CameraComponent {
     bool active = true;
-    int width = 0;
-    int height = 0;
 };
 
 struct WeaponComponent {

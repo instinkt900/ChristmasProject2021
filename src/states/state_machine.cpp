@@ -23,7 +23,7 @@ void StateMachine::Update(uint32_t ticks, entt::registry& registry) {
     }
 }
 
-void StateMachine::Draw(SDL_Renderer* renderer) {
+void StateMachine::Draw(SDL_Renderer& renderer) {
     if (m_currentState) {
         m_currentState->Draw(renderer);
     }

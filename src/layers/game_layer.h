@@ -1,10 +1,11 @@
 #pragma once
 
 #include "layer.h"
-#include "tile_map.h"
 #include "states/state_machine.h"
 #include "random.h"
 #include "SDL_FontCache.h"
+
+class TileMap;
 
 struct WorldParameters {
     uint32_t m_seed = 0xF00DF00D;
@@ -51,7 +52,7 @@ struct WorldState {
 
     float m_enemySpawnDelayMin = 0.0f;
     float m_enemySpawnDelayMax = 0.0f;
-    
+
     uint32_t m_enemySpawnTimer = 0;
     float m_enemyCurrentSpeed = 0.0f;
 
@@ -59,20 +60,19 @@ struct WorldState {
     int m_highScore = 0;
 };
 
-class GameLayer : public Layer
-{
+class GameLayer : public Layer {
 public:
-    GameLayer(SDL_Renderer* renderer);
+    GameLayer(SDL_Renderer& renderer);
     ~GameLayer();
 
     bool OnEvent(SDL_Event const& event) override;
     void Update(uint32_t ticks) override;
-    void Draw(SDL_Renderer* renderer) override;
+    void Draw(SDL_Renderer& renderer) override;
 
     void OnAddedToStack(LayerStack* layerStack) override;
     void OnRemovedFromStack() override;
 
-    SDL_Renderer& GetRenderer() const { return *m_renderer; }
+    SDL_Renderer& GetRenderer() const { return m_renderer; }
 
     auto& GetRandom() { return m_random; }
     auto& GetWorldParameters() const { return m_worldParameters; }
@@ -91,7 +91,7 @@ public:
     void SaveScore();
 
 private:
-    SDL_Renderer* m_renderer = nullptr;
+    SDL_Renderer& m_renderer;
     StateMachine m_stateMachine;
 
     WorldParameters const m_worldParameters;

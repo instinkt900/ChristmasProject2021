@@ -3,12 +3,13 @@
 #include "ecs/components/components.h"
 #include "utils.h"
 
-TileMap::TileMap(SDL_Renderer* renderer, int tileSizeX, int tileSizeY)
-    : m_noise(1/16.0f, 10000.0f)
+TileMap::TileMap(SDL_Renderer& renderer, int tileSizeX, int tileSizeY)
+    : m_renderer(renderer)
+    , m_noise(1/16.0f, 10000.0f)
     , m_tileSizeX(tileSizeX)
     , m_tileSizeY(tileSizeY) {
     auto image = IMG_Load("tileset.png");
-    m_tileset = SDL_CreateTextureFromSurface(renderer, image);
+    m_tileset = SDL_CreateTextureFromSurface(&m_renderer, image);
     SDL_FreeSurface(image);
 }
 
@@ -16,7 +17,7 @@ TileMap::~TileMap() {
     SDL_DestroyTexture(m_tileset);
 }
 
-void TileMap::Draw(SDL_Renderer* renderer, ViewParameters const& view) const {
+void TileMap::Draw(ViewParameters const& view) const {
     int const rows = static_cast<int>(std::ceil(view.m_height / static_cast<float>(m_tileSizeX)));
     int const cols = static_cast<int>(std::ceil(view.m_width / static_cast<float>(m_tileSizeY))) + 1;
     int const startTileX = view.m_offsetX / m_tileSizeX;
@@ -34,7 +35,7 @@ void TileMap::Draw(SDL_Renderer* renderer, ViewParameters const& view) const {
                 destRect.y = startPosY + r * m_tileSizeY;
                 destRect.w = m_tileSizeX;
                 destRect.h = m_tileSizeY;
-                SDL_RenderCopy(renderer, m_tileset, &sourceRect, &destRect);
+                SDL_RenderCopy(&m_renderer, m_tileset, &sourceRect, &destRect);
             }
         }
     }

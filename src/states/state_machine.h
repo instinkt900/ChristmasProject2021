@@ -29,7 +29,7 @@ public:
 
     bool OnEvent(SDL_Event const& event);
     void Update(uint32_t ticks, entt::registry& registry);
-    void Draw(SDL_Renderer* renderer);
+    void Draw(SDL_Renderer& renderer);
 
 private:
     std::map<entt::id_type, std::unique_ptr<State>> m_states;

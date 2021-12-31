@@ -59,7 +59,7 @@ bool StatePostGame::OnEvent(SDL_Event const& event) {
     return false;
 }
 
-void StatePostGame::Draw(SDL_Renderer* renderer) {
+void StatePostGame::Draw(SDL_Renderer& renderer) {
     int const displayWidth = m_gameLayer.GetWidth();
     int const displayHeight = m_gameLayer.GetHeight();
 
@@ -74,10 +74,10 @@ void StatePostGame::Draw(SDL_Renderer* renderer) {
     int const text2Y = text1Y + text1Height;
 
     SDL_Rect destRect1{ text1X, text1Y, text1Width, text1Height };
-    SDL_RenderCopy(renderer, m_gameOverText, nullptr, &destRect1);
+    SDL_RenderCopy(&renderer, m_gameOverText, nullptr, &destRect1);
 
     if (m_newHighScore) {
         SDL_Rect destRect2{ text2X, text2Y, text2Width, text2Height };
-        SDL_RenderCopy(renderer, m_highScoreText, nullptr, &destRect2);
+        SDL_RenderCopy(&renderer, m_highScoreText, nullptr, &destRect2);
     }
 }

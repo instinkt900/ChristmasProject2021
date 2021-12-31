@@ -47,7 +47,7 @@ void StatePreGame::Update(uint32_t ticks, entt::registry& registry) {
     m_sfxTimer -= ticks;
 }
 
-void StatePreGame::Draw(SDL_Renderer* renderer) {
+void StatePreGame::Draw(SDL_Renderer& renderer) {
     int const index = std::min(2, static_cast<int>(std::floor(m_timer / 1000)));
     SDL_Rect destRect{
         (m_gameLayer.GetWidth() - std::get<0>(m_countDownTextDim[index])) / 2,
@@ -55,5 +55,5 @@ void StatePreGame::Draw(SDL_Renderer* renderer) {
         std::get<0>(m_countDownTextDim[index]),
         std::get<1>(m_countDownTextDim[index])
     };
-    SDL_RenderCopy(renderer, m_countDownText[index], nullptr, &destRect);
+    SDL_RenderCopy(&renderer, m_countDownText[index], nullptr, &destRect);
 }

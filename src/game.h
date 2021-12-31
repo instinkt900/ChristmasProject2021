@@ -2,8 +2,7 @@
 
 #include "layers/layer_stack.h"
 
-class Game
-{
+class Game {
 public:
     Game();
     ~Game();
@@ -18,11 +17,11 @@ protected:
     void Shutdown();
 
 private:
-    static int constexpr INIT_WINDOW_WIDTH = 640;
-    static int constexpr INIT_WINDOW_HEIGHT = 480;
+    static int constexpr INIT_WINDOW_WIDTH = 1280;
+    static int constexpr INIT_WINDOW_HEIGHT = 960;
 
-    int m_windowWidth = 0;
-    int m_windowHeight = 0;
+    static int constexpr INIT_RENDER_WIDTH = 640;
+    static int constexpr INIT_RENDER_HEIGHT = 480;
 
     bool m_running = false;
     uint32_t m_updateTicks = 0;

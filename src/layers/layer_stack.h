@@ -1,6 +1,7 @@
 #pragma once
 
 class Layer;
+struct RenderContext;
 
 class LayerStack
 {
@@ -14,7 +15,7 @@ public:
 
     void OnEvent(SDL_Event const& event);
     void Update(uint32_t ticks);
-    void Draw(SDL_Renderer* renderer);
+    void Draw(SDL_Renderer& renderer);
 
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }

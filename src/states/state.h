@@ -10,7 +10,7 @@ public:
     virtual void OnLeave() {}
     virtual bool OnEvent(SDL_Event const& event) { return false; }
     virtual void Update(uint32_t ticks, entt::registry& registry) {}
-    virtual void Draw(SDL_Renderer* renderer) {}
+    virtual void Draw(SDL_Renderer& renderer) {}
 
 protected:
     StateMachine* m_stateMachine = nullptr;

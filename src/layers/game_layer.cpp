@@ -2,6 +2,7 @@
 #include "game_layer.h"
 #include "layer_stack.h"
 #include "utils.h"
+#include "tile_map.h"
 #include "ecs/components/components.h"
 #include "ecs/systems/sprite_system.h"
 #include "ecs/systems/animation_system.h"
@@ -9,17 +10,17 @@
 #include "states/state_game.h"
 #include "states/state_post_game.h"
 
-GameLayer::GameLayer(SDL_Renderer* renderer)
-:m_renderer(renderer)
-,m_random(0) {
+GameLayer::GameLayer(SDL_Renderer& renderer)
+    : m_renderer(renderer)
+    , m_random(0) {
     m_registry.on_destroy<SpriteComponent>().connect<&GameLayer::DestroySprite>(this);
 
     SDL_Surface* bg = IMG_Load("background.jpg");
-    m_backgroundTexture = SDL_CreateTextureFromSurface(m_renderer, bg);
+    m_backgroundTexture = SDL_CreateTextureFromSurface(&m_renderer, bg);
     SDL_FreeSurface(bg);
 
     SDL_Surface* explosion = IMG_Load("exp2_0.png");
-    m_explosionTexture = SDL_CreateTextureFromSurface(m_renderer, explosion);
+    m_explosionTexture = SDL_CreateTextureFromSurface(&m_renderer, explosion);
     SDL_FreeSurface(explosion);
 
     m_tileMap = std::make_unique<TileMap>(m_renderer, 8, 8);
@@ -29,7 +30,7 @@ GameLayer::GameLayer(SDL_Renderer* renderer)
     m_stateMachine.AddState<StatePostGame>(*this);
 
     m_scoreFont = FC_CreateFont();
-    FC_LoadFont(m_scoreFont, m_renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
+    FC_LoadFont(m_scoreFont, &m_renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
 
     m_weaponSFX = Mix_LoadWAV("Pew__006.wav");
     Mix_VolumeChunk(m_weaponSFX, 16);
@@ -62,16 +63,6 @@ GameLayer::~GameLayer() {
 }
 
 bool GameLayer::OnEvent(SDL_Event const& event) {
-    if (event.type == SDL_WINDOWEVENT) {
-        switch (event.window.event) {
-        case SDL_WINDOWEVENT_SIZE_CHANGED:
-            auto& cameraComponent = m_registry.get<CameraComponent>(m_cameraEntity);
-            cameraComponent.width = event.window.data1;
-            cameraComponent.height = event.window.data2;
-            break;
-        }
-    }
-
     return m_stateMachine.OnEvent(event);
 }
 
@@ -86,39 +77,38 @@ void GameLayer::Update(uint32_t ticks) {
         if (!healthComponent.alive) {
             deadEntities.push_back(entity);
         }
-        });
+    });
 
     for (auto entity : deadEntities) {
         m_registry.destroy(entity);
     }
 
-    if (m_stateMachine.IsInState<StateGame>() && !m_registry.valid(m_playerEntity))
-    {
+    if (m_stateMachine.IsInState<StateGame>() && !m_registry.valid(m_playerEntity)) {
         // game over
         Mix_PlayChannel(-1, m_playerDiedSFX, 0);
         m_stateMachine.StateTransition<StatePostGame>();
     }
 }
 
-void GameLayer::Draw(SDL_Renderer* renderer) {
-    SDL_RenderCopy(renderer, m_backgroundTexture, nullptr, nullptr);
+void GameLayer::Draw(SDL_Renderer& renderer) {
+    SDL_RenderCopy(&m_renderer, m_backgroundTexture, nullptr, nullptr);
 
     auto const& cameraPositionComponent = m_registry.get<PositionComponent>(m_cameraEntity);
     auto const& cameraCameraComponent = m_registry.get<CameraComponent>(m_cameraEntity);
     ViewParameters viewParameters;
-    viewParameters.m_width = cameraCameraComponent.width;
-    viewParameters.m_height = cameraCameraComponent.height;
+    viewParameters.m_width = GetWidth();
+    viewParameters.m_height = GetHeight();
     viewParameters.m_offsetX = static_cast<int>(cameraPositionComponent.x) - viewParameters.m_width / 2;
     viewParameters.m_offsetY = static_cast<int>(cameraPositionComponent.y) - viewParameters.m_height / 2;
 
-    m_tileMap->Draw(m_renderer, viewParameters);
+    m_tileMap->Draw(viewParameters);
 
     SpriteSystem::Draw(m_renderer, m_registry, viewParameters);
 
-    m_stateMachine.Draw(renderer);
+    m_stateMachine.Draw(m_renderer);
 
-    FC_Draw(m_scoreFont, renderer, 3, 0, "Score: %d", m_worldState.m_score);
-    FC_Draw(m_scoreFont, renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
+    FC_Draw(m_scoreFont, &m_renderer, 3, 0, "Score: %d", m_worldState.m_score);
+    FC_Draw(m_scoreFont, &m_renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
 }
 
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
@@ -181,9 +171,7 @@ void GameLayer::SetupLevel() {
 
     cameraPosition.x = 0;
     cameraPosition.y = 0;
-    
-    cameraDetails.width = 640;
-    cameraDetails.height = 480;
+
     cameraDetails.active = true;
 
     // player
@@ -196,7 +184,7 @@ void GameLayer::SetupLevel() {
     auto& playerWeaponComponent = m_registry.emplace<WeaponComponent>(m_playerEntity);
 
     SDL_Surface* playerImage = IMG_Load(m_worldParameters.m_playerSpritePath.c_str());
-    playerSpriteComponent.texture = SDL_CreateTextureFromSurface(m_renderer, playerImage);
+    playerSpriteComponent.texture = SDL_CreateTextureFromSurface(&m_renderer, playerImage);
     SDL_FreeSurface(playerImage);
     playerSpriteComponent.width = m_worldParameters.m_playerSpriteWidth;
     playerSpriteComponent.height = m_worldParameters.m_playerSpriteHeight;

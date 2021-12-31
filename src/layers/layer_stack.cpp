@@ -35,14 +35,16 @@ void LayerStack::RemoveLayer(Layer* layer) {
 }
 
 void LayerStack::OnEvent(SDL_Event const& event) {
-    if (event.type == SDL_WINDOWEVENT) {
-        switch (event.window.event) {
-        case SDL_WINDOWEVENT_SIZE_CHANGED:
-            m_width = event.window.data1;
-            m_height = event.window.data2;
-            break;
-        }
-    }
+    // we only care about logical res which shouldnt change
+    //if (event.type == SDL_WINDOWEVENT) {
+    //    switch (event.window.event) {
+    //    case SDL_WINDOWEVENT_SIZE_CHANGED:
+    //        m_width = event.window.data1;
+    //        m_height = event.window.data2;
+    //        break;
+    //    }
+    //}
+
     for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++it) {
         if ((*it)->OnEvent(event)) {
             break;
@@ -56,7 +58,7 @@ void LayerStack::Update(uint32_t ticks) {
     }
 }
 
-void LayerStack::Draw(SDL_Renderer* renderer) {
+void LayerStack::Draw(SDL_Renderer& renderer) {
     for (auto&& layer : m_layers) {
         layer->Draw(renderer);
     }

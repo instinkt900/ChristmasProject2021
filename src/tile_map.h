@@ -6,13 +6,14 @@ struct ViewParameters;
 
 class TileMap {
 public:
-    TileMap(SDL_Renderer* renderer, int tileSizeX, int tileSizeY);
+    TileMap(SDL_Renderer& renderer, int tileSizeX, int tileSizeY);
     ~TileMap();
 
-    void Draw(SDL_Renderer* renderer, ViewParameters const& view) const;
+    void Draw(ViewParameters const& view) const;
     bool Collides(int x, int y, int width, int height) const;
 
 private:
+    SDL_Renderer& m_renderer;
     SimplexNoise m_noise;
     int m_tileSizeX = 0;
     int m_tileSizeY = 0;

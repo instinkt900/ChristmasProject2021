@@ -15,7 +15,7 @@ bool Layer::OnEvent(SDL_Event const& event) {
 void Layer::Update(uint32_t ticks) {
 }
 
-void Layer::Draw(SDL_Renderer* renderer) {
+void Layer::Draw(SDL_Renderer& renderer) {
 }
 
 void Layer::OnAddedToStack(LayerStack* layerStack) {

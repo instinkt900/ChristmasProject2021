@@ -14,9 +14,9 @@ namespace EnemySystem {
             auto const& cameraPositionComponent = registry.get<PositionComponent>(cameraEntity);
             auto const& cameraCameraComponent = registry.get<CameraComponent>(cameraEntity);
             int const spawnY = 0;
-            int const spawnX = static_cast<int>(cameraPositionComponent.x) + static_cast<int>(cameraCameraComponent.width / 2);
-            int const spawnYMin = static_cast<int>(cameraPositionComponent.y) - static_cast<int>(cameraCameraComponent.height / 2);
-            int const spawnYMax = static_cast<int>(cameraPositionComponent.y) + static_cast<int>(cameraCameraComponent.height / 2);
+            int const spawnX = static_cast<int>(cameraPositionComponent.x) + gameLayer.GetWidth() / 2;
+            int const spawnYMin = static_cast<int>(cameraPositionComponent.y) - gameLayer.GetHeight() / 2;
+            int const spawnYMax = static_cast<int>(cameraPositionComponent.y) + gameLayer.GetHeight() / 2;
 
             int const collisionWidth = 32;
             int const collisionHeight = 32;
