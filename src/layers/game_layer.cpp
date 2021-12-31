@@ -122,7 +122,7 @@ void GameLayer::OnRemovedFromStack() {
     Mix_PauseMusic();
 }
 
-void GameLayer::SpawnExplosion(int x, int y) {
+void GameLayer::SpawnExplosion(int x, int y, bool playSound) {
     auto entity = m_registry.create();
     auto& positionComponent = m_registry.emplace<PositionComponent>(entity);
     positionComponent.x = static_cast<float>(x);
@@ -156,7 +156,9 @@ void GameLayer::SpawnExplosion(int x, int y) {
     auto& lifetimeComponent = m_registry.emplace<LifetimeComponent>(entity);
     lifetimeComponent.lifetime = animComponent.ticks_per_frame * frameCount;
 
-    Mix_PlayChannel(-1, m_explosionSFX, 0);
+    if (playSound) {
+        Mix_PlayChannel(-1, m_explosionSFX, 0);
+    }
 }
 
 void GameLayer::SetupLevel() {
@@ -200,7 +202,7 @@ void GameLayer::SetupLevel() {
         auto& healthComponent = m_registry.get<HealthComponent>(m_playerEntity);
         healthComponent.alive = false;
         auto const& positionComponent = m_registry.get<PositionComponent>(m_playerEntity);
-        SpawnExplosion(static_cast<int>(positionComponent.x), static_cast<int>(positionComponent.y));
+        SpawnExplosion(static_cast<int>(positionComponent.x), static_cast<int>(positionComponent.y), false);
     };
 
     playerWeaponComponent.fire_delay = m_worldParameters.m_playerFireDelay;

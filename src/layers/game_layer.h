@@ -81,7 +81,7 @@ public:
     auto GetPlayerEntity() const { return m_playerEntity; }
     auto GetCameraEntity() const { return m_cameraEntity; }
     auto& GetTileMap() const { return *m_tileMap; }
-    void SpawnExplosion(int x, int y);
+    void SpawnExplosion(int x, int y, bool playSound);
 
     auto GetWeaponSFX() { return m_weaponSFX; }
     auto GetCountSFX() { return m_countSFX; }
