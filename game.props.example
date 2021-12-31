@@ -2,10 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <SDL_PATH>D:\Development\SDL2-2.0.18</SDL_PATH>
-    <SDL_IMAGE_PATH>D:\Development\SDL2_image-2.0.5</SDL_IMAGE_PATH>
-    <SDL_TTF_PATH>D:\Development\SDL2_ttf-2.0.15</SDL_TTF_PATH>
-    <SDL_MIXER_PATH>D:\Development\SDL2_mixer-2.0.4</SDL_MIXER_PATH>
+    <SDL_PATH>C:\Development\SDL2-2.0.18</SDL_PATH>
+    <SDL_IMAGE_PATH>C:\Development\SDL2_image-2.0.5</SDL_IMAGE_PATH>
+    <SDL_TTF_PATH>C:\Development\SDL2_ttf-2.0.15</SDL_TTF_PATH>
+    <SDL_MIXER_PATH>C:\Development\SDL2_mixer-2.0.4</SDL_MIXER_PATH>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
