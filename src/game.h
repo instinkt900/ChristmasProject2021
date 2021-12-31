@@ -4,8 +4,8 @@
 
 class Game {
 public:
-    Game();
-    ~Game();
+    Game(int renderWidth, int renderHeight, std::string const& configPath = "config.json");
+    virtual ~Game();
 
     int Run();
 
@@ -20,8 +20,9 @@ private:
     static int constexpr INIT_WINDOW_WIDTH = 1280;
     static int constexpr INIT_WINDOW_HEIGHT = 960;
 
-    static int constexpr INIT_RENDER_WIDTH = 640;
-    static int constexpr INIT_RENDER_HEIGHT = 480;
+    int m_renderWidth = 0;
+    int m_renderHeight = 0;
+    std::string m_configPath;
 
     bool m_running = false;
     uint32_t m_updateTicks = 0;

@@ -2,7 +2,10 @@
 #include "game.h"
 #include "layers/menu_layer.h"
 
-Game::Game() {
+Game::Game(int renderWidth, int renderHeight, std::string const& configPath)
+    : m_renderWidth(renderWidth)
+    , m_renderHeight(renderHeight)
+    , m_configPath(configPath) {
     m_updateTicks = 1000 / 60;
 }
 
@@ -33,11 +36,27 @@ int Game::Run() {
 }
 
 bool Game::Initialise() {
+    nlohmann::json j;
+    std::ifstream configFile(m_configPath.c_str());
+    if (configFile.is_open()) {
+        configFile >> j;
+    }
+
+    int windowWidth = INIT_WINDOW_WIDTH;
+    int windowHeight = INIT_WINDOW_HEIGHT;
+
+    if (j.contains("window_width")) {
+        windowWidth = j["window_width"];
+    }
+    if (j.contains("window_height")) {
+        windowHeight = j["window_height"];
+    }
+
     if (0 > SDL_Init(SDL_INIT_EVERYTHING)) {
         return false;
     }
 
-    if (nullptr == (m_window = SDL_CreateWindow("Xmas Game 2021", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT, SDL_WINDOW_SHOWN))) {
+    if (nullptr == (m_window = SDL_CreateWindow("Xmas Game 2021", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN))) {
         return false;
     }
 
@@ -45,7 +64,7 @@ bool Game::Initialise() {
         return false;
     }
 
-    SDL_RenderSetLogicalSize(m_renderer, INIT_RENDER_WIDTH, INIT_RENDER_HEIGHT);
+    SDL_RenderSetLogicalSize(m_renderer, m_renderWidth, m_renderHeight);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -72,7 +91,7 @@ bool Game::Initialise() {
         return false;
     }
 
-    m_layerStack = std::make_unique<LayerStack>(INIT_RENDER_WIDTH, INIT_RENDER_HEIGHT);
+    m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight);
 
     auto menuLayer = std::make_unique<MenuLayer>(*m_renderer);
     m_layerStack->PushLayer(std::move(menuLayer));
@@ -111,6 +130,19 @@ void Game::Draw() {
 }
 
 void Game::Shutdown() {
+    int windowWidth = 0;
+    int windowHeight = 0;
+    int renderWidth = 0;
+    int renderHeight = 0;
+
+    SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
+    SDL_RenderGetLogicalSize(m_renderer, &renderWidth, &renderHeight);
+    nlohmann::json j;
+    j["window_width"] = windowWidth;
+    j["window_height"] = windowHeight;
+    std::ofstream configFile(m_configPath.c_str());
+    configFile << std::setw(4) << j << std::endl;
+
     ImGui_ImplSDLRenderer_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();

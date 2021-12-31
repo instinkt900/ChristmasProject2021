@@ -3,6 +3,6 @@
 
 int main(int argc, char** argv)
 {
-    Game game;
+    Game game(640, 480);
     return game.Run();
 }
