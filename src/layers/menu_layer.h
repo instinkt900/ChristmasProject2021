@@ -3,10 +3,11 @@
 #include "layer.h"
 
 class AudioFactory;
+class Game;
 
 class MenuLayer : public Layer {
 public:
-    MenuLayer(SDL_Renderer& renderer, AudioFactory& audioFactory);
+    MenuLayer(Game& game, SDL_Renderer& renderer, AudioFactory& audioFactory);
     virtual ~MenuLayer();
 
     bool OnEvent(SDL_Event const& event) override;
@@ -14,6 +15,7 @@ public:
     void Draw(SDL_Renderer& renderer) override;
 
 private:
+    Game& m_game;
     SDL_Renderer& m_renderer;
     AudioFactory& m_audioFactory;
 

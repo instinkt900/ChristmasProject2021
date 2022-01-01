@@ -3,9 +3,11 @@
 #include "loading_layer.h"
 #include "layer_stack.h"
 #include "audio_factory.h"
+#include "game.h"
 
-MenuLayer::MenuLayer(SDL_Renderer& renderer, AudioFactory& audioFactory)
-    : m_renderer(renderer)
+MenuLayer::MenuLayer(Game& game, SDL_Renderer& renderer, AudioFactory& audioFactory)
+    : m_game(game)
+    , m_renderer(renderer)
     , m_audioFactory(audioFactory) {
     m_splashTexture = CreateTextureRef(&m_renderer, "title_raw.jpg");
 
@@ -34,11 +36,12 @@ MenuLayer::~MenuLayer() {
 bool MenuLayer::OnEvent(SDL_Event const& event) {
     if (event.type == SDL_KEYUP) {
         switch (event.key.keysym.sym) {
-        case SDLK_SPACE:
+        case SDLK_SPACE: {
             auto loadingLayer = std::make_unique<LoadingLayer>(m_renderer, m_audioFactory);
             m_layerStack->PushLayer(std::move(loadingLayer));
             m_layerStack->RemoveLayer(this);
             return true;
+        }
         }
     }
     return false;

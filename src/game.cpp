@@ -5,6 +5,10 @@
 Game::Game(int renderWidth, int renderHeight, std::string const& configPath)
     : m_renderWidth(renderWidth)
     , m_renderHeight(renderHeight)
+    , m_windowWidth(INIT_WINDOW_WIDTH)
+    , m_windowHeight(INIT_WINDOW_HEIGHT)
+    , m_editorWindowWidth(INIT_WINDOW_WIDTH)
+    , m_editorWindowHeight(INIT_WINDOW_HEIGHT)
     , m_configPath(configPath) {
     m_updateTicks = 1000 / 60;
 }
@@ -35,6 +39,20 @@ int Game::Run() {
     return 0;
 }
 
+void Game::SetEditorMode(bool editorMode) {
+    m_editorMode = editorMode;
+    if (m_editorMode) {
+        if (m_gameSurface == nullptr) {
+            m_gameSurface = CreateTextureRef(SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, m_renderWidth, m_renderHeight));
+        }
+        SDL_SetWindowSize(m_window, m_editorWindowWidth, m_editorWindowHeight);
+        SDL_SetWindowResizable(m_window, SDL_TRUE);
+    } else {
+        SDL_SetWindowSize(m_window, m_windowWidth, m_windowHeight);
+        SDL_SetWindowResizable(m_window, SDL_FALSE);
+    }
+}
+
 bool Game::Initialise() {
     nlohmann::json j;
     std::ifstream configFile(m_configPath.c_str());
@@ -42,29 +60,30 @@ bool Game::Initialise() {
         configFile >> j;
     }
 
-    int windowWidth = INIT_WINDOW_WIDTH;
-    int windowHeight = INIT_WINDOW_HEIGHT;
-
     if (j.contains("window_width")) {
-        windowWidth = j["window_width"];
+        m_windowWidth = j["window_width"];
     }
     if (j.contains("window_height")) {
-        windowHeight = j["window_height"];
+        m_windowHeight = j["window_height"];
+    }
+    if (j.contains("editor_window_width")) {
+        m_editorWindowWidth = j["editor_window_width"];
+    }
+    if (j.contains("editor_window_height")) {
+        m_editorWindowHeight = j["editor_window_height"];
     }
 
     if (0 > SDL_Init(SDL_INIT_EVERYTHING)) {
         return false;
     }
 
-    if (nullptr == (m_window = SDL_CreateWindow("Xmas Game 2021", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN))) {
+    if (nullptr == (m_window = SDL_CreateWindow("Xmas Game 2021", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_windowWidth, m_windowHeight, SDL_WINDOW_SHOWN))) {
         return false;
     }
 
     if (nullptr == (m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED))) {
         return false;
     }
-
-    SDL_RenderSetLogicalSize(m_renderer, m_renderWidth, m_renderHeight);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -93,19 +112,33 @@ bool Game::Initialise() {
 
     m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight);
 
-    auto menuLayer = std::make_unique<MenuLayer>(*m_renderer, m_audioFactory);
+    auto menuLayer = std::make_unique<MenuLayer>(*this, *m_renderer, m_audioFactory);
     m_layerStack->PushLayer(std::move(menuLayer));
 
     return true;
 }
 
 void Game::OnEvent(SDL_Event const& event) {
-    if (event.type == SDL_QUIT) {
+    if (event.type == SDL_WINDOWEVENT) {
+        if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+            if (m_editorMode) {
+                m_editorWindowWidth = event.window.data1;
+                m_editorWindowHeight = event.window.data2;
+            } else {
+                m_windowWidth = event.window.data1;
+                m_windowHeight = event.window.data2;
+            }
+        }
+    } else if (event.type == SDL_QUIT) {
         m_running = false;
     } else if (event.type == SDL_KEYUP) {
         switch (event.key.keysym.sym) {
         case SDLK_ESCAPE:
             m_running = false;
+            break;
+        case SDLK_g:
+            SetEditorMode(!m_editorMode);
+            break;
         }
     }
     m_layerStack->OnEvent(event);
@@ -126,8 +159,27 @@ void Game::Draw() {
     ImGui_ImplSDL2_NewFrame(m_window);
     ImGui::NewFrame();
 
+    SDL_RenderSetLogicalSize(m_renderer, m_renderWidth, m_renderHeight);
+
+    if (m_editorMode) {
+        SDL_SetRenderDrawColor(m_renderer, 0x11, 0x11, 0x11, 0xFF);
+        SDL_RenderClear(m_renderer);
+        SDL_SetRenderTarget(m_renderer, m_gameSurface.get());
+    }
+
+    SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(m_renderer);
     m_layerStack->Draw(*m_renderer);
+
+    if (m_editorMode) {
+        SDL_SetRenderTarget(m_renderer, nullptr);
+        SDL_RenderSetLogicalSize(m_renderer, m_windowWidth, m_windowHeight);
+
+        if (ImGui::Begin("Game")) {
+            ImGui::Image(m_gameSurface.get(), ImVec2(static_cast<float>(m_renderWidth), static_cast<float>(m_renderHeight)));
+        }
+        ImGui::End();
+    }
 
     ImGui::Render();
     ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
@@ -135,16 +187,11 @@ void Game::Draw() {
 }
 
 void Game::Shutdown() {
-    int windowWidth = 0;
-    int windowHeight = 0;
-    int renderWidth = 0;
-    int renderHeight = 0;
-
-    SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
-    SDL_RenderGetLogicalSize(m_renderer, &renderWidth, &renderHeight);
     nlohmann::json j;
-    j["window_width"] = windowWidth;
-    j["window_height"] = windowHeight;
+    j["window_width"] = m_windowWidth;
+    j["window_height"] = m_windowHeight;
+    j["editor_window_width"] = m_editorWindowWidth;
+    j["editor_window_height"] = m_editorWindowHeight;
     std::ofstream configFile(m_configPath.c_str());
     configFile << std::setw(4) << j << std::endl;
 

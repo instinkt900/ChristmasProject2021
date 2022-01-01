@@ -11,6 +11,9 @@ public:
     int Run();
     void Stop() { m_running = false; }
 
+    void SetEditorMode(bool editorMode);
+    bool IsEditorMode() const { return m_editorMode; }
+
 protected:
     bool Initialise();
     void OnEvent(SDL_Event const& event);
@@ -24,14 +27,20 @@ private:
 
     int m_renderWidth = 0;
     int m_renderHeight = 0;
+    int m_windowWidth = 0;
+    int m_windowHeight = 0;
+    int m_editorWindowWidth = 0;
+    int m_editorWindowHeight = 0;
     std::string m_configPath;
 
     bool m_running = false;
+    bool m_editorMode = false;
     uint32_t m_updateTicks = 0;
     uint32_t m_lastUpdateTicks = 0;
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
     AudioFactory m_audioFactory;
+    TextureRef m_gameSurface;
 
     std::unique_ptr<LayerStack> m_layerStack;
 };

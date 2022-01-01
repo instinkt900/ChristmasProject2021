@@ -5,7 +5,9 @@ AudioFactory::AudioFactory() {
 }
 
 AudioFactory::~AudioFactory() {
-    m_loadingThread.join();
+    if (m_loadingThread.joinable()) {
+        m_loadingThread.join();
+    }
 }
 
 void AudioFactory::LoadAll(std::function<void()> const& onLoadedCallback) {
