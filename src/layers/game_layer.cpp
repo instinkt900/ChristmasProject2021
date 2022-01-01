@@ -78,28 +78,30 @@ void GameLayer::OnRemovedFromStack() {
     Mix_PauseMusic();
 }
 
-void GameLayer::SpawnCamera(int x, int y) {
-    m_cameraEntity = m_registry.create();
+entt::entity GameLayer::SpawnCamera(int x, int y) {
+    auto entity = m_registry.create();
 
-    m_registry.emplace<VelocityComponent>(m_cameraEntity);
-    auto& cameraPosition = m_registry.emplace<PositionComponent>(m_cameraEntity);
-    auto& cameraDetails = m_registry.emplace<CameraComponent>(m_cameraEntity);
+    m_registry.emplace<VelocityComponent>(entity);
+    auto& cameraPosition = m_registry.emplace<PositionComponent>(entity);
+    auto& cameraDetails = m_registry.emplace<CameraComponent>(entity);
 
     cameraPosition.x = static_cast<float>(x);
     cameraPosition.y = static_cast<float>(y);
 
     cameraDetails.active = true;
+
+    return entity;
 }
 
-void GameLayer::SpawnPlayer(int x, int y) {
-    m_playerEntity = m_registry.create();
+entt::entity GameLayer::SpawnPlayer(int x, int y) {
+    auto entity = m_registry.create();
 
-    m_registry.emplace<HealthComponent>(m_playerEntity);
-    m_registry.emplace<VelocityComponent>(m_playerEntity);
-    auto& playerPositionComponent = m_registry.emplace<PositionComponent>(m_playerEntity);
-    auto& playerCollisionComponent = m_registry.emplace<CollisionComponent>(m_playerEntity);
-    auto& playerSpriteComponent = m_registry.emplace<SpriteComponent>(m_playerEntity);
-    auto& playerWeaponComponent = m_registry.emplace<WeaponComponent>(m_playerEntity);
+    m_registry.emplace<HealthComponent>(entity);
+    m_registry.emplace<VelocityComponent>(entity);
+    auto& playerPositionComponent = m_registry.emplace<PositionComponent>(entity);
+    auto& playerCollisionComponent = m_registry.emplace<CollisionComponent>(entity);
+    auto& playerSpriteComponent = m_registry.emplace<SpriteComponent>(entity);
+    auto& playerWeaponComponent = m_registry.emplace<WeaponComponent>(entity);
 
     playerSpriteComponent.texture = CreateTextureRef(&m_renderer, m_worldParameters.m_playerSpritePath.c_str());
     playerSpriteComponent.width = m_worldParameters.m_playerSpriteWidth;
@@ -107,23 +109,26 @@ void GameLayer::SpawnPlayer(int x, int y) {
 
     playerPositionComponent.x = static_cast<float>(x);
     playerPositionComponent.y = static_cast<float>(y);
+    playerPositionComponent.parent = m_cameraEntity;
 
     playerCollisionComponent.width = m_worldParameters.m_playerCollisionWidth;
     playerCollisionComponent.height = m_worldParameters.m_playerCollisionHeight;
     playerCollisionComponent.flags = COLLISION_FLAG_PLAYER;
     playerCollisionComponent.flag_mask = COLLISION_FLAG_MAP | COLLISION_FLAG_ENEMY;
-    playerCollisionComponent.on_collision = [this](entt::entity otherEntity) {
-        auto& healthComponent = m_registry.get<HealthComponent>(m_playerEntity);
+    playerCollisionComponent.on_collision = [this, entity](entt::entity otherEntity) {
+        auto& healthComponent = m_registry.get<HealthComponent>(entity);
         healthComponent.alive = false;
-        auto const& positionComponent = m_registry.get<PositionComponent>(m_playerEntity);
-        SpawnExplosion(static_cast<int>(positionComponent.x), static_cast<int>(positionComponent.y), false);
+        auto const position = ResolvePosition(m_registry, entity);
+        SpawnExplosion(static_cast<int>(position.x), static_cast<int>(position.y), false);
     };
 
     playerWeaponComponent.fire_delay = m_worldParameters.m_playerFireDelay;
     playerWeaponComponent.velocity = m_worldParameters.m_playerBulletSpeed;
+
+    return entity;
 }
 
-void GameLayer::SpawnExplosion(int x, int y, bool playSound) {
+entt::entity GameLayer::SpawnExplosion(int x, int y, bool playSound) {
     auto entity = m_registry.create();
     auto& positionComponent = m_registry.emplace<PositionComponent>(entity);
     auto& spriteComponent = m_registry.emplace<SpriteComponent>(entity);
@@ -163,14 +168,16 @@ void GameLayer::SpawnExplosion(int x, int y, bool playSound) {
     if (playSound) {
         Mix_PlayChannel(-1, m_explosionSFX.get(), 0);
     }
+
+    return entity;
 }
 
 void GameLayer::SetupLevel() {
     m_registry.clear();
     m_random.Reset(m_worldParameters.m_seed);
 
-    SpawnCamera(0, 0);
-    SpawnPlayer(0, 0);
+    m_cameraEntity = SpawnCamera(0, 0);
+    m_playerEntity = SpawnPlayer(0, 0);
 
     m_worldState.m_levelSpeed = m_worldParameters.m_levelSpeedInit;
     m_worldState.m_enemySpawnDelayMin = static_cast<float>(m_worldParameters.m_enemySpawnDelayMinInit);

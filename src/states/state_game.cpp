@@ -74,9 +74,8 @@ void StateGame::Update(uint32_t ticks, entt::registry& registry) {
 
     // update move speed
     worldState.m_levelSpeed += worldParameters.m_levelSpeedIncrease * seconds;
-    auto& playerVelocityComponent = registry.get<VelocityComponent>(m_gameLayer.GetPlayerEntity());
     auto& cameraVelocityComponent = registry.get<VelocityComponent>(m_gameLayer.GetCameraEntity());
-    playerVelocityComponent.x = cameraVelocityComponent.x = worldState.m_levelSpeed;
+    cameraVelocityComponent.x = worldState.m_levelSpeed;
 
     // input handling
     auto playerEntity = m_gameLayer.GetPlayerEntity();

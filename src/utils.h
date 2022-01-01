@@ -8,6 +8,11 @@ struct ViewParameters {
 };
 
 struct IntVec2 {
-    int x;
-    int y;
+    int x = 0;
+    int y = 0;
 };
+
+struct PositionComponent;
+
+IntVec2 ResolvePosition(entt::registry& registry, entt::entity entity);
+IntVec2 ResolvePosition(entt::registry& registry, PositionComponent const& positionComponent);

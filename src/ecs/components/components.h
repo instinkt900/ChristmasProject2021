@@ -3,6 +3,7 @@
 struct PositionComponent {
     float x = 0;
     float y = 0;
+    entt::entity parent = entt::null;
 };
 
 struct VelocityComponent {

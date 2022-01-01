@@ -22,8 +22,9 @@ namespace WeaponSystem {
                 auto& projectileVelocityComponent = registry.emplace<VelocityComponent>(projectile);
                 auto& projectileSpriteComponent = registry.emplace<SpriteComponent>(projectile);
                 auto& collisionComponent = registry.emplace<CollisionComponent>(projectile);
-                projectilePositionComponent.x = positionComponent.x;
-                projectilePositionComponent.y = positionComponent.y;
+                auto const spawnPosition = ResolvePosition(registry, positionComponent);
+                projectilePositionComponent.x = spawnPosition.x;
+                projectilePositionComponent.y = spawnPosition.y;
                 projectileVelocityComponent.x = weaponComponent.velocity * (weaponComponent.facing_left ? -1.0f : 1.0f);
                 projectileVelocityComponent.y = 0;
                 projectileSpriteComponent.texture = CreateTextureRef(&renderer, worldParameters.m_playerBulletSpritePath.c_str());

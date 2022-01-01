@@ -159,6 +159,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\states\state_post_game.cpp" />
     <ClCompile Include="src\states\state_pre_game.cpp" />
     <ClCompile Include="src\tile_map.cpp" />
+    <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ecs\components\components.h" />

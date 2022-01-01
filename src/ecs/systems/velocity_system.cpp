@@ -50,8 +50,14 @@ namespace VelocitySystem {
             float const newPositionY = positionComponent.y + velocityComponent.y * seconds;
             bool move = true;
 
-            int const colliderX = static_cast<int>(newPositionX);
-            int const colliderY = static_cast<int>(newPositionY);
+            PositionComponent newPositionComponent;
+            newPositionComponent.x = newPositionX;
+            newPositionComponent.y = newPositionY;
+            newPositionComponent.parent = positionComponent.parent;
+            auto const hostPosition = ResolvePosition(registry, newPositionComponent);
+
+            int const colliderX = static_cast<int>(hostPosition.x);
+            int const colliderY = static_cast<int>(hostPosition.y);
             int const colliderWidth = static_cast<int>(collisionComponent.width);
             int const colliderHeight = static_cast<int>(collisionComponent.height);
 
@@ -75,9 +81,9 @@ namespace VelocitySystem {
                     auto& otherCollisionComponent = registry.get<CollisionComponent>(otherEntity);
 
                     if ((otherCollisionComponent.flags & collisionComponent.flag_mask) != 0) {
-                        auto& otherPositionComponent = registry.get<PositionComponent>(otherEntity);
-                        int const otherColliderX = static_cast<int>(otherPositionComponent.x);
-                        int const otherColliderY = static_cast<int>(otherPositionComponent.y);
+                        auto const otherPosition = ResolvePosition(registry, otherEntity);
+                        int const otherColliderX = static_cast<int>(otherPosition.x);
+                        int const otherColliderY = static_cast<int>(otherPosition.y);
                         int const otherColliderWidth = static_cast<int>(otherCollisionComponent.width);
                         int const otherColliderHeight = static_cast<int>(otherCollisionComponent.height);
 

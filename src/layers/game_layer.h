@@ -81,9 +81,9 @@ public:
     auto GetCameraEntity() const { return m_cameraEntity; }
     auto& GetTileMap() const { return *m_tileMap; }
 
-    void SpawnCamera(int x, int y);
-    void SpawnPlayer(int x, int y);
-    void SpawnExplosion(int x, int y, bool playSound);
+    entt::entity SpawnCamera(int x, int y);
+    entt::entity SpawnPlayer(int x, int y);
+    entt::entity SpawnExplosion(int x, int y, bool playSound);
 
     auto GetWeaponSFX() { return m_weaponSFX; }
     auto GetCountSFX() { return m_countSFX; }
