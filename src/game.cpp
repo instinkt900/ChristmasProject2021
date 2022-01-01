@@ -173,7 +173,7 @@ void Game::Draw() {
 
     if (m_editorMode) {
         SDL_SetRenderTarget(m_renderer, nullptr);
-        SDL_RenderSetLogicalSize(m_renderer, m_windowWidth, m_windowHeight);
+        SDL_RenderSetLogicalSize(m_renderer, m_editorWindowWidth, m_editorWindowHeight);
 
         if (ImGui::Begin("Game")) {
             ImGui::Image(m_gameSurface.get(), ImVec2(static_cast<float>(m_renderWidth), static_cast<float>(m_renderHeight)));
