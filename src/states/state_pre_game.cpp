@@ -2,6 +2,7 @@
 #include "state_pre_game.h"
 #include "state_machine.h"
 #include "state_game.h"
+#include "audio_factory.h"
 #include "layers/game_layer.h"
 #include "ecs/systems/animation_system.h"
 
@@ -37,7 +38,7 @@ void StatePreGame::Update(uint32_t ticks, entt::registry& registry) {
     m_timer -= ticks;
 
     if (ticks > m_sfxTimer) {
-        Mix_PlayChannel(-1, m_gameLayer.GetCountSFX().get(), 0);
+        Mix_PlayChannel(-1, m_gameLayer.GetAudioFactory().GetCountSFX().get(), 0);
         m_sfxTimer += 1000;
     }
     m_sfxTimer -= ticks;

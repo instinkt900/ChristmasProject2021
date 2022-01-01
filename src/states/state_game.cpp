@@ -1,6 +1,7 @@
 #include "game_pch.h"
 #include "state_game.h"
 #include "state_post_game.h"
+#include "audio_factory.h"
 #include "layers/game_layer.h"
 #include "ecs/systems/enemy_system.h"
 #include "ecs/systems/weapon_system.h"
@@ -20,7 +21,7 @@ StateGame::~StateGame() {
 
 void StateGame::OnEnter() {
     m_controlState.clear();
-    Mix_PlayChannel(-1, m_gameLayer.GetStartSFX().get(), 0);
+    Mix_PlayChannel(-1, m_gameLayer.GetAudioFactory().GetStartSFX().get(), 0);
 }
 
 bool StateGame::OnEvent(SDL_Event const& event) {
@@ -102,7 +103,7 @@ void StateGame::Update(uint32_t ticks, entt::registry& registry) {
 
     if (!registry.valid(playerEntity)) {
         // game over
-        Mix_PlayChannel(-1, m_gameLayer.GetPlayerDiedSFX().get(), 0);
+        Mix_PlayChannel(-1, m_gameLayer.GetAudioFactory().GetPlayerDiedSFX().get(), 0);
         m_stateMachine->StateTransition<StatePostGame>();
     }
 }

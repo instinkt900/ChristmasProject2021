@@ -2,11 +2,11 @@
 
 #include "layer.h"
 
-struct RenderContext;
+class AudioFactory;
 
 class MenuLayer : public Layer {
 public:
-    MenuLayer(SDL_Renderer& renderer);
+    MenuLayer(SDL_Renderer& renderer, AudioFactory& audioFactory);
     virtual ~MenuLayer();
 
     bool OnEvent(SDL_Event const& event) override;
@@ -15,6 +15,7 @@ public:
 
 private:
     SDL_Renderer& m_renderer;
+    AudioFactory& m_audioFactory;
 
     TextureRef m_splashTexture;
     TextureRef m_titleText;
@@ -22,6 +23,6 @@ private:
     TextureRef m_promptText;
     TextureRef m_promptTextDrop;
 
-    std::tuple<int, int> m_titleTextDim;
-    std::tuple<int, int> m_promptTextDim;
+    IntVec2 m_titleTextDim;
+    IntVec2 m_promptTextDim;
 };

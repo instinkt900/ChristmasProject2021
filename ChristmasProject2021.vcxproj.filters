@@ -67,8 +67,14 @@
     <ClCompile Include="src\SDL_FontCache.c" />
     <ClCompile Include="src\simplex_noise.cpp" />
     <ClCompile Include="src\tile_map.cpp" />
-    <ClCompile Include="src\ecs\systems\cleanup_system.cpp" />
     <ClCompile Include="src\utils.cpp" />
+    <ClCompile Include="src\audio_factory.cpp" />
+    <ClCompile Include="src\ecs\systems\cleanup_system.cpp">
+      <Filter>ecs\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\loading_layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -147,7 +153,13 @@
     <ClInclude Include="src\tile_map.h" />
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\smart_sdl.h" />
-    <ClInclude Include="src\ecs\systems\cleanup_system.h" />
+    <ClInclude Include="src\audio_factory.h" />
+    <ClInclude Include="src\ecs\systems\cleanup_system.h">
+      <Filter>ecs\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\loading_layer.h">
+      <Filter>layers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

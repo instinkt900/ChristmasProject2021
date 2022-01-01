@@ -2,14 +2,16 @@
 #include "game_layer.h"
 #include "layer_stack.h"
 #include "tile_map.h"
+#include "audio_factory.h"
 #include "ecs/components/components.h"
 #include "ecs/systems/sprite_system.h"
 #include "states/state_pre_game.h"
 #include "states/state_game.h"
 #include "states/state_post_game.h"
 
-GameLayer::GameLayer(SDL_Renderer& renderer)
+GameLayer::GameLayer(SDL_Renderer& renderer, AudioFactory& audioFactory)
     : m_renderer(renderer)
+    , m_audioFactory(audioFactory)
     , m_random(0) {
     m_backgroundTexture = CreateTextureRef(&m_renderer, "background.jpg");
     m_explosionTexture = CreateTextureRef(&m_renderer, "exp2_0.png");
@@ -21,16 +23,6 @@ GameLayer::GameLayer(SDL_Renderer& renderer)
     m_stateMachine.AddState<StatePostGame>(*this);
 
     m_scoreFont = CreateCachedFontRef(&m_renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
-
-    m_weaponSFX = CreateAudioRef("Pew__006.wav");
-    m_explosionSFX = CreateAudioRef("Explosion2__006.wav");
-    m_playerDiedSFX = CreateAudioRef("Explosion2__007.wav");
-    m_countSFX = CreateAudioRef("Pickup__010.wav");
-    m_startSFX = CreateAudioRef("Pickup__003.wav");
-    m_music = CreateMusicRef("OutThere.ogg");
-
-    Mix_VolumeChunk(m_weaponSFX.get(), 16);
-    Mix_VolumeChunk(m_playerDiedSFX.get(), 16);
 
     LoadScore();
 }
@@ -70,7 +62,7 @@ void GameLayer::Draw(SDL_Renderer& renderer) {
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
     Layer::OnAddedToStack(layerStack);
     m_stateMachine.StateTransition<StatePreGame>();
-    Mix_PlayMusic(m_music.get(), -1);
+    Mix_PlayMusic(m_audioFactory.GetMusic().get(), -1);
 }
 
 void GameLayer::OnRemovedFromStack() {
@@ -166,7 +158,7 @@ entt::entity GameLayer::SpawnExplosion(int x, int y, bool playSound) {
     lifetimeComponent.lifetime = animComponent.ticks_per_frame * frameCount;
 
     if (playSound) {
-        Mix_PlayChannel(-1, m_explosionSFX.get(), 0);
+        Mix_PlayChannel(-1, m_audioFactory.GetExplosionSFX().get(), 0);
     }
 
     return entity;

@@ -1,5 +1,6 @@
 #include "game_pch.h"
 #include "weapon_system.h"
+#include "audio_factory.h"
 #include "ecs/components/components.h"
 #include "layers/game_layer.h"
 
@@ -23,8 +24,8 @@ namespace WeaponSystem {
                 auto& projectileSpriteComponent = registry.emplace<SpriteComponent>(projectile);
                 auto& collisionComponent = registry.emplace<CollisionComponent>(projectile);
                 auto const spawnPosition = ResolvePosition(registry, positionComponent);
-                projectilePositionComponent.x = spawnPosition.x;
-                projectilePositionComponent.y = spawnPosition.y;
+                projectilePositionComponent.x = static_cast<float>(spawnPosition.x);
+                projectilePositionComponent.y = static_cast<float>(spawnPosition.y);
                 projectileVelocityComponent.x = weaponComponent.velocity * (weaponComponent.facing_left ? -1.0f : 1.0f);
                 projectileVelocityComponent.y = 0;
                 projectileSpriteComponent.texture = CreateTextureRef(&renderer, worldParameters.m_playerBulletSpritePath.c_str());
@@ -39,7 +40,7 @@ namespace WeaponSystem {
                     healthComponent.alive = false;
                 };
                 weaponComponent.timer = weaponComponent.fire_delay;
-                Mix_PlayChannel(-1, gameLayer.GetWeaponSFX().get(), 0);
+                Mix_PlayChannel(-1, gameLayer.GetAudioFactory().GetWeaponSFX().get(), 0);
 
                 worldState.m_score -= worldParameters.m_scoreShootPenalty;
             }

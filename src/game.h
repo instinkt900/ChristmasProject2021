@@ -1,6 +1,7 @@
 #pragma once
 
 #include "layers/layer_stack.h"
+#include "audio_factory.h"
 
 class Game {
 public:
@@ -30,6 +31,7 @@ private:
     uint32_t m_lastUpdateTicks = 0;
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
+    AudioFactory m_audioFactory;
 
     std::unique_ptr<LayerStack> m_layerStack;
 };

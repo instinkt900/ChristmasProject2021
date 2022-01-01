@@ -59,9 +59,11 @@ struct WorldState {
     int m_highScore = 0;
 };
 
+class AudioFactory;
+
 class GameLayer : public Layer {
 public:
-    GameLayer(SDL_Renderer& renderer);
+    GameLayer(SDL_Renderer& renderer, AudioFactory& audioFactory);
     virtual ~GameLayer();
 
     bool OnEvent(SDL_Event const& event) override;
@@ -72,6 +74,7 @@ public:
     void OnRemovedFromStack() override;
 
     SDL_Renderer& GetRenderer() const { return m_renderer; }
+    AudioFactory& GetAudioFactory() const { return m_audioFactory; }
 
     auto& GetRandom() { return m_random; }
     auto& GetWorldParameters() const { return m_worldParameters; }
@@ -85,11 +88,6 @@ public:
     entt::entity SpawnPlayer(int x, int y);
     entt::entity SpawnExplosion(int x, int y, bool playSound);
 
-    auto GetWeaponSFX() { return m_weaponSFX; }
-    auto GetCountSFX() { return m_countSFX; }
-    auto GetStartSFX() { return m_startSFX; }
-    auto GetPlayerDiedSFX() { return m_playerDiedSFX; }
-
     void SetupLevel();
     void SaveScore();
 
@@ -97,6 +95,7 @@ private:
     void LoadScore();
 
     SDL_Renderer& m_renderer;
+    AudioFactory& m_audioFactory;
     StateMachine m_stateMachine;
 
     WorldParameters const m_worldParameters;
@@ -113,11 +112,4 @@ private:
     TextureRef m_explosionTexture;
 
     CachedFontRef m_scoreFont;
-
-    MusicRef m_music;
-    AudioRef m_weaponSFX;
-    AudioRef m_explosionSFX;
-    AudioRef m_playerDiedSFX;
-    AudioRef m_countSFX;
-    AudioRef m_startSFX;
 };
