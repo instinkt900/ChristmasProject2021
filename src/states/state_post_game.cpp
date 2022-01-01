@@ -3,6 +3,7 @@
 #include "state_pre_game.h"
 #include "layers/game_layer.h"
 #include "ecs/components/components.h"
+#include "ecs/systems/animation_system.h"
 
 StatePostGame::StatePostGame(StateMachine* stateMachine, GameLayer& gameLayer)
     : State(stateMachine)
@@ -51,6 +52,10 @@ bool StatePostGame::OnEvent(SDL_Event const& event) {
         }
     }
     return false;
+}
+
+void StatePostGame::Update(uint32_t ticks, entt::registry& registry) {
+    AnimationSystem::Update(ticks, m_gameLayer);
 }
 
 void StatePostGame::Draw(SDL_Renderer& renderer) {

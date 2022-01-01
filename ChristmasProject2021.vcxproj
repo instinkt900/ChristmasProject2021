@@ -126,6 +126,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\ecs\systems\animation_system.cpp" />
+    <ClCompile Include="src\ecs\systems\cleanup_system.cpp" />
     <ClCompile Include="src\ecs\systems\enemy_system.cpp" />
     <ClCompile Include="src\ecs\systems\lifetime_system.cpp" />
     <ClCompile Include="src\ecs\systems\sprite_system.cpp" />
@@ -162,6 +163,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
   <ItemGroup>
     <ClInclude Include="src\ecs\components\components.h" />
     <ClInclude Include="src\ecs\systems\animation_system.h" />
+    <ClInclude Include="src\ecs\systems\cleanup_system.h" />
     <ClInclude Include="src\ecs\systems\enemy_system.h" />
     <ClInclude Include="src\ecs\systems\lifetime_system.h" />
     <ClInclude Include="src\ecs\systems\sprite_system.h" />

@@ -102,6 +102,11 @@ bool Game::Initialise() {
 void Game::OnEvent(SDL_Event const& event) {
     if (event.type == SDL_QUIT) {
         m_running = false;
+    } else if (event.type == SDL_KEYUP) {
+        switch (event.key.keysym.sym) {
+        case SDLK_ESCAPE:
+            m_running = false;
+        }
     }
     m_layerStack->OnEvent(event);
 }

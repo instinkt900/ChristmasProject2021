@@ -8,6 +8,7 @@ public:
     virtual ~Game();
 
     int Run();
+    void Stop() { m_running = false; }
 
 protected:
     bool Initialise();

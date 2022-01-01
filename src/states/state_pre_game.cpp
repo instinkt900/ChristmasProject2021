@@ -3,6 +3,7 @@
 #include "state_machine.h"
 #include "state_game.h"
 #include "layers/game_layer.h"
+#include "ecs/systems/animation_system.h"
 
 StatePreGame::StatePreGame(StateMachine* stateMachine, GameLayer& gameLayer)
     : State(stateMachine)
@@ -40,6 +41,8 @@ void StatePreGame::Update(uint32_t ticks, entt::registry& registry) {
         m_sfxTimer += 1000;
     }
     m_sfxTimer -= ticks;
+
+    AnimationSystem::Update(ticks, m_gameLayer);
 }
 
 void StatePreGame::Draw(SDL_Renderer& renderer) {

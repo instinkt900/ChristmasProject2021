@@ -1,10 +1,13 @@
 #include "game_pch.h"
 #include "state_game.h"
+#include "state_post_game.h"
 #include "layers/game_layer.h"
 #include "ecs/systems/enemy_system.h"
 #include "ecs/systems/weapon_system.h"
 #include "ecs/systems/velocity_system.h"
 #include "ecs/systems/lifetime_system.h"
+#include "ecs/systems/animation_system.h"
+#include "ecs/systems/cleanup_system.h"
 #include "ecs/components/components.h"
 
 StateGame::StateGame(StateMachine* stateMachine, GameLayer& gameLayer)
@@ -95,4 +98,12 @@ void StateGame::Update(uint32_t ticks, entt::registry& registry) {
     WeaponSystem::Update(ticks, m_gameLayer);
     VelocitySystem::Update(ticks, m_gameLayer);
     LifetimeSystem::Update(ticks, m_gameLayer);
+    AnimationSystem::Update(ticks, m_gameLayer);
+    CleanupSystem::Update(ticks, m_gameLayer);
+
+    if (!registry.valid(playerEntity)) {
+        // game over
+        Mix_PlayChannel(-1, m_gameLayer.GetPlayerDiedSFX().get(), 0);
+        m_stateMachine->StateTransition<StatePostGame>();
+    }
 }

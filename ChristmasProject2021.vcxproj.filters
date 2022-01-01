@@ -67,6 +67,7 @@
     <ClCompile Include="src\SDL_FontCache.c" />
     <ClCompile Include="src\simplex_noise.cpp" />
     <ClCompile Include="src\tile_map.cpp" />
+    <ClCompile Include="src\ecs\systems\cleanup_system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -145,6 +146,7 @@
     <ClInclude Include="src\tile_map.h" />
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\smart_sdl.h" />
+    <ClInclude Include="src\ecs\systems\cleanup_system.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

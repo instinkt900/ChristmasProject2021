@@ -62,7 +62,7 @@ struct WorldState {
 class GameLayer : public Layer {
 public:
     GameLayer(SDL_Renderer& renderer);
-    ~GameLayer();
+    virtual ~GameLayer();
 
     bool OnEvent(SDL_Event const& event) override;
     void Update(uint32_t ticks) override;
@@ -80,16 +80,22 @@ public:
     auto GetPlayerEntity() const { return m_playerEntity; }
     auto GetCameraEntity() const { return m_cameraEntity; }
     auto& GetTileMap() const { return *m_tileMap; }
+
+    void SpawnCamera(int x, int y);
+    void SpawnPlayer(int x, int y);
     void SpawnExplosion(int x, int y, bool playSound);
 
     auto GetWeaponSFX() { return m_weaponSFX; }
     auto GetCountSFX() { return m_countSFX; }
     auto GetStartSFX() { return m_startSFX; }
+    auto GetPlayerDiedSFX() { return m_playerDiedSFX; }
 
     void SetupLevel();
     void SaveScore();
 
 private:
+    void LoadScore();
+
     SDL_Renderer& m_renderer;
     StateMachine m_stateMachine;
 
