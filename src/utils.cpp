@@ -7,8 +7,8 @@ IntVec2 ResolvePosition(entt::registry& registry, entt::entity entity) {
     if (registry.valid(entity)) {
         auto const& positionComponent = registry.get<PositionComponent>(entity);
         auto const parentPosition = ResolvePosition(registry, positionComponent.parent);
-        position.x = positionComponent.x + parentPosition.x;
-        position.y = positionComponent.y + parentPosition.y;
+        position.x = static_cast<int>(positionComponent.x + parentPosition.x);
+        position.y = static_cast<int>(positionComponent.y + parentPosition.y);
     }
     return position;
 }
@@ -16,7 +16,7 @@ IntVec2 ResolvePosition(entt::registry& registry, entt::entity entity) {
 IntVec2 ResolvePosition(entt::registry& registry, PositionComponent const& positionComponent) {
     IntVec2 position;
     auto const parentPosition = ResolvePosition(registry, positionComponent.parent);
-    position.x = positionComponent.x + parentPosition.x;
-    position.y = positionComponent.y + parentPosition.y;
+    position.x = static_cast<int>(positionComponent.x + parentPosition.x);
+    position.y = static_cast<int>(positionComponent.y + parentPosition.y);
     return position;
 }
