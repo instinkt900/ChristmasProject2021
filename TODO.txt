@@ -1,11 +1,5 @@
-- Work out window size independent resolution (font rendering is the sticking issue here)
 - Proper tilemap implementation
-- Fix player postion jittering. Camera relative positioning vs moving tilemap etc.
-- Clean up sprite animation handling. Separate sprite/Animation code.
 - fix enemies staying alive forever
-- standardize sound loading/playing etc.
 - Wrap SDL stuff.
 - animation data files.
-- shared_ptr sdl_textures. (probably comes under wrapping SDL stuff)
-- asset loading/cachine
-- load screens
+- asset loading/caching

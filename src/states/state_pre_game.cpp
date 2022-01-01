@@ -16,7 +16,7 @@ StatePreGame::StatePreGame(StateMachine* stateMachine, GameLayer& gameLayer)
     countText[1] = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "2", textColor));
     countText[2] = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "3", textColor));
     for (int i = 0; i < 3; ++i) {
-        m_countDownText[i] = CreateTextureRef(&m_gameLayer.GetRenderer(), countText[i]);
+        m_countDownText[i] = CreateTextureRef(m_gameLayer.GetRenderer(), countText[i]);
         m_countDownTextDim[i] = { countText[i]->w, countText[i]->h };
     }
 }

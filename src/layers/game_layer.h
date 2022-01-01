@@ -3,6 +3,7 @@
 #include "layer.h"
 #include "states/state_machine.h"
 #include "random.h"
+#include "game.h"
 
 class TileMap;
 
@@ -63,7 +64,7 @@ class AudioFactory;
 
 class GameLayer : public Layer {
 public:
-    GameLayer(SDL_Renderer& renderer, AudioFactory& audioFactory);
+    GameLayer(Game& game);
     virtual ~GameLayer();
 
     bool OnEvent(SDL_Event const& event) override;
@@ -73,8 +74,8 @@ public:
     void OnAddedToStack(LayerStack* layerStack) override;
     void OnRemovedFromStack() override;
 
-    SDL_Renderer& GetRenderer() const { return m_renderer; }
-    AudioFactory& GetAudioFactory() const { return m_audioFactory; }
+    SDL_Renderer* GetRenderer() const { return m_game.GetRenderer(); }
+    AudioFactory& GetAudioFactory() const { return m_game.GetAudioFactory(); }
 
     auto& GetRandom() { return m_random; }
     auto& GetWorldParameters() const { return m_worldParameters; }
@@ -94,8 +95,7 @@ public:
 private:
     void LoadScore();
 
-    SDL_Renderer& m_renderer;
-    AudioFactory& m_audioFactory;
+    Game& m_game;
     StateMachine m_stateMachine;
 
     WorldParameters const m_worldParameters;

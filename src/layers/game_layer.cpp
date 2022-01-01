@@ -9,20 +9,20 @@
 #include "states/state_game.h"
 #include "states/state_post_game.h"
 
-GameLayer::GameLayer(SDL_Renderer& renderer, AudioFactory& audioFactory)
-    : m_renderer(renderer)
-    , m_audioFactory(audioFactory)
+GameLayer::GameLayer(Game& game)
+    : m_game(game)
     , m_random(0) {
-    m_backgroundTexture = CreateTextureRef(&m_renderer, "background.jpg");
-    m_explosionTexture = CreateTextureRef(&m_renderer, "exp2_0.png");
+    auto renderer = m_game.GetRenderer();
+    m_backgroundTexture = CreateTextureRef(renderer, "background.jpg");
+    m_explosionTexture = CreateTextureRef(renderer, "exp2_0.png");
 
-    m_tileMap = std::make_unique<TileMap>(m_renderer, 8, 8);
+    m_tileMap = std::make_unique<TileMap>(*renderer, 8, 8);
 
     m_stateMachine.AddState<StatePreGame>(*this);
     m_stateMachine.AddState<StateGame>(*this);
     m_stateMachine.AddState<StatePostGame>(*this);
 
-    m_scoreFont = CreateCachedFontRef(&m_renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
+    m_scoreFont = CreateCachedFontRef(renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
 
     LoadScore();
 }
@@ -39,7 +39,7 @@ void GameLayer::Update(uint32_t ticks) {
 }
 
 void GameLayer::Draw(SDL_Renderer& renderer) {
-    SDL_RenderCopy(&m_renderer, m_backgroundTexture.get(), nullptr, nullptr);
+    SDL_RenderCopy(&renderer, m_backgroundTexture.get(), nullptr, nullptr);
 
     auto const& cameraPositionComponent = m_registry.get<PositionComponent>(m_cameraEntity);
     auto const& cameraCameraComponent = m_registry.get<CameraComponent>(m_cameraEntity);
@@ -51,18 +51,19 @@ void GameLayer::Draw(SDL_Renderer& renderer) {
 
     m_tileMap->Draw(viewParameters);
 
-    SpriteSystem::Draw(m_renderer, m_registry, viewParameters);
+    SpriteSystem::Draw(renderer, m_registry, viewParameters);
 
-    m_stateMachine.Draw(m_renderer);
+    m_stateMachine.Draw(renderer);
 
-    FC_Draw(m_scoreFont.get(), &m_renderer, 3, 0, "Score: %d", m_worldState.m_score);
-    FC_Draw(m_scoreFont.get(), &m_renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
+    FC_Draw(m_scoreFont.get(), &renderer, 3, 0, "Score: %d", m_worldState.m_score);
+    FC_Draw(m_scoreFont.get(), &renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
 }
 
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
     Layer::OnAddedToStack(layerStack);
     m_stateMachine.StateTransition<StatePreGame>();
-    Mix_PlayMusic(m_audioFactory.GetMusic().get(), -1);
+    auto& audioFactory = m_game.GetAudioFactory();
+    Mix_PlayMusic(audioFactory.GetMusic().get(), -1);
 }
 
 void GameLayer::OnRemovedFromStack() {
@@ -95,7 +96,7 @@ entt::entity GameLayer::SpawnPlayer(int x, int y) {
     auto& playerSpriteComponent = m_registry.emplace<SpriteComponent>(entity);
     auto& playerWeaponComponent = m_registry.emplace<WeaponComponent>(entity);
 
-    playerSpriteComponent.texture = CreateTextureRef(&m_renderer, m_worldParameters.m_playerSpritePath.c_str());
+    playerSpriteComponent.texture = CreateTextureRef(m_game.GetRenderer(), m_worldParameters.m_playerSpritePath.c_str());
     playerSpriteComponent.width = m_worldParameters.m_playerSpriteWidth;
     playerSpriteComponent.height = m_worldParameters.m_playerSpriteHeight;
 
@@ -158,7 +159,7 @@ entt::entity GameLayer::SpawnExplosion(int x, int y, bool playSound) {
     lifetimeComponent.lifetime = animComponent.ticks_per_frame * frameCount;
 
     if (playSound) {
-        Mix_PlayChannel(-1, m_audioFactory.GetExplosionSFX().get(), 0);
+        Mix_PlayChannel(-1, m_game.GetAudioFactory().GetExplosionSFX().get(), 0);
     }
 
     return entity;

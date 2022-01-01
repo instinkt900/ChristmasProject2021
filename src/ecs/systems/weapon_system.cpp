@@ -6,11 +6,11 @@
 
 namespace WeaponSystem {
     void Update(uint32_t ticks, GameLayer& gameLayer) {
-        auto& renderer = gameLayer.GetRenderer();
+        auto renderer = gameLayer.GetRenderer();
         auto& registry = gameLayer.GetRegistry();
         auto const& worldParameters = gameLayer.GetWorldParameters();
         auto& worldState = gameLayer.GetWorldState();
-        registry.view<WeaponComponent, PositionComponent>().each([ticks, &registry, &renderer, &worldParameters, &worldState, &gameLayer](auto& weaponComponent, auto const& positionComponent) {
+        registry.view<WeaponComponent, PositionComponent>().each([ticks, &registry, renderer, &worldParameters, &worldState, &gameLayer](auto& weaponComponent, auto const& positionComponent) {
             if (weaponComponent.timer > 0) {
                 weaponComponent.timer -= ticks;
             }
@@ -28,7 +28,7 @@ namespace WeaponSystem {
                 projectilePositionComponent.y = static_cast<float>(spawnPosition.y);
                 projectileVelocityComponent.x = weaponComponent.velocity * (weaponComponent.facing_left ? -1.0f : 1.0f);
                 projectileVelocityComponent.y = 0;
-                projectileSpriteComponent.texture = CreateTextureRef(&renderer, worldParameters.m_playerBulletSpritePath.c_str());
+                projectileSpriteComponent.texture = CreateTextureRef(renderer, worldParameters.m_playerBulletSpritePath.c_str());
                 projectileSpriteComponent.width = worldParameters.m_playerBulletSpriteWidth;
                 projectileSpriteComponent.height = worldParameters.m_playerBulletSpriteHeight;
                 collisionComponent.width = worldParameters.m_playerBulletCollisionWidth;

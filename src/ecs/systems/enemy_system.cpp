@@ -32,9 +32,9 @@ namespace EnemySystem {
             positionComponent.x = static_cast<float>(spawnX);
             positionComponent.y = static_cast<float>(spawnY);
 
-            auto& renderer = gameLayer.GetRenderer();
+            auto renderer = gameLayer.GetRenderer();
             auto& sprite = registry.emplace<SpriteComponent>(enemy);
-            sprite.texture = CreateTextureRef(&renderer, worldParameters.m_enemySpritePath.c_str());
+            sprite.texture = CreateTextureRef(renderer, worldParameters.m_enemySpritePath.c_str());
             sprite.width = worldParameters.m_enemySpriteWidth;
             sprite.height = worldParameters.m_enemySpriteHeight;
 

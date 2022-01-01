@@ -14,6 +14,9 @@ public:
     void SetEditorMode(bool editorMode);
     bool IsEditorMode() const { return m_editorMode; }
 
+    auto GetRenderer() const { return m_renderer; }
+    auto& GetAudioFactory() { return m_audioFactory; }
+
 protected:
     bool Initialise();
     void OnEvent(SDL_Event const& event);

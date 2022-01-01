@@ -11,12 +11,12 @@ StatePostGame::StatePostGame(StateMachine* stateMachine, GameLayer& gameLayer)
     FontRef font = CreateFontRef(gameLayer.GetWorldParameters().m_gameFontPath.c_str(), 80);
     SDL_Color textColor{ 255, 255, 255, 255 };
     SurfaceRef gameOverText = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "Game Over", textColor));
-    m_gameOverText = CreateTextureRef(&m_gameLayer.GetRenderer(), gameOverText);
+    m_gameOverText = CreateTextureRef(m_gameLayer.GetRenderer(), gameOverText);
     m_gameOverTextDim = { gameOverText->w, gameOverText->h };
 
     font = CreateFontRef(gameLayer.GetWorldParameters().m_gameFontPath.c_str(), 30);
     SurfaceRef highScoreText = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "New high score!", textColor));
-    m_highScoreText = CreateTextureRef(&m_gameLayer.GetRenderer(), highScoreText);
+    m_highScoreText = CreateTextureRef(m_gameLayer.GetRenderer(), highScoreText);
     m_highScoreTextDim = { highScoreText->w, highScoreText->h };
 }
 

@@ -3,10 +3,11 @@
 #include "layer.h"
 
 class AudioFactory;
+class Game;
 
 class LoadingLayer : public Layer {
 public:
-    LoadingLayer(SDL_Renderer& renderer, AudioFactory& audioFactory);
+    LoadingLayer(Game& game);
     virtual ~LoadingLayer();
 
     bool OnEvent(SDL_Event const& event) override;
@@ -16,8 +17,7 @@ public:
     void OnAddedToStack(LayerStack* layerStack) override;
 
 private:
-    SDL_Renderer& m_renderer;
-    AudioFactory& m_audioFactory;
+    Game& m_game;
 
     TextureRef m_loadingTexture;
     TextureRef m_loadingText;

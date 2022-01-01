@@ -7,7 +7,7 @@ class Game;
 
 class MenuLayer : public Layer {
 public:
-    MenuLayer(Game& game, SDL_Renderer& renderer, AudioFactory& audioFactory);
+    MenuLayer(Game& game);
     virtual ~MenuLayer();
 
     bool OnEvent(SDL_Event const& event) override;
@@ -16,8 +16,6 @@ public:
 
 private:
     Game& m_game;
-    SDL_Renderer& m_renderer;
-    AudioFactory& m_audioFactory;
 
     TextureRef m_splashTexture;
     TextureRef m_titleText;
