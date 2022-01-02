@@ -31,6 +31,9 @@ GameLayer::~GameLayer() {
 }
 
 bool GameLayer::OnEvent(SDL_Event const& event) {
+    if (event.type == SDL_RENDER_TARGETS_RESET || event.type == SDL_RENDER_DEVICE_RESET) {
+        FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), event.type);
+    }
     return m_stateMachine.OnEvent(event);
 }
 
