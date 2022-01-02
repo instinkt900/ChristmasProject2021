@@ -34,9 +34,7 @@ void ImGuiInspectMember(char const* name, SDL_Rect& value) {
 }
 
 void ImGuiInspectMember(char const* name, TextureRef& value) {
-    if (ImGui::CollapsingHeader(name)) {
-        ImGui::Image(value.get(), ImVec2(100, 100));
-    }
+    ImGui::Image(value.get(), ImVec2(100, 100));
 }
 
 template <typename T>
@@ -148,7 +146,7 @@ void ImGuiInspect(entt::registry& registry, entt::entity entity) {
 
 template <typename... Ts>
 void ImGuiInspectMultiple(entt::registry& registry, entt::entity entity) {
-    (ImGuiInspect<Ts>(registry, entity), ...);
+    (ImGuiInspect<Ts>(registry, entity), ...); // fold expression
 }
 
 void ImGuiInspectAll(entt::registry& registry, entt::entity entity) {
