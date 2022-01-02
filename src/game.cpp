@@ -95,7 +95,9 @@ bool Game::Initialise() {
     ImGui_ImplSDL2_InitForSDLRenderer(m_window);
     ImGui_ImplSDLRenderer_Init(m_renderer);
 
-    SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    ImGui_ImplSDLRenderer_NewFrame();
+    ImGui_ImplSDL2_NewFrame(m_window);
+    ImGui::NewFrame();
 
     int const imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
     if (imgFlags != IMG_Init(imgFlags)) {
@@ -148,17 +150,15 @@ void Game::Update() {
     uint32_t const nowTicks = SDL_GetTicks();
     uint32_t deltaTicks = nowTicks - m_lastUpdateTicks;
     while (deltaTicks > m_updateTicks) {
-        m_layerStack->Update(m_updateTicks);
+        if (!m_paused) {
+            m_layerStack->Update(m_updateTicks);
+        }
         m_lastUpdateTicks += m_updateTicks;
         deltaTicks -= m_updateTicks;
     }
 }
 
 void Game::Draw() {
-    ImGui_ImplSDLRenderer_NewFrame();
-    ImGui_ImplSDL2_NewFrame(m_window);
-    ImGui::NewFrame();
-
     SDL_RenderSetLogicalSize(m_renderer, m_renderWidth, m_renderHeight);
 
     if (m_editorMode) {
@@ -179,11 +179,26 @@ void Game::Draw() {
             ImGui::Image(m_gameSurface.get(), ImVec2(static_cast<float>(m_renderWidth), static_cast<float>(m_renderHeight)));
         }
         ImGui::End();
+
+        if (ImGui::Begin("Control")) {
+            if (ImGui::Button("Play")) {
+                SetPaused(false);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Pause")) {
+                SetPaused(true);
+            }
+        }
+        ImGui::End();
     }
 
     ImGui::Render();
     ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(m_renderer);
+
+    ImGui_ImplSDLRenderer_NewFrame();
+    ImGui_ImplSDL2_NewFrame(m_window);
+    ImGui::NewFrame();
 }
 
 void Game::Shutdown() {

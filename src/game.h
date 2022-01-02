@@ -10,6 +10,7 @@ public:
 
     int Run();
     void Stop() { m_running = false; }
+    void SetPaused(bool paused) { m_paused = paused; }
 
     void SetEditorMode(bool editorMode);
     bool IsEditorMode() const { return m_editorMode; }
@@ -37,6 +38,7 @@ private:
     std::string m_configPath;
 
     bool m_running = false;
+    bool m_paused = false;
     bool m_editorMode = false;
     uint32_t m_updateTicks = 0;
     uint32_t m_lastUpdateTicks = 0;

@@ -94,6 +94,7 @@ public:
 
 private:
     void LoadScore();
+    void DrawDebugUI();
 
     Game& m_game;
     StateMachine m_stateMachine;

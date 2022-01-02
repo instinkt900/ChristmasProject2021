@@ -57,6 +57,10 @@ void GameLayer::Draw(SDL_Renderer& renderer) {
 
     FC_Draw(m_scoreFont.get(), &renderer, 3, 0, "Score: %d", m_worldState.m_score);
     FC_Draw(m_scoreFont.get(), &renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
+
+    if (m_game.IsEditorMode()) {
+        DrawDebugUI();
+    }
 }
 
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
@@ -194,4 +198,16 @@ void GameLayer::SaveScore() {
         scoreData.write(reinterpret_cast<char const*>(&m_worldState.m_highScore), sizeof(m_worldState.m_highScore));
         scoreData.close();
     }
+}
+
+void GameLayer::DrawDebugUI() {
+    if (ImGui::Begin("registry")) {
+        m_registry.each([](auto entity) {
+            auto const label = fmt::format("{}", static_cast<uint32_t>(entity));
+            if (ImGui::TreeNode(label.c_str())) {
+                ImGui::TreePop();
+            }
+        });
+    }
+    ImGui::End();
 }
