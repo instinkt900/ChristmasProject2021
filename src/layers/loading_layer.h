@@ -19,7 +19,6 @@ public:
 private:
     Game& m_game;
 
-    TextureRef m_loadingTexture;
     TextureRef m_loadingText;
     TextureRef m_loadingTextDrop;
     IntVec2 m_loadingTextDim;

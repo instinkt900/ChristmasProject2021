@@ -8,7 +8,6 @@
 LoadingLayer::LoadingLayer(Game& game)
     : m_game(game) {
     auto renderer = m_game.GetRenderer();
-    m_loadingTexture = CreateTextureRef(renderer, "title_raw.jpg");
 
     FontRef font = CreateFontRef("pilotcommand.ttf", 60);
     SDL_Color textColor{ 255, 255, 255, 255 };
@@ -30,15 +29,15 @@ bool LoadingLayer::OnEvent(SDL_Event const& event) {
 
 void LoadingLayer::Update(uint32_t ticks) {
     if (m_loadingFinished) {
+        auto layerStack = m_layerStack;
         auto gameLayer = std::make_unique<GameLayer>(m_game);
-        m_layerStack->PushLayer(std::move(gameLayer));
-        m_layerStack->RemoveLayer(this);
+        layerStack->PopLayer(); // removes 'this'
+        layerStack->PopLayer(); // removes background layer
+        layerStack->PushLayer(std::move(gameLayer));
     }
 }
 
 void LoadingLayer::Draw(SDL_Renderer& renderer) {
-    SDL_RenderCopy(&renderer, m_loadingTexture.get(), nullptr, nullptr);
-
     int const text1Width = m_loadingTextDim.x;
     int const text1Height = m_loadingTextDim.y;
     int const text1X = (GetWidth() - text1Width) / 2;

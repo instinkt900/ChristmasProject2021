@@ -1,6 +1,7 @@
 #include "game_pch.h"
 #include "game.h"
-#include "layers/menu_layer.h"
+#include "layers/splash_layer.h"
+#include "layers/background_layer.h"
 
 Game::Game(int renderWidth, int renderHeight, std::string const& configPath)
     : m_renderWidth(renderWidth)
@@ -114,7 +115,10 @@ bool Game::Initialise() {
 
     m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight);
 
-    auto menuLayer = std::make_unique<MenuLayer>(*this);
+    auto backgroundLayer = std::make_unique<BackgroundLayer>(*GetRenderer());
+    m_layerStack->PushLayer(std::move(backgroundLayer));
+
+    auto menuLayer = std::make_unique<SplashLayer>(*this);
     m_layerStack->PushLayer(std::move(menuLayer));
 
     return true;

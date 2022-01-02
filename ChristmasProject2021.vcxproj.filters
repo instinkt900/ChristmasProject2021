@@ -46,7 +46,7 @@
     <ClCompile Include="src\layers\layer_stack.cpp">
       <Filter>layers</Filter>
     </ClCompile>
-    <ClCompile Include="src\layers\menu_layer.cpp">
+    <ClCompile Include="src\layers\splash_layer.cpp">
       <Filter>layers</Filter>
     </ClCompile>
     <ClCompile Include="src\states\state_game.cpp">
@@ -73,6 +73,12 @@
       <Filter>ecs\systems</Filter>
     </ClCompile>
     <ClCompile Include="src\layers\loading_layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\menu_layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\background_layer.cpp">
       <Filter>layers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -127,7 +133,7 @@
     <ClInclude Include="src\layers\layer_stack.h">
       <Filter>layers</Filter>
     </ClInclude>
-    <ClInclude Include="src\layers\menu_layer.h">
+    <ClInclude Include="src\layers\splash_layer.h">
       <Filter>layers</Filter>
     </ClInclude>
     <ClInclude Include="src\states\state.h">
@@ -162,6 +168,12 @@
     </ClInclude>
     <ClInclude Include="src\ecs\components\inspectors.h">
       <Filter>ecs\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\menu_layer.h">
+      <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\background_layer.h">
+      <Filter>layers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

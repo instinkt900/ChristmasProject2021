@@ -2,7 +2,6 @@
 
 #include "layer.h"
 
-class AudioFactory;
 class Game;
 
 class MenuLayer : public Layer {
@@ -16,13 +15,4 @@ public:
 
 private:
     Game& m_game;
-
-    TextureRef m_splashTexture;
-    TextureRef m_titleText;
-    TextureRef m_titleTextDrop;
-    TextureRef m_promptText;
-    TextureRef m_promptTextDrop;
-
-    IntVec2 m_titleTextDim;
-    IntVec2 m_promptTextDim;
 };
