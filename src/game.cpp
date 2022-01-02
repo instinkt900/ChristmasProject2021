@@ -121,6 +121,10 @@ bool Game::Initialise() {
 }
 
 void Game::OnEvent(SDL_Event const& event) {
+    ImGui_ImplSDL2_ProcessEvent(&event);
+    if (ImGui::GetIO().WantCaptureKeyboard && (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)) {
+        return;
+    }
     if (event.type == SDL_WINDOWEVENT) {
         if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
             if (m_editorMode) {

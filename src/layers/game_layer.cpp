@@ -203,11 +203,38 @@ void GameLayer::SaveScore() {
     }
 }
 
+namespace {
+    void ImGuiInspect(PositionComponent& component) {
+        if (ImGui::CollapsingHeader("PositionComponent")) {
+            ImGui::InputFloat("x", &component.x);
+            ImGui::InputFloat("y", &component.y);
+        }
+    }
+
+    void ImGuiInspect(CameraComponent& component) {
+        if (ImGui::CollapsingHeader("CameraComponent")) {
+        }
+    }
+
+    template<typename T>
+    void ImGuiInspect(entt::registry& registry, entt::entity entity) {
+        if (T* comp = registry.try_get<T>(entity)) {
+            ImGuiInspect(*comp);
+        }
+    }
+
+    template<typename... Ts>
+    void ImGuiInspectMultiple(entt::registry& registry, entt::entity entity) {
+        (ImGuiInspect<Ts>(registry, entity), ...);
+    }
+}
+
 void GameLayer::DrawDebugUI() {
     if (ImGui::Begin("registry")) {
-        m_registry.each([](auto entity) {
+        m_registry.each([this](auto entity) {
             auto const label = fmt::format("{}", static_cast<uint32_t>(entity));
             if (ImGui::TreeNode(label.c_str())) {
+                ImGuiInspectMultiple<PositionComponent, CameraComponent>(m_registry, entity);
                 ImGui::TreePop();
             }
         });
