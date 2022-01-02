@@ -160,6 +160,9 @@
     <ClInclude Include="src\layers\loading_layer.h">
       <Filter>layers</Filter>
     </ClInclude>
+    <ClInclude Include="src\ecs\components\inspectors.h">
+      <Filter>ecs\components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
