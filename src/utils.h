@@ -7,10 +7,14 @@ struct ViewParameters {
     int m_height;
 };
 
-struct IntVec2 {
-    int x = 0;
-    int y = 0;
+template<typename T>
+struct Vec2 {
+    T x{ 0 };
+    T y{ 0 };
 };
+
+using IntVec2 = Vec2<int>;
+using FloatVec2 = Vec2<float>;
 
 struct PositionComponent;
 

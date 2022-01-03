@@ -81,6 +81,12 @@
     <ClCompile Include="src\layers\background_layer.cpp">
       <Filter>layers</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\widget.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\widget_image.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -100,6 +106,9 @@
     </Filter>
     <Filter Include="ecs\components">
       <UniqueIdentifier>{b1c6c4ea-68ea-4d23-a414-5aea59fccb53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{6d52be80-05f6-483a-b32f-115687c05ed8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +183,12 @@
     </ClInclude>
     <ClInclude Include="src\layers\background_layer.h">
       <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\widget.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\widget_image.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

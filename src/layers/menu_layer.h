@@ -1,6 +1,7 @@
 #pragma once
 
 #include "layer.h"
+#include "ui/widget.h"
 
 class Game;
 
@@ -13,6 +14,9 @@ public:
     void Update(uint32_t ticks) override;
     void Draw(SDL_Renderer& renderer) override;
 
+    void OnAddedToStack(LayerStack* stack) override;
+
 private:
     Game& m_game;
+    WidgetRef m_rootWidget;
 };

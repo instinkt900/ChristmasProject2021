@@ -4,6 +4,7 @@
 #include "layer_stack.h"
 #include "audio_factory.h"
 #include "game.h"
+#include "menu_layer.h"
 
 SplashLayer::SplashLayer(Game& game)
     : m_game(game) {
@@ -40,6 +41,9 @@ bool SplashLayer::OnEvent(SDL_Event const& event) {
             auto loadingLayer = std::make_unique<LoadingLayer>(m_game);
             layerStack->PopLayer(); // removes 'this'
             layerStack->PushLayer(std::move(loadingLayer));
+            //auto menuLayer = std::make_unique<MenuLayer>(m_game);
+            //layerStack->PopLayer(); // removes 'this'
+            //layerStack->PushLayer(std::move(menuLayer));
             return true;
         }
         }
