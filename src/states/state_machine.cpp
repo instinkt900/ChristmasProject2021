@@ -8,7 +8,7 @@ StateMachine::StateMachine() {
 StateMachine::~StateMachine() {
 }
 
-bool StateMachine::OnEvent(SDL_Event const& event) {
+bool StateMachine::OnEvent(Event const& event) {
     if (m_currentState) {
         return m_currentState->OnEvent(event);
     }

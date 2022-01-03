@@ -2,6 +2,9 @@
 #include "game.h"
 #include "layers/splash_layer.h"
 #include "layers/background_layer.h"
+#include "events/event_window_size.h"
+#include "events/event_key.h"
+#include "events/event_quit.h"
 
 Game::Game(int renderWidth, int renderHeight, std::string const& configPath)
     : m_renderWidth(renderWidth)
@@ -28,7 +31,13 @@ int Game::Run() {
     while (m_running) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            OnEvent(event);
+            ImGui_ImplSDL2_ProcessEvent(&event);
+            if (ImGui::GetIO().WantCaptureKeyboard && (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)) {
+                continue;
+            }
+            if (auto const translatedEvent = Event::FromSDL(event)) {
+                OnEvent(*translatedEvent);
+            }
         }
 
         Update();
@@ -124,31 +133,27 @@ bool Game::Initialise() {
     return true;
 }
 
-void Game::OnEvent(SDL_Event const& event) {
-    ImGui_ImplSDL2_ProcessEvent(&event);
-    if (ImGui::GetIO().WantCaptureKeyboard && (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)) {
-        return;
-    }
-    if (event.type == SDL_WINDOWEVENT) {
-        if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-            if (m_editorMode) {
-                m_editorWindowWidth = event.window.data1;
-                m_editorWindowHeight = event.window.data2;
-            } else {
-                m_windowWidth = event.window.data1;
-                m_windowHeight = event.window.data2;
-            }
+void Game::OnEvent(Event const& event) {
+    if (auto windowEvent = event_cast<EventWindowSize>(event)) {
+        if (m_editorMode) {
+            m_editorWindowWidth = windowEvent->GetWidth();
+            m_editorWindowHeight = windowEvent->GetHeight();
+        } else {
+            m_windowWidth = windowEvent->GetWidth();
+            m_windowHeight = windowEvent->GetHeight();
         }
-    } else if (event.type == SDL_QUIT) {
+    } else if (auto quitEvent = event_cast<EventQuit>(event)) {
         m_running = false;
-    } else if (event.type == SDL_KEYUP) {
-        switch (event.key.keysym.sym) {
-        case SDLK_ESCAPE:
-            m_running = false;
-            break;
-        case SDLK_g:
-            SetEditorMode(!m_editorMode);
-            break;
+    } else if (auto keyEvent = event_cast<EventKey>(event)) {
+        if (keyEvent->GetAction() == KeyAction::Up) {
+            switch (keyEvent->GetKey()) {
+            case Key::Escape:
+                m_running = false;
+                break;
+            case Key::G:
+                SetEditorMode(!m_editorMode);
+                break;
+            }
         }
     }
     m_layerStack->OnEvent(event);

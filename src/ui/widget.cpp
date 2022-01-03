@@ -7,7 +7,7 @@ Widget::Widget() {
 Widget::~Widget() {
 }
 
-bool Widget::OnEvent(SDL_Event const& event) {
+bool Widget::OnEvent(Event const& event) {
     for (auto&& child : m_children) {
         if (child->OnEvent(event)) {
             return true;
@@ -28,7 +28,20 @@ void Widget::Draw(SDL_Renderer& renderer) {
     }
 }
 
-void Widget::SetRect(WidgetRect const& rect) {
+void Widget::AddChild(WidgetRef widget) {
+    m_children.push_back(widget);
+    widget->SetParent(this);
+}
+
+void Widget::RemoveChild(WidgetRef widget) {
+    auto it = std::find(m_children.begin(), m_children.end(), widget);
+    if (std::end(m_children) != it) {
+        (*it)->SetParent(nullptr);
+        m_children.erase(it);
+    }
+}
+
+void Widget::SetScreenRect(WidgetRect const& rect) {
     m_screenRect = rect;
     for (auto&& child : m_children) {
         child->RecalculateBounds();
@@ -48,18 +61,5 @@ void Widget::RecalculateBounds() {
 
     for (auto&& child : m_children) {
         child->RecalculateBounds();
-    }
-}
-
-void Widget::AddChild(WidgetRef widget) {
-    m_children.push_back(widget);
-    widget->SetParent(this);
-}
-
-void Widget::RemoveChild(WidgetRef widget) {
-    auto it = std::find(m_children.begin(), m_children.end(), widget);
-    if (std::end(m_children) != it) {
-        (*it)->SetParent(nullptr);
-        m_children.erase(it);
     }
 }

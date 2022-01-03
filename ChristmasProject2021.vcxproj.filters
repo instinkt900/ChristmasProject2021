@@ -87,6 +87,12 @@
     <ClCompile Include="src\ui\widget_image.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="src\events\event.cpp">
+      <Filter>events</Filter>
+    </ClCompile>
+    <ClCompile Include="src\events\event_key.cpp">
+      <Filter>events</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -109,6 +115,9 @@
     </Filter>
     <Filter Include="ui">
       <UniqueIdentifier>{6d52be80-05f6-483a-b32f-115687c05ed8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="events">
+      <UniqueIdentifier>{59fbb686-131e-4ff6-91cf-3b490114322e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -189,6 +198,21 @@
     </ClInclude>
     <ClInclude Include="src\ui\widget_image.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\event.h">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\event_window_size.h">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\event_quit.h">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\event_key.h">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\event_device.h">
+      <Filter>events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

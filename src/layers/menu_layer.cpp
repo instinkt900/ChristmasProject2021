@@ -10,9 +10,13 @@ MenuLayer::MenuLayer(Game& game)
     auto imageWidget = std::make_shared<WidgetImage>();
     auto& imageBounds = imageWidget->GetLayoutBounds();
     imageBounds.topLeft.anchor.x = 0.5f;
+    imageBounds.topLeft.offset.x = -50;
     imageBounds.topLeft.anchor.y = 0.5f;
-    imageBounds.bottomRight.anchor.x = 1.0f;
-    imageBounds.bottomRight.anchor.y = 1.0f;
+    imageBounds.topLeft.offset.y = -50;
+    imageBounds.bottomRight.anchor.x = 0.5f;
+    imageBounds.bottomRight.offset.x = 50;
+    imageBounds.bottomRight.anchor.y = 0.5f;
+    imageBounds.bottomRight.offset.y = 50;
     imageWidget->SetImage(CreateTextureRef(game.GetRenderer(), "ship003.png"));
     m_rootWidget->AddChild(imageWidget);
 }
@@ -20,7 +24,7 @@ MenuLayer::MenuLayer(Game& game)
 MenuLayer::~MenuLayer() {
 }
 
-bool MenuLayer::OnEvent(SDL_Event const& event) {
+bool MenuLayer::OnEvent(Event const& event) {
     if (m_rootWidget->OnEvent(event)) {
         return true;
     }
@@ -41,5 +45,5 @@ void MenuLayer::OnAddedToStack(LayerStack* stack) {
     WidgetRect widgetRect;
     widgetRect.topLeft = { 0, 0 };
     widgetRect.bottomRight = { GetWidth(), GetHeight() };
-    m_rootWidget->SetRect(widgetRect);
+    m_rootWidget->SetScreenRect(widgetRect);
 }

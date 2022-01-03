@@ -12,7 +12,7 @@ public:
     std::unique_ptr<Layer> PopLayer();
     void RemoveLayer(Layer* layer);
 
-    void OnEvent(SDL_Event const& event);
+    void OnEvent(Event const& event);
     void Update(uint32_t ticks);
     void Draw(SDL_Renderer& renderer);
 

@@ -9,6 +9,7 @@
 #include "states/state_game.h"
 #include "states/state_post_game.h"
 #include "ecs/components/inspectors.h"
+#include "events/event_device.h"
 
 GameLayer::GameLayer(Game& game)
     : m_game(game)
@@ -31,9 +32,12 @@ GameLayer::GameLayer(Game& game)
 GameLayer::~GameLayer() {
 }
 
-bool GameLayer::OnEvent(SDL_Event const& event) {
-    if (event.type == SDL_RENDER_TARGETS_RESET || event.type == SDL_RENDER_DEVICE_RESET) {
-        FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), event.type);
+bool GameLayer::OnEvent(Event const& event) {
+    if (auto deviceEvent = event_cast<EventRenderDeviceReset>(event)) {
+        FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), SDL_RENDER_DEVICE_RESET);
+    }
+    if (auto targetEvent = event_cast<EventRenderTargetReset>(event)) {
+        FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), SDL_RENDER_TARGETS_RESET);
     }
     return m_stateMachine.OnEvent(event);
 }

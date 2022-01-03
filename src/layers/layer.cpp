@@ -8,7 +8,7 @@ Layer::Layer() {
 Layer::~Layer() {
 }
 
-bool Layer::OnEvent(SDL_Event const& event) {
+bool Layer::OnEvent(Event const& event) {
     return false;
 }
 

@@ -135,6 +135,8 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\ecs\systems\sprite_system.cpp" />
     <ClCompile Include="src\ecs\systems\velocity_system.cpp" />
     <ClCompile Include="src\ecs\systems\weapon_system.cpp" />
+    <ClCompile Include="src\events\event.cpp" />
+    <ClCompile Include="src\events\event_key.cpp" />
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\game_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -180,6 +182,11 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ecs\systems\sprite_system.h" />
     <ClInclude Include="src\ecs\systems\velocity_system.h" />
     <ClInclude Include="src\ecs\systems\weapon_system.h" />
+    <ClInclude Include="src\events\event.h" />
+    <ClInclude Include="src\events\event_key.h" />
+    <ClInclude Include="src\events\event_quit.h" />
+    <ClInclude Include="src\events\event_device.h" />
+    <ClInclude Include="src\events\event_window_size.h" />
     <ClInclude Include="src\game.h" />
     <ClInclude Include="src\game_pch.h" />
     <ClInclude Include="src\layers\background_layer.h" />

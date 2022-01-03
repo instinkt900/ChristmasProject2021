@@ -10,6 +10,7 @@
 #include "ecs/systems/animation_system.h"
 #include "ecs/systems/cleanup_system.h"
 #include "ecs/components/components.h"
+#include "events/event_key.h"
 
 StateGame::StateGame(StateMachine* stateMachine, GameLayer& gameLayer)
     : State(stateMachine)
@@ -24,42 +25,44 @@ void StateGame::OnEnter() {
     Mix_PlayChannel(-1, m_gameLayer.GetAudioFactory().GetStartSFX().get(), 0);
 }
 
-bool StateGame::OnEvent(SDL_Event const& event) {
-    if (event.type == SDL_KEYDOWN) {
-        switch (event.key.keysym.sym) {
-        case SDLK_w:
-            m_controlState[ControlKey::Up] = true;
-            return true;
-        case SDLK_s:
-            m_controlState[ControlKey::Down] = true;
-            return true;
-        case SDLK_a:
-            m_controlState[ControlKey::Left] = true;
-            return true;
-        case SDLK_d:
-            m_controlState[ControlKey::Right] = true;
-            return true;
-        case SDLK_SPACE:
-            m_controlState[ControlKey::Fire] = true;
-            return true;
-        }
-    } else if (event.type == SDL_KEYUP) {
-        switch (event.key.keysym.sym) {
-        case SDLK_w:
-            m_controlState[ControlKey::Up] = false;
-            return true;
-        case SDLK_s:
-            m_controlState[ControlKey::Down] = false;
-            return true;
-        case SDLK_a:
-            m_controlState[ControlKey::Left] = false;
-            return true;
-        case SDLK_d:
-            m_controlState[ControlKey::Right] = false;
-            return true;
-        case SDLK_SPACE:
-            m_controlState[ControlKey::Fire] = false;
-            return true;
+bool StateGame::OnEvent(Event const& event) {
+    if (auto keyEvent = event_cast<EventKey>(event)) {
+        if (keyEvent->GetAction() == KeyAction::Down) {
+            switch (keyEvent->GetKey()) {
+            case Key::W:
+                m_controlState[ControlKey::Up] = true;
+                return true;
+            case Key::S:
+                m_controlState[ControlKey::Down] = true;
+                return true;
+            case Key::A:
+                m_controlState[ControlKey::Left] = true;
+                return true;
+            case Key::D:
+                m_controlState[ControlKey::Right] = true;
+                return true;
+            case Key::Space:
+                m_controlState[ControlKey::Fire] = true;
+                return true;
+            }
+        } else if (keyEvent->GetAction() == KeyAction::Up) {
+            switch (keyEvent->GetKey()) {
+            case Key::W:
+                m_controlState[ControlKey::Up] = false;
+                return true;
+            case Key::S:
+                m_controlState[ControlKey::Down] = false;
+                return true;
+            case Key::A:
+                m_controlState[ControlKey::Left] = false;
+                return true;
+            case Key::D:
+                m_controlState[ControlKey::Right] = false;
+                return true;
+            case Key::Space:
+                m_controlState[ControlKey::Fire] = false;
+                return true;
+            }
         }
     }
     return false;

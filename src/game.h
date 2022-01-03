@@ -20,7 +20,7 @@ public:
 
 protected:
     bool Initialise();
-    void OnEvent(SDL_Event const& event);
+    void OnEvent(Event const& event);
     void Update();
     void Draw();
     void Shutdown();

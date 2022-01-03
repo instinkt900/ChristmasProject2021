@@ -4,6 +4,7 @@
 #include "layers/game_layer.h"
 #include "ecs/components/components.h"
 #include "ecs/systems/animation_system.h"
+#include "events/event_key.h"
 
 StatePostGame::StatePostGame(StateMachine* stateMachine, GameLayer& gameLayer)
     : State(stateMachine)
@@ -33,21 +34,18 @@ void StatePostGame::OnEnter() {
     }
 }
 
-bool StatePostGame::OnEvent(SDL_Event const& event) {
-    if (event.type == SDL_KEYDOWN) {
-        switch (event.key.keysym.sym) {
-        case SDLK_SPACE:
-            m_exitPending = true;
-            return true;
-        }
-    }
-    if (event.type == SDL_KEYUP) {
-        switch (event.key.keysym.sym) {
-        case SDLK_SPACE:
-            if (m_exitPending) {
-                m_exitPending = false;
-                m_stateMachine->StateTransition<StatePreGame>();
+bool StatePostGame::OnEvent(Event const& event) {
+    if (auto keyEvent = event_cast<EventKey>(event)) {
+        if (keyEvent->GetKey() == Key::Space) {
+            if (keyEvent->GetAction() == KeyAction::Down) {
+                m_exitPending = true;
                 return true;
+            } else if (keyEvent->GetAction() == KeyAction::Up) {
+                if (m_exitPending) {
+                    m_exitPending = false;
+                    m_stateMachine->StateTransition<StatePreGame>();
+                    return true;
+                }
             }
         }
     }

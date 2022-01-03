@@ -32,7 +32,7 @@ void LayerStack::RemoveLayer(Layer* layer) {
     }
 }
 
-void LayerStack::OnEvent(SDL_Event const& event) {
+void LayerStack::OnEvent(Event const& event) {
     for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++it) {
         if ((*it)->OnEvent(event)) {
             break;

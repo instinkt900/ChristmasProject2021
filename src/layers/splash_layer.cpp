@@ -5,6 +5,7 @@
 #include "audio_factory.h"
 #include "game.h"
 #include "menu_layer.h"
+#include "events/event_key.h"
 
 SplashLayer::SplashLayer(Game& game)
     : m_game(game) {
@@ -32,20 +33,20 @@ SplashLayer::SplashLayer(Game& game)
 SplashLayer::~SplashLayer() {
 }
 
-bool SplashLayer::OnEvent(SDL_Event const& event) {
-    if (event.type == SDL_KEYUP) {
-        switch (event.key.keysym.sym) {
-        case SDLK_SPACE: {
-            // we will delete 'this' here so we need to keep everything local
-            auto layerStack = m_layerStack;
-            auto loadingLayer = std::make_unique<LoadingLayer>(m_game);
-            layerStack->PopLayer(); // removes 'this'
-            layerStack->PushLayer(std::move(loadingLayer));
-            //auto menuLayer = std::make_unique<MenuLayer>(m_game);
-            //layerStack->PopLayer(); // removes 'this'
-            //layerStack->PushLayer(std::move(menuLayer));
-            return true;
-        }
+bool SplashLayer::OnEvent(Event const& event) {
+    if (auto keyEvent = event_cast<EventKey>(event)) {
+        if (keyEvent->GetAction() == KeyAction::Up) {
+            if (keyEvent->GetKey() == Key::Space) {
+                // we will delete 'this' here so we need to keep everything local
+                auto layerStack = m_layerStack;
+                //auto loadingLayer = std::make_unique<LoadingLayer>(m_game);
+                //layerStack->PopLayer(); // removes 'this'
+                //layerStack->PushLayer(std::move(loadingLayer));
+                auto menuLayer = std::make_unique<MenuLayer>(m_game);
+                layerStack->PopLayer(); // removes 'this'
+                layerStack->PushLayer(std::move(menuLayer));
+                return true;
+            }
         }
     }
     return false;

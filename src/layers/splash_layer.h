@@ -10,7 +10,7 @@ public:
     SplashLayer(Game& game);
     virtual ~SplashLayer();
 
-    bool OnEvent(SDL_Event const& event) override;
+    bool OnEvent(Event const& event) override;
     void Update(uint32_t ticks) override;
     void Draw(SDL_Renderer& renderer) override;
 
