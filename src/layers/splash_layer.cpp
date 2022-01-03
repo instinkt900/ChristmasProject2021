@@ -6,6 +6,7 @@
 #include "game.h"
 #include "menu_layer.h"
 #include "events/event_key.h"
+#include "events/event_dispatch.h"
 
 SplashLayer::SplashLayer(Game& game)
     : m_game(game) {
@@ -34,22 +35,9 @@ SplashLayer::~SplashLayer() {
 }
 
 bool SplashLayer::OnEvent(Event const& event) {
-    if (auto keyEvent = event_cast<EventKey>(event)) {
-        if (keyEvent->GetAction() == KeyAction::Up) {
-            if (keyEvent->GetKey() == Key::Space) {
-                // we will delete 'this' here so we need to keep everything local
-                auto layerStack = m_layerStack;
-                //auto loadingLayer = std::make_unique<LoadingLayer>(m_game);
-                //layerStack->PopLayer(); // removes 'this'
-                //layerStack->PushLayer(std::move(loadingLayer));
-                auto menuLayer = std::make_unique<MenuLayer>(m_game);
-                layerStack->PopLayer(); // removes 'this'
-                layerStack->PushLayer(std::move(menuLayer));
-                return true;
-            }
-        }
-    }
-    return false;
+    EventDispatch dispatch(event);
+    dispatch.Dispatch(this, &SplashLayer::OnKeyEvent);
+    return dispatch.GetHandled();
 }
 
 void SplashLayer::Update(uint32_t ticks) {
@@ -77,4 +65,21 @@ void SplashLayer::Draw(SDL_Renderer& renderer) {
 
     SDL_Rect destRect2{ text2X, text2Y, text2Width, text2Height };
     SDL_RenderCopy(&renderer, m_promptText.get(), nullptr, &destRect2);
+}
+
+bool SplashLayer::OnKeyEvent(EventKey const& event) {
+    if (event.GetAction() == KeyAction::Up) {
+        if (event.GetKey() == Key::Space) {
+            // we will delete 'this' here so we need to keep everything local
+            auto layerStack = m_layerStack;
+            //auto loadingLayer = std::make_unique<LoadingLayer>(m_game);
+            //layerStack->PopLayer(); // removes 'this'
+            //layerStack->PushLayer(std::move(loadingLayer));
+            auto menuLayer = std::make_unique<MenuLayer>(m_game);
+            layerStack->PopLayer(); // removes 'this'
+            layerStack->PushLayer(std::move(menuLayer));
+            return true;
+        }
+    }
+    return false;
 }

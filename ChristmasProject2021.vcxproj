@@ -183,7 +183,9 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ecs\systems\velocity_system.h" />
     <ClInclude Include="src\ecs\systems\weapon_system.h" />
     <ClInclude Include="src\events\event.h" />
+    <ClInclude Include="src\events\event_dispatch.h" />
     <ClInclude Include="src\events\event_key.h" />
+    <ClInclude Include="src\events\event_listener.h" />
     <ClInclude Include="src\events\event_quit.h" />
     <ClInclude Include="src\events\event_device.h" />
     <ClInclude Include="src\events\event_window_size.h" />

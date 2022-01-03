@@ -1,14 +1,16 @@
 #pragma once
 
-class LayerStack;
-struct RenderContext;
+#include "events/event_listener.h"
 
-class Layer {
+class LayerStack;
+
+class Layer : public EventListener {
 public:
     Layer();
     virtual ~Layer();
 
-    virtual bool OnEvent(Event const& event);
+    bool OnEvent(Event const& event) override;
+
     virtual void Update(uint32_t ticks);
     virtual void Draw(SDL_Renderer& renderer);
 

@@ -32,12 +32,13 @@ void LayerStack::RemoveLayer(Layer* layer) {
     }
 }
 
-void LayerStack::OnEvent(Event const& event) {
+bool LayerStack::OnEvent(Event const& event) {
     for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++it) {
         if ((*it)->OnEvent(event)) {
-            break;
+            return true;
         }
     }
+    return false;
 }
 
 void LayerStack::Update(uint32_t ticks) {

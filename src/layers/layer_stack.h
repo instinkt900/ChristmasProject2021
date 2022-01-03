@@ -1,9 +1,10 @@
 #pragma once
 
-class Layer;
-struct RenderContext;
+#include "events/event_listener.h"
 
-class LayerStack {
+class Layer;
+
+class LayerStack : public EventListener {
 public:
     LayerStack(int width, int height);
     ~LayerStack();
@@ -12,7 +13,7 @@ public:
     std::unique_ptr<Layer> PopLayer();
     void RemoveLayer(Layer* layer);
 
-    void OnEvent(Event const& event);
+    bool OnEvent(Event const& event) override;
     void Update(uint32_t ticks);
     void Draw(SDL_Renderer& renderer);
 

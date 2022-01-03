@@ -4,6 +4,7 @@
 
 class AudioFactory;
 class Game;
+class EventKey;
 
 class SplashLayer : public Layer {
 public:
@@ -24,4 +25,6 @@ private:
 
     IntVec2 m_titleTextDim;
     IntVec2 m_promptTextDim;
+
+    bool OnKeyEvent(EventKey const& event);
 };
