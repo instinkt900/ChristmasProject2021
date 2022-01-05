@@ -168,6 +168,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\states\state_pre_game.cpp" />
     <ClCompile Include="src\tile_map.cpp" />
     <ClCompile Include="src\ui\widget.cpp" />
+    <ClCompile Include="src\ui\widget_button.cpp" />
     <ClCompile Include="src\ui\widget_image.cpp" />
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
@@ -186,9 +187,11 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\events\event_dispatch.h" />
     <ClInclude Include="src\events\event_key.h" />
     <ClInclude Include="src\events\event_listener.h" />
+    <ClInclude Include="src\events\event_mouse.h" />
     <ClInclude Include="src\events\event_quit.h" />
     <ClInclude Include="src\events\event_device.h" />
     <ClInclude Include="src\events\event_window_size.h" />
+    <ClInclude Include="src\events\widget_events.h" />
     <ClInclude Include="src\game.h" />
     <ClInclude Include="src\game_pch.h" />
     <ClInclude Include="src\layers\background_layer.h" />
@@ -209,6 +212,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\states\state_pre_game.h" />
     <ClInclude Include="src\tile_map.h" />
     <ClInclude Include="src\ui\widget.h" />
+    <ClInclude Include="src\ui\widget_button.h" />
     <ClInclude Include="src\ui\widget_image.h" />
     <ClInclude Include="src\utils.h" />
   </ItemGroup>

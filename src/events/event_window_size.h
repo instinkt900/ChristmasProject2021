@@ -10,7 +10,7 @@ public:
         , m_height(height) {}
     virtual ~EventWindowSize() {}
 
-    static EventType GetStaticType() { return EventType::WindowSize; }
+    static int GetStaticType() { return EVENTTYPE_WINDOWSIZE; }
 
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }

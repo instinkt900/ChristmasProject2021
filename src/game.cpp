@@ -35,6 +35,9 @@ int Game::Run() {
             if (ImGui::GetIO().WantCaptureKeyboard && (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)) {
                 continue;
             }
+            if (ImGui::GetIO().WantCaptureMouse && (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)) {
+                continue;
+            }
             if (auto const translatedEvent = Event::FromSDL(event)) {
                 OnEvent(*translatedEvent);
             }

@@ -8,7 +8,7 @@ public:
         : Event(GetStaticType()) {}
     virtual ~EventRenderDeviceReset() {}
 
-    static EventType GetStaticType() { return EventType::RenderDeviceReset; }
+    static int GetStaticType() { return EVENTTYPE_RENDERDEVICERESET; }
 };
 
 class EventRenderTargetReset : public Event {
@@ -17,5 +17,5 @@ public:
         : Event(GetStaticType()) {}
     virtual ~EventRenderTargetReset() {}
 
-    static EventType GetStaticType() { return EventType::RenderTargetReset; }
+    static int GetStaticType() { return EVENTTYPE_RENDERTARGETRESET; }
 };

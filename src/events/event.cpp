@@ -4,6 +4,7 @@
 #include "event_quit.h"
 #include "event_key.h"
 #include "event_device.h"
+#include "event_mouse.h"
 
 std::unique_ptr<Event> Event::FromSDL(SDL_Event const& event) {
     switch (event.type) {
@@ -30,6 +31,12 @@ std::unique_ptr<Event> Event::FromSDL(SDL_Event const& event) {
     }
     case SDL_RENDER_TARGETS_RESET: {
         return std::make_unique<EventRenderTargetReset>();
+    }
+    case SDL_MOUSEBUTTONDOWN: {
+        return std::make_unique<EventMouseDown>(FromSDLMouse(event.button.button), IntVec2{ event.button.x, event.button.y });
+    }
+    case SDL_MOUSEBUTTONUP: {
+        return std::make_unique<EventMouseUp>(FromSDLMouse(event.button.button), IntVec2{ event.button.x, event.button.y });
     }
     }
     return nullptr;

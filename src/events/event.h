@@ -1,25 +1,28 @@
 #pragma once
 
-enum class EventType {
-    RenderDeviceReset,
-    RenderTargetReset,
-    WindowSize,
-    Quit,
-    Key,
+enum EventType : int {
+    EVENTTYPE_RENDERDEVICERESET,
+    EVENTTYPE_RENDERTARGETRESET,
+    EVENTTYPE_WINDOWSIZE,
+    EVENTTYPE_QUIT,
+    EVENTTYPE_KEY,
+    EVENTTYPE_WIDGET_RESIZE,
+    EVENTTYPE_MOUSE_DOWN,
+    EVENTTYPE_MOUSE_UP,
 };
 
 class Event {
 public:
-    Event(EventType type)
+    Event(int type)
         : m_type(type) {}
     virtual ~Event() {}
 
-    EventType GetType() const { return m_type; }
+    int GetType() const { return m_type; }
 
     static std::unique_ptr<Event> FromSDL(SDL_Event const& event);
 
 protected:
-    EventType m_type;
+    int m_type;
 };
 
 template<typename T>

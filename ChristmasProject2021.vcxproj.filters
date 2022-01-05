@@ -93,6 +93,9 @@
     <ClCompile Include="src\events\event_key.cpp">
       <Filter>events</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\widget_button.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -219,6 +222,15 @@
     </ClInclude>
     <ClInclude Include="src\events\event_listener.h">
       <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\widget_events.h">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\event_mouse.h">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\widget_button.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

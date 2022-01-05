@@ -146,7 +146,7 @@ public:
         , m_key(key) {}
     virtual ~EventKey() {}
 
-    static EventType GetStaticType() { return EventType::Key; }
+    static int GetStaticType() { return EVENTTYPE_KEY; }
 
     KeyAction GetAction() const { return m_action; }
     Key GetKey() const { return m_key; }

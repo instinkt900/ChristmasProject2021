@@ -1,8 +1,10 @@
 #pragma once
 
+#include "events/event_listener.h"
+
 class State;
 
-class StateMachine {
+class StateMachine : public EventListener {
 public:
     StateMachine();
     ~StateMachine();

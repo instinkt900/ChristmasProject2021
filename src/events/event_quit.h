@@ -8,7 +8,5 @@ public:
         : Event(GetStaticType()) {}
     virtual ~EventQuit() {}
 
-    static EventType GetStaticType() {
-        return EventType::Quit;
-    }
+    static int GetStaticType() { return EVENTTYPE_QUIT; }
 };
