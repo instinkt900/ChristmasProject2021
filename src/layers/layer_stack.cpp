@@ -52,3 +52,12 @@ void LayerStack::Draw(SDL_Renderer& renderer) {
         layer->Draw(renderer);
     }
 }
+
+void LayerStack::DebugDraw() {
+    if (ImGui::Begin("Layer Stack")) {
+        for (auto&& layer : m_layers) {
+            layer->DebugDraw();
+        }
+    }
+    ImGui::End();
+}

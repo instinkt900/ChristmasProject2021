@@ -5,6 +5,7 @@
 #include "events/event_window_size.h"
 #include "events/event_key.h"
 #include "events/event_quit.h"
+#include "events/event_mouse.h"
 
 Game::Game(int renderWidth, int renderHeight, std::string const& configPath)
     : m_renderWidth(renderWidth)
@@ -35,9 +36,9 @@ int Game::Run() {
             if (ImGui::GetIO().WantCaptureKeyboard && (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)) {
                 continue;
             }
-            if (ImGui::GetIO().WantCaptureMouse && (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)) {
-                continue;
-            }
+            //if (ImGui::GetIO().WantCaptureMouse && (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)) {
+            //    continue;
+            //}
             if (auto const translatedEvent = Event::FromSDL(event)) {
                 OnEvent(*translatedEvent);
             }
@@ -108,10 +109,6 @@ bool Game::Initialise() {
     ImGui_ImplSDL2_InitForSDLRenderer(m_window);
     ImGui_ImplSDLRenderer_Init(m_renderer);
 
-    ImGui_ImplSDLRenderer_NewFrame();
-    ImGui_ImplSDL2_NewFrame(m_window);
-    ImGui::NewFrame();
-
     int const imgFlags = IMG_INIT_JPG | IMG_INIT_PNG;
     if (imgFlags != IMG_Init(imgFlags)) {
         return false;
@@ -159,6 +156,26 @@ void Game::OnEvent(Event const& event) {
             }
         }
     }
+
+    if (m_editorMode) {
+        std::shared_ptr<Event> translatedEvent;
+        if (auto mouseEvent = event_cast<EventMouseDown>(event)) {
+            IntVec2 translatedPosition = mouseEvent->GetPosition();
+            translatedPosition.x -= m_gameWindowPos.x;
+            translatedPosition.y -= m_gameWindowPos.y;
+            translatedEvent = std::make_shared<EventMouseDown>(mouseEvent->GetButton(), translatedPosition);
+        } else if (auto mouseEvent = event_cast<EventMouseUp>(event)) {
+            IntVec2 translatedPosition = mouseEvent->GetPosition();
+            translatedPosition.x -= m_gameWindowPos.x;
+            translatedPosition.y -= m_gameWindowPos.y;
+            translatedEvent = std::make_shared<EventMouseUp>(mouseEvent->GetButton(), translatedPosition);
+        }
+        if (translatedEvent) {
+            m_layerStack->OnEvent(*translatedEvent);
+            return;
+        }
+    }
+
     m_layerStack->OnEvent(event);
 }
 
@@ -175,6 +192,10 @@ void Game::Update() {
 }
 
 void Game::Draw() {
+    ImGui_ImplSDLRenderer_NewFrame();
+    ImGui_ImplSDL2_NewFrame(m_window);
+    ImGui::NewFrame();
+
     SDL_RenderSetLogicalSize(m_renderer, m_renderWidth, m_renderHeight);
 
     if (m_editorMode) {
@@ -192,6 +213,10 @@ void Game::Draw() {
         SDL_RenderSetLogicalSize(m_renderer, m_editorWindowWidth, m_editorWindowHeight);
 
         if (ImGui::Begin("Game")) {
+            auto windowPos = ImGui::GetWindowPos();
+            auto windowRegionStart = ImGui::GetWindowContentRegionMin();
+            m_gameWindowPos.x = static_cast<int>(windowPos.x + windowRegionStart.x);
+            m_gameWindowPos.y = static_cast<int>(windowPos.y + windowRegionStart.y);
             ImGui::Image(m_gameSurface.get(), ImVec2(static_cast<float>(m_renderWidth), static_cast<float>(m_renderHeight)));
         }
         ImGui::End();
@@ -206,15 +231,13 @@ void Game::Draw() {
             }
         }
         ImGui::End();
+
+        m_layerStack->DebugDraw();
     }
 
     ImGui::Render();
     ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(m_renderer);
-
-    ImGui_ImplSDLRenderer_NewFrame();
-    ImGui_ImplSDL2_NewFrame(m_window);
-    ImGui::NewFrame();
 }
 
 void Game::Shutdown() {

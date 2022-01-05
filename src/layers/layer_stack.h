@@ -16,6 +16,7 @@ public:
     bool OnEvent(Event const& event) override;
     void Update(uint32_t ticks);
     void Draw(SDL_Renderer& renderer);
+    void DebugDraw();
 
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }

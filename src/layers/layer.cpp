@@ -18,6 +18,10 @@ void Layer::Update(uint32_t ticks) {
 void Layer::Draw(SDL_Renderer& renderer) {
 }
 
+void Layer::DebugDraw() {
+    ImGui::CollapsingHeader("Empty Layer");
+}
+
 void Layer::OnAddedToStack(LayerStack* layerStack) {
     m_layerStack = layerStack;
 }

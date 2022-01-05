@@ -13,6 +13,7 @@ public:
 
     virtual void Update(uint32_t ticks);
     virtual void Draw(SDL_Renderer& renderer);
+    virtual void DebugDraw();
 
     virtual void OnAddedToStack(LayerStack* layerStack);
     virtual void OnRemovedFromStack();

@@ -2,6 +2,7 @@
 #include "widget.h"
 #include "events/event_dispatch.h"
 #include "events/widget_events.h"
+#include "debug/inspectors.h"
 
 Widget::Widget() {
 }
@@ -30,6 +31,11 @@ void Widget::Draw(SDL_Renderer& renderer) {
     }
     for (auto&& child : m_children) {
         child->Draw(renderer);
+    }
+    if (m_showRect) {
+        SDL_Rect rect{ m_screenRect.topLeft.x, m_screenRect.topLeft.y, m_screenRect.bottomRight.x - m_screenRect.topLeft.x, m_screenRect.bottomRight.y - m_screenRect.topLeft.y };
+        SDL_SetRenderDrawColor(&renderer, 0xFF, 0x00, 0x00, 0xFF);
+        SDL_RenderDrawRect(&renderer, &rect);
     }
 }
 
@@ -86,4 +92,22 @@ IntVec2 Widget::TranslatePosition(IntVec2 const& point) const {
     translated.x -= m_screenRect.topLeft.x;
     translated.y -= m_screenRect.topLeft.y;
     return translated;
+}
+
+void Widget::DebugDraw() {
+    auto const label = fmt::format("Widget({})", m_id);
+    if (ImGui::TreeNode(label.c_str())) {
+        ImGui::LabelText("parent", "%d", (void*)m_parent);
+        ImGuiInspectMember("visible", m_visible);
+        ImGuiInspectMember("show_rect", m_showRect);
+        ImGuiInspectMember("bounds", m_layoutBounds);
+        ImGuiInspectMember("screen_rect", m_screenRect);
+        if (ImGui::Button("Recalculate")) {
+            RecalculateBounds(true);
+        }
+        for (auto&& child : m_children) {
+            child->DebugDraw();
+        }
+        ImGui::TreePop();
+    }
 }

@@ -122,6 +122,9 @@
     <Filter Include="events">
       <UniqueIdentifier>{59fbb686-131e-4ff6-91cf-3b490114322e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="debug">
+      <UniqueIdentifier>{9d75a4f3-92ef-4455-bfe6-80e139dd0657}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ecs\components\components.h">
@@ -187,9 +190,6 @@
     <ClInclude Include="src\layers\loading_layer.h">
       <Filter>layers</Filter>
     </ClInclude>
-    <ClInclude Include="src\ecs\components\inspectors.h">
-      <Filter>ecs\components</Filter>
-    </ClInclude>
     <ClInclude Include="src\layers\menu_layer.h">
       <Filter>layers</Filter>
     </ClInclude>
@@ -231,6 +231,9 @@
     </ClInclude>
     <ClInclude Include="src\ui\widget_button.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\debug\inspectors.h">
+      <Filter>debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

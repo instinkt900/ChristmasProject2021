@@ -8,7 +8,7 @@
 #include "states/state_pre_game.h"
 #include "states/state_game.h"
 #include "states/state_post_game.h"
-#include "ecs/components/inspectors.h"
+#include "debug/inspectors.h"
 #include "events/event_device.h"
 #include "events/event_dispatch.h"
 

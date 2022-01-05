@@ -46,6 +46,7 @@ private:
     SDL_Renderer* m_renderer = nullptr;
     AudioFactory m_audioFactory;
     TextureRef m_gameSurface;
+    IntVec2 m_gameWindowPos;
 
     std::unique_ptr<LayerStack> m_layerStack;
 };

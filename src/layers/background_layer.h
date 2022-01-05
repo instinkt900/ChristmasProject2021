@@ -8,6 +8,7 @@ public:
     virtual ~BackgroundLayer();
 
     void Draw(SDL_Renderer& renderer) override;
+    void DebugDraw() override;
 
 private:
     TextureRef m_backgroundTexture;

@@ -174,8 +174,8 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\audio_factory.h" />
+    <ClInclude Include="src\debug\inspectors.h" />
     <ClInclude Include="src\ecs\components\components.h" />
-    <ClInclude Include="src\ecs\components\inspectors.h" />
     <ClInclude Include="src\ecs\systems\animation_system.h" />
     <ClInclude Include="src\ecs\systems\cleanup_system.h" />
     <ClInclude Include="src\ecs\systems\enemy_system.h" />

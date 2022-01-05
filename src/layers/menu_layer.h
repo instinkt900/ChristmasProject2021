@@ -13,6 +13,7 @@ public:
     bool OnEvent(Event const& event) override;
     void Update(uint32_t ticks) override;
     void Draw(SDL_Renderer& renderer) override;
+    void DebugDraw() override;
 
     void OnAddedToStack(LayerStack* stack) override;
 

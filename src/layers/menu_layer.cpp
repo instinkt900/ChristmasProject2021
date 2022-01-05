@@ -53,6 +53,12 @@ void MenuLayer::Draw(SDL_Renderer& renderer) {
     m_rootWidget->Draw(renderer);
 }
 
+void MenuLayer::DebugDraw() {
+    if (ImGui::CollapsingHeader("MenuLayer")) {
+        m_rootWidget->DebugDraw();
+    }
+}
+
 void MenuLayer::OnAddedToStack(LayerStack* stack) {
     Layer::OnAddedToStack(stack);
 

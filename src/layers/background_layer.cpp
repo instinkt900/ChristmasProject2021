@@ -11,3 +11,9 @@ BackgroundLayer::~BackgroundLayer() {
 void BackgroundLayer::Draw(SDL_Renderer& renderer) {
     SDL_RenderCopy(&renderer, m_backgroundTexture.get(), nullptr, nullptr);
 }
+
+void BackgroundLayer::DebugDraw() {
+    if (ImGui::CollapsingHeader("BackgroundLayer")) {
+        ImGui::Image(m_backgroundTexture.get(), ImVec2(100, 100));
+    }
+}
