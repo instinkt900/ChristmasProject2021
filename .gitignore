@@ -1,6 +1,6 @@
-Debug
-x64
-.vs
+/Debug
+/x64
+/.vs
 *.user
 imgui.ini
 data.bin
