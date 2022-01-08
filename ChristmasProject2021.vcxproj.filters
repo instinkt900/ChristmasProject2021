@@ -96,6 +96,9 @@
     <ClCompile Include="src\ui\widget_button.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\widget_animation.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -234,6 +237,9 @@
     </ClInclude>
     <ClInclude Include="src\debug\inspectors.h">
       <Filter>debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\widget_animation.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

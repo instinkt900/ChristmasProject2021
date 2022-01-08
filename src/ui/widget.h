@@ -95,4 +95,6 @@ protected:
 
     WidgetBounds m_layoutBounds;
     WidgetRect m_screenRect;
+
+    friend class WidgetAnimation;
 };
