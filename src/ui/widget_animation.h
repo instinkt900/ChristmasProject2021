@@ -7,10 +7,41 @@ enum class WidgetAnimationKeyframeType {
     Linear,
 };
 
+enum class WidgetAnimationLoopType {
+    Stop,
+    Reset,
+    Loop,
+};
+
+enum class WidgetAnimationTrackType {
+    AnchorLeft,
+    AnchorRight,
+    AnchorTop,
+    AnchorBottom,
+    OffsetTop,
+    OffsetBottom,
+    OffsetLeft,
+    OffsetRight,
+};
+
 struct WidgetAnimationKeyframe {
     float m_time;
     float m_value;
     WidgetAnimationKeyframeType m_type;
+};
+
+struct WidgetAnimationTrackDesc {
+    std::vector<WidgetAnimationKeyframe> keyframes;
+};
+
+struct WidgetAnimationDesc {
+    float startTime;
+    float endTime;
+};
+
+struct WidgetAnimationTracksDesc {
+    std ::map<WidgetAnimationTrackType, std::vector<WidgetAnimationTrackDesc>> tracks;
+    std::map<std::string, WidgetAnimationDesc> animations;
 };
 
 class WidgetAnimationTrack {
@@ -24,24 +55,15 @@ private:
     std::vector<WidgetAnimationKeyframe> m_keyframes;
 };
 
-enum class WidgetAnimationLoopType {
-    Stop,
-    Reset,
-    Loop,
-};
-
-class WidgetAnimation {
+class WidgetTracks {
 public:
-    WidgetAnimation(Widget& parentWidget);
+    WidgetTracks(WidgetAnimationTracksDesc const& animationDesc, Widget& parentWidget);
 
-    void Update(float deltaTime);
+    void SetTime(float time) { m_currentTime = time; }
+    float GetTime() const { return m_currentTime; }
 
 private:
-    bool m_playing = false;
     float m_currentTime = 0;
-    float m_maxTime = 0;
-    WidgetAnimationLoopType m_loopType = WidgetAnimationLoopType::Stop;
-    std::vector<WidgetAnimationTrack> m_tracks;
-
-    void OnEnd();
+    std::vector<WidgetAnimationTrack> tracks;
+    float& GetValueRef(Widget& parentWidget, WidgetAnimationTrackType type) const;
 };

@@ -4,7 +4,7 @@
 
 struct WidgetVertex {
     FloatVec2 anchor;
-    IntVec2 offset;
+    FloatVec2 offset;
 };
 
 struct WidgetBounds {
@@ -21,22 +21,22 @@ struct WidgetRect {
 inline void ImGuiInspectMember(char const* label, WidgetBounds& widgetBounds) {
     ImGui::PushItemWidth(50);
     ImGui::PushID(&widgetBounds.topLeft.offset.y);
-    ImGui::InputInt("", &widgetBounds.topLeft.offset.y, 0);
+    ImGui::InputFloat("", &widgetBounds.topLeft.offset.y, 0, 0, "%.0f");
     ImGui::PopID();
     ImGui::SameLine();
     ImGui::InputFloat("Top", &widgetBounds.topLeft.anchor.y, 0, 0, "%.2f");
     ImGui::PushID(&widgetBounds.bottomRight.offset.y);
-    ImGui::InputInt("", &widgetBounds.bottomRight.offset.y, 0);
+    ImGui::InputFloat("", &widgetBounds.bottomRight.offset.y, 0, 0, "%.0f");
     ImGui::PopID();
     ImGui::SameLine();
     ImGui::InputFloat("Bottom", &widgetBounds.bottomRight.anchor.y, 0, 0, "%.2f");
     ImGui::PushID(&widgetBounds.topLeft.offset.x);
-    ImGui::InputInt("", &widgetBounds.topLeft.offset.x, 0);
+    ImGui::InputFloat("", &widgetBounds.topLeft.offset.x, 0, 0, "%.0f");
     ImGui::PopID();
     ImGui::SameLine();
     ImGui::InputFloat("Left", &widgetBounds.topLeft.anchor.x, 0, 0, "%.2f");
     ImGui::PushID(&widgetBounds.bottomRight.offset.x);
-    ImGui::InputInt("", &widgetBounds.bottomRight.offset.x, 0);
+    ImGui::InputFloat("", &widgetBounds.bottomRight.offset.x, 0, 0, "%.0f");
     ImGui::PopID();
     ImGui::SameLine();
     ImGui::InputFloat("Right", &widgetBounds.bottomRight.anchor.x, 0, 0, "%.2f");
