@@ -10,18 +10,18 @@ void WidgetAnimationTrack::SetTime(float time) {
     // should be able to cache these iterators
     auto firstKeyframeIt = std::begin(m_keyframes);
     auto lastKeyframeIt = std::begin(m_keyframes);
-    while (lastKeyframeIt->m_time < time) {
+    while (lastKeyframeIt->time < time) {
         firstKeyframeIt = lastKeyframeIt;
         ++lastKeyframeIt;
     }
 
-    float const t = time - firstKeyframeIt->m_time;
-    switch (firstKeyframeIt->m_type) {
+    float const t = time - firstKeyframeIt->time;
+    switch (firstKeyframeIt->type) {
     case WidgetAnimationKeyframeType::Step:
-        m_value = firstKeyframeIt->m_value;
+        m_value = firstKeyframeIt->value;
         break;
     case WidgetAnimationKeyframeType::Linear:
-        m_value = firstKeyframeIt->m_value + (lastKeyframeIt->m_value - firstKeyframeIt->m_value) * t;
+        m_value = firstKeyframeIt->value + (lastKeyframeIt->value - firstKeyframeIt->value) * t;
         break;
     }
 }
@@ -55,12 +55,12 @@ void WidgetAnimation::Update(float deltaTime) {
     m_tracks.SetTime(m_currentTime);
 }
 
-WidgetTracks::WidgetTracks(WidgetAnimationTracksDesc const& tracksDesc, std::vector<WidgetAnimationDesc> animationList, Widget& parentWidget) {
+WidgetTracks::WidgetTracks(WidgetAnimationTracksDesc const& tracksDesc, Widget& parentWidget) {
     for (auto&& trackDesc : tracksDesc.tracks) {
         m_tracks.push_back(WidgetAnimationTrack(GetValueRef(parentWidget, trackDesc.first)));
     }
-    for (auto&& animDesc : animationList) {
-        m_animations.insert(std::make_pair(animDesc.name, WidgetAnimation(*this, animDesc)));
+    for (auto&& [animName, animDesc] : tracksDesc.animations) {
+        m_animations.insert(std::make_pair(animName, WidgetAnimation(*this, animDesc)));
     }
 }
 

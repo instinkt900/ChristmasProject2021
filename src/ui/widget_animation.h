@@ -25,14 +25,38 @@ enum class WidgetAnimationTrackType {
 };
 
 struct WidgetAnimationKeyframe {
-    float m_time;
-    float m_value;
-    WidgetAnimationKeyframeType m_type;
+    float time;
+    float value;
+    WidgetAnimationKeyframeType type;
 };
+
+inline void to_json(nlohmann::json& j, WidgetAnimationKeyframe const& keyframe) {
+    j = nlohmann::json{
+        { "time", keyframe.time },
+        { "value", keyframe.value },
+        { "type", keyframe.type }
+    };
+}
+
+inline void from_json(nlohmann::json const& j, WidgetAnimationKeyframe& keyframe) {
+    j.at("time").get_to(keyframe.time);
+    j.at("value").get_to(keyframe.value);
+    j.at("type").get_to(keyframe.type);
+}
 
 struct WidgetAnimationTrackDesc {
     std::vector<WidgetAnimationKeyframe> keyframes;
 };
+
+inline void to_json(nlohmann::json& j, WidgetAnimationTrackDesc const& track) {
+    j = nlohmann::json{
+        { "keyframes", track.keyframes }
+    };
+}
+
+inline void from_json(nlohmann::json const& j, WidgetAnimationTrackDesc& track) {
+    j.at("keyframes").get_to(track.keyframes);
+}
 
 struct WidgetAnimationDesc {
     std::string name;
@@ -41,10 +65,38 @@ struct WidgetAnimationDesc {
     WidgetAnimationLoopType loopType;
 };
 
+inline void to_json(nlohmann::json& j, WidgetAnimationDesc const& animation) {
+    j = nlohmann::json{
+        { "name", animation.name },
+        { "startTime", animation.startTime },
+        { "endTime", animation.endTime },
+        { "loopType", animation.loopType }
+    };
+}
+
+inline void from_json(nlohmann::json const& j, WidgetAnimationDesc& animation) {
+    j.at("name").get_to(animation.name);
+    j.at("startTime").get_to(animation.startTime);
+    j.at("endTime").get_to(animation.endTime);
+    j.at("loopType").get_to(animation.loopType);
+}
+
 struct WidgetAnimationTracksDesc {
     std ::map<WidgetAnimationTrackType, std::vector<WidgetAnimationTrackDesc>> tracks;
     std::map<std::string, WidgetAnimationDesc> animations;
 };
+
+inline void to_json(nlohmann::json& j, WidgetAnimationTracksDesc const& tracks) {
+    j = nlohmann::json{
+        { "tracks", tracks.tracks },
+        { "animations", tracks.animations }
+    };
+}
+
+inline void from_json(nlohmann::json const& j, WidgetAnimationTracksDesc& tracks) {
+    j.at("tracks").get_to(tracks.tracks);
+    j.at("animations").get_to(tracks.animations);
+}
 
 class WidgetAnimationTrack {
 public:
@@ -76,7 +128,7 @@ private:
 
 class WidgetTracks {
 public:
-    WidgetTracks(WidgetAnimationTracksDesc const& tracksDesc, std::vector<WidgetAnimationDesc> animationList, Widget& parentWidget);
+    WidgetTracks(WidgetAnimationTracksDesc const& tracksDesc, Widget& parentWidget);
 
     void Update(float deltaTime);
 
