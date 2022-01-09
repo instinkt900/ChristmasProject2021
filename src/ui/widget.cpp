@@ -64,10 +64,10 @@ void Widget::RecalculateBounds(bool propagate) {
         auto& parentBounds = m_parent->GetScreenRect();
         auto const parentWidth = parentBounds.bottomRight.x - parentBounds.topLeft.x;
         auto const parentHeight = parentBounds.bottomRight.y - parentBounds.topLeft.y;
-        m_screenRect.topLeft.x = parentBounds.topLeft.x + m_layoutBounds.topLeft.offset.x + static_cast<int>(parentWidth * m_layoutBounds.topLeft.anchor.x);
-        m_screenRect.topLeft.y = parentBounds.topLeft.y + m_layoutBounds.topLeft.offset.y + static_cast<int>(parentHeight * m_layoutBounds.topLeft.anchor.y);
-        m_screenRect.bottomRight.x = parentBounds.topLeft.x + m_layoutBounds.bottomRight.offset.x + static_cast<int>(parentWidth * m_layoutBounds.bottomRight.anchor.x);
-        m_screenRect.bottomRight.y = parentBounds.topLeft.y + m_layoutBounds.bottomRight.offset.y + static_cast<int>(parentHeight * m_layoutBounds.bottomRight.anchor.y);
+        m_screenRect.topLeft.x = parentBounds.topLeft.x + static_cast<int>(m_layoutBounds.topLeft.offset.x + parentWidth * m_layoutBounds.topLeft.anchor.x);
+        m_screenRect.topLeft.y = parentBounds.topLeft.y + static_cast<int>(m_layoutBounds.topLeft.offset.y + parentHeight * m_layoutBounds.topLeft.anchor.y);
+        m_screenRect.bottomRight.x = parentBounds.topLeft.x + static_cast<int>(m_layoutBounds.bottomRight.offset.x + parentWidth * m_layoutBounds.bottomRight.anchor.x);
+        m_screenRect.bottomRight.y = parentBounds.topLeft.y + static_cast<int>(m_layoutBounds.bottomRight.offset.y + parentHeight * m_layoutBounds.bottomRight.anchor.y);
     }
 
     if (propagate) {

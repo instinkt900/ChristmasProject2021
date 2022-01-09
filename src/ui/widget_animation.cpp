@@ -7,6 +7,7 @@ WidgetAnimationTrack::WidgetAnimationTrack(float& value)
 }
 
 void WidgetAnimationTrack::SetTime(float time) {
+    // should be able to cache these iterators
     auto firstKeyframeIt = std::begin(m_keyframes);
     auto lastKeyframeIt = std::begin(m_keyframes);
     while (lastKeyframeIt->m_time < time) {
@@ -25,42 +26,75 @@ void WidgetAnimationTrack::SetTime(float time) {
     }
 }
 
-WidgetTracks::WidgetTracks(WidgetAnimationTracksDesc const& animationDesc, Widget& parentWidget) {
-    for (auto&& trackDesc : animationDesc.tracks) {
-        m_tracks.push_back(WidgetAnimationTrack(GetValueRef(parentWidget, trackDesc.first)));
-    }
+WidgetAnimation::WidgetAnimation(WidgetTracks& tracks, WidgetAnimationDesc const& desc)
+    : m_tracks(tracks)
+    , m_name(desc.name)
+    , m_startTime(desc.startTime)
+    , m_endTime(desc.endTime)
+    , m_loopType(desc.loopType)
+    , m_currentTime(desc.startTime) {
 }
 
 void WidgetAnimation::Update(float deltaTime) {
-    if (m_playing) {
-        m_currentTime += deltaTime;
-        if (m_currentTime >= m_maxTime) {
-            OnEnd();
+    m_currentTime += deltaTime;
+    if (m_currentTime >= m_endTime) {
+        switch (m_loopType) {
+        case WidgetAnimationLoopType::Stop:
+            m_currentTime = m_endTime;
+            m_tracks.StopAnimation();
+            break;
+        case WidgetAnimationLoopType::Reset:
+            m_currentTime = m_startTime;
+            m_tracks.StopAnimation();
+            break;
+        case WidgetAnimationLoopType::Loop:
+            m_currentTime -= (m_endTime - m_startTime);
+            break;
         }
+    }
+    m_tracks.SetTime(m_currentTime);
+}
 
-        for (auto&& track : m_tracks) {
-            track.SetTime(m_currentTime);
-        }
+WidgetTracks::WidgetTracks(WidgetAnimationTracksDesc const& tracksDesc, std::vector<WidgetAnimationDesc> animationList, Widget& parentWidget) {
+    for (auto&& trackDesc : tracksDesc.tracks) {
+        m_tracks.push_back(WidgetAnimationTrack(GetValueRef(parentWidget, trackDesc.first)));
+    }
+    for (auto&& animDesc : animationList) {
+        m_animations.insert(std::make_pair(animDesc.name, WidgetAnimation(*this, animDesc)));
     }
 }
 
-void WidgetAnimation::OnEnd() {
-    switch (m_loopType) {
-    case WidgetAnimationLoopType::Stop:
-        m_currentTime = m_maxTime;
-        m_playing = false;
-        break;
-    case WidgetAnimationLoopType::Reset:
-        m_currentTime = 0;
-        m_playing = false;
-        break;
-    case WidgetAnimationLoopType::Loop:
-        m_currentTime -= m_maxTime;
-        break;
+void WidgetTracks::Update(float deltaTime) {
+    if (m_currentAnimation) {
+        m_currentAnimation->Update(deltaTime);
     }
 }
 
-float& WidgetAnimation::GetValueRef(Widget& parentWidget, WidgetAnimationTrackType type) const {
+void WidgetTracks::SetTime(float time) {
+    m_currentTime = time;
+    for (auto&& track : m_tracks) {
+        track.SetTime(m_currentTime);
+    }
+}
+
+bool WidgetTracks::HasAnimation(std::string const& name) {
+    return std::end(m_animations) != m_animations.find(name);
+}
+
+bool WidgetTracks::SetAnimation(std::string const& name) {
+    auto it = m_animations.find(name);
+    if (std::end(m_animations) != it) {
+        m_currentAnimation = &(it->second);
+        return true;
+    }
+    return false;
+}
+
+void WidgetTracks::StopAnimation() {
+    m_currentAnimation = nullptr;
+}
+
+float& WidgetTracks::GetValueRef(Widget& parentWidget, WidgetAnimationTrackType type) const {
     switch (type) {
     case WidgetAnimationTrackType::AnchorLeft:
         return parentWidget.m_layoutBounds.topLeft.anchor.x;

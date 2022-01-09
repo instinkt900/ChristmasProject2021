@@ -35,8 +35,10 @@ struct WidgetAnimationTrackDesc {
 };
 
 struct WidgetAnimationDesc {
+    std::string name;
     float startTime;
     float endTime;
+    WidgetAnimationLoopType loopType;
 };
 
 struct WidgetAnimationTracksDesc {
@@ -55,15 +57,41 @@ private:
     std::vector<WidgetAnimationKeyframe> m_keyframes;
 };
 
+class WidgetTracks;
+
+class WidgetAnimation {
+public:
+    WidgetAnimation(WidgetTracks& tracks, WidgetAnimationDesc const& desc);
+
+    void Update(float deltaTime);
+
+private:
+    WidgetTracks& m_tracks;
+    std::string m_name;
+    float m_startTime = 0;
+    float m_endTime = 0;
+    float m_currentTime = 0;
+    WidgetAnimationLoopType m_loopType = WidgetAnimationLoopType::Stop;
+};
+
 class WidgetTracks {
 public:
-    WidgetTracks(WidgetAnimationTracksDesc const& animationDesc, Widget& parentWidget);
+    WidgetTracks(WidgetAnimationTracksDesc const& tracksDesc, std::vector<WidgetAnimationDesc> animationList, Widget & parentWidget);
 
-    void SetTime(float time) { m_currentTime = time; }
+    void Update(float deltaTime);
+
+    void SetTime(float time);
     float GetTime() const { return m_currentTime; }
+
+    bool HasAnimation(std::string const& name);
+    bool SetAnimation(std::string const& name);
+    void StopAnimation();
 
 private:
     float m_currentTime = 0;
-    std::vector<WidgetAnimationTrack> tracks;
+    std::vector<WidgetAnimationTrack> m_tracks;
+    std::map<std::string, WidgetAnimation> m_animations;
+    WidgetAnimation* m_currentAnimation = nullptr;
+
     float& GetValueRef(Widget& parentWidget, WidgetAnimationTrackType type) const;
 };
