@@ -1,0 +1,119 @@
+{
+    "id": "",
+    "type": 0,
+    "layoutBounds":
+    {
+        "topLeft":
+        {
+            "anchor":
+            {
+                "x": 0,
+                "y": 0
+            },
+            "offset":
+            {
+                "x": 0,
+                "y": 0
+            }
+        },
+        "bottomRight":
+        {
+            "anchor":
+            {
+                "x": 1,
+                "y": 1
+            },
+            "offset":
+            {
+                "x": 0,
+                "y": 0
+            }
+        }
+    },
+    "children":
+    [
+        {
+            "id": "button",
+            "type": 0,
+            "layoutBounds":
+            {
+                "topLeft":
+                {
+                    "anchor":
+                    {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "offset":
+                    {
+                        "x": -50,
+                        "y": -25
+                    }
+                },
+                "bottomRight":
+                {
+                    "anchor":
+                    {
+                        "x": 0.5,
+                        "y": 0.5
+                    },
+                    "offset":
+                    {
+                        "x": 50,
+                        "y": 25
+                    }
+                }
+            },
+            "children":
+            [
+                {
+                    "id": "button_image",
+                    "type": 1,
+                    "layoutBounds":
+                    {
+                        "topLeft":
+                        {
+                            "anchor":
+                            {
+                                "x": 0,
+                                "y": 0
+                            },
+                            "offset":
+                            {
+                                "x": 0,
+                                "y": 0
+                            }
+                        },
+                        "bottomRight":
+                        {
+                            "anchor":
+                            {
+                                "x": 1,
+                                "y": 1
+                            },
+                            "offset":
+                            {
+                                "x": 0,
+                                "y": 0
+                            }
+                        }
+                    },
+                    "imagePath": "ship003.png",
+                    "imageRect":
+                    {
+                        "position":
+                        {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "dimensions":
+                        {
+                            "x": 124,
+                            "y": 64
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -13,7 +13,7 @@ Widget::Widget(WidgetDesc const& desc)
     : m_id(desc.id)
     , m_layoutBounds(desc.layoutBounds) {
     for (auto&& childDesc : desc.children) {
-
+        AddChild(CreateWidget(childDesc));
     }
 }
 
@@ -142,9 +142,9 @@ void Widget::DebugDraw() {
 
 WidgetRef Widget::CreateWidget(WidgetDesc const& desc) {
     if (desc.type == WidgetType::Node) {
-        return std::make_shared<WidgetImage>(desc);
-    } else if (desc.type == WidgetType::Image) {
         return std::make_shared<Widget>(desc);
+    } else if (desc.type == WidgetType::Image) {
+        return std::make_shared<WidgetImage>(desc);
     }
     assert(false);
     return nullptr;

@@ -8,31 +8,36 @@
 MenuLayer::MenuLayer(Game& game)
     : m_game(game) {
 
-    m_rootWidget = std::make_shared<Widget>();
+    std::ifstream f("test_widget.json");
+    nlohmann::json j;
+    f >> j;
+    WidgetDesc d = j;
 
-    auto imageWidget = std::make_shared<WidgetImage>();
-    imageWidget->SetImage(CreateTextureRef(game.GetRenderer(), "ship003.png"));
+    m_rootWidget = std::make_shared<Widget>(d);
 
-    auto buttonWidget = std::make_shared<WidgetButton>();
-    auto& buttonBounds = buttonWidget->GetLayoutBounds();
-    buttonBounds.topLeft.anchor.x = 0.5f;
-    buttonBounds.topLeft.offset.x = -50;
-    buttonBounds.topLeft.anchor.y = 0.5f;
-    buttonBounds.topLeft.offset.y = -50;
-    buttonBounds.bottomRight.anchor.x = 0.5f;
-    buttonBounds.bottomRight.offset.x = 50;
-    buttonBounds.bottomRight.anchor.y = 0.5f;
-    buttonBounds.bottomRight.offset.y = 50;
-    buttonWidget->SetOnClickedCallback([this]() {
-        auto layerStack = m_layerStack;
-        auto& game = m_game;
-        layerStack->PopLayer();
-        layerStack->PopLayer();
-        layerStack->PushLayer(std::make_unique<GameLayer>(game));
-    });
+    //auto imageWidget = std::make_shared<WidgetImage>();
+    //imageWidget->SetImage(CreateTextureRef(game.GetRenderer(), "ship003.png"));
 
-    buttonWidget->AddChild(imageWidget);
-    m_rootWidget->AddChild(buttonWidget);
+    //auto buttonWidget = std::make_shared<WidgetButton>();
+    //auto& buttonBounds = buttonWidget->GetLayoutBounds();
+    //buttonBounds.topLeft.anchor.x = 0.5f;
+    //buttonBounds.topLeft.offset.x = -50;
+    //buttonBounds.topLeft.anchor.y = 0.5f;
+    //buttonBounds.topLeft.offset.y = -50;
+    //buttonBounds.bottomRight.anchor.x = 0.5f;
+    //buttonBounds.bottomRight.offset.x = 50;
+    //buttonBounds.bottomRight.anchor.y = 0.5f;
+    //buttonBounds.bottomRight.offset.y = 50;
+    //buttonWidget->SetOnClickedCallback([this]() {
+    //    auto layerStack = m_layerStack;
+    //    auto& game = m_game;
+    //    layerStack->PopLayer();
+    //    layerStack->PopLayer();
+    //    layerStack->PushLayer(std::make_unique<GameLayer>(game));
+    //});
+
+    //buttonWidget->AddChild(imageWidget);
+    //m_rootWidget->AddChild(buttonWidget);
 }
 
 MenuLayer::~MenuLayer() {
