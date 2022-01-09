@@ -1,62 +1,17 @@
 #pragma once
 
 #include "events/event_listener.h"
+#include "widget_types.h"
+#include "widget_desc.h"
 
-struct WidgetVertex {
-    FloatVec2 anchor;
-    FloatVec2 offset;
-};
-
-struct WidgetBounds {
-    WidgetVertex topLeft{ 0.0f, 0.0f, 0, 0 };
-    WidgetVertex bottomRight{ 1.0f, 1.0f, 0, 0 };
-};
-
-struct WidgetRect {
-    IntVec2 topLeft{ 0, 0 };
-    IntVec2 bottomRight{ 0, 0 };
-};
-
-
-inline void ImGuiInspectMember(char const* label, WidgetBounds& widgetBounds) {
-    ImGui::PushItemWidth(50);
-    ImGui::PushID(&widgetBounds.topLeft.offset.y);
-    ImGui::InputFloat("", &widgetBounds.topLeft.offset.y, 0, 0, "%.0f");
-    ImGui::PopID();
-    ImGui::SameLine();
-    ImGui::InputFloat("Top", &widgetBounds.topLeft.anchor.y, 0, 0, "%.2f");
-    ImGui::PushID(&widgetBounds.bottomRight.offset.y);
-    ImGui::InputFloat("", &widgetBounds.bottomRight.offset.y, 0, 0, "%.0f");
-    ImGui::PopID();
-    ImGui::SameLine();
-    ImGui::InputFloat("Bottom", &widgetBounds.bottomRight.anchor.y, 0, 0, "%.2f");
-    ImGui::PushID(&widgetBounds.topLeft.offset.x);
-    ImGui::InputFloat("", &widgetBounds.topLeft.offset.x, 0, 0, "%.0f");
-    ImGui::PopID();
-    ImGui::SameLine();
-    ImGui::InputFloat("Left", &widgetBounds.topLeft.anchor.x, 0, 0, "%.2f");
-    ImGui::PushID(&widgetBounds.bottomRight.offset.x);
-    ImGui::InputFloat("", &widgetBounds.bottomRight.offset.x, 0, 0, "%.0f");
-    ImGui::PopID();
-    ImGui::SameLine();
-    ImGui::InputFloat("Right", &widgetBounds.bottomRight.anchor.x, 0, 0, "%.2f");
-    ImGui::PopItemWidth();
-}
-
-inline void ImGuiInspectMember(char const* label, WidgetRect& widgetRect) {
-    ImGui::PushItemWidth(108);
-    ImGui::InputInt("Top", &widgetRect.topLeft.y, 0);
-    ImGui::InputInt("Left", &widgetRect.topLeft.x, 0);
-    ImGui::InputInt("Bottom", &widgetRect.bottomRight.y, 0);
-    ImGui::InputInt("Right", &widgetRect.bottomRight.x, 0);
-    ImGui::PopItemWidth();
-}
+class WidgetTracks;
 
 using WidgetRef = std::shared_ptr<class Widget>;
 
 class Widget : public EventListener {
 public:
     Widget();
+    Widget(WidgetDesc const& desc);
     virtual ~Widget();
 
     virtual bool OnEvent(Event const& event) override;
@@ -79,12 +34,18 @@ public:
     WidgetBounds& GetLayoutBounds() { return m_layoutBounds; }
     void SetScreenRect(WidgetRect const& rect);
     WidgetRect const& GetScreenRect() const { return m_screenRect; }
-    
+
     void RecalculateBounds(bool propagate);
     bool IsInBounds(IntVec2 const& point) const;
     IntVec2 TranslatePosition(IntVec2 const& point) const;
 
+    bool HasAnimation(std::string const& name);
+    bool SetAnimation(std::string const& name);
+    void StopAnimation();
+
     void DebugDraw();
+
+    static WidgetRef CreateWidget(WidgetDesc const& desc);
 
 protected:
     std::string m_id;
@@ -96,5 +57,7 @@ protected:
     WidgetBounds m_layoutBounds;
     WidgetRect m_screenRect;
 
-    friend class WidgetTracks;
+    std::unique_ptr<WidgetTracks> m_tracks;
+
+    friend WidgetTracks;
 };

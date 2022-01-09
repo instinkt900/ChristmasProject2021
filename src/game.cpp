@@ -7,6 +7,11 @@
 #include "events/event_quit.h"
 #include "events/event_mouse.h"
 
+// TODO needed a few places but we dont want to pass this around
+// not strictly needed as we can remove its use by being smarter
+// about resource creation.
+SDL_Renderer* g_renderer = nullptr;
+
 Game::Game(int renderWidth, int renderHeight, std::string const& configPath)
     : m_renderWidth(renderWidth)
     , m_renderHeight(renderHeight)
@@ -98,6 +103,8 @@ bool Game::Initialise() {
     if (nullptr == (m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED))) {
         return false;
     }
+
+    g_renderer = m_renderer;
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

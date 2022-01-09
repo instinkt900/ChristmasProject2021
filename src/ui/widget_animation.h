@@ -76,7 +76,7 @@ private:
 
 class WidgetTracks {
 public:
-    WidgetTracks(WidgetAnimationTracksDesc const& tracksDesc, std::vector<WidgetAnimationDesc> animationList, Widget & parentWidget);
+    WidgetTracks(WidgetAnimationTracksDesc const& tracksDesc, std::vector<WidgetAnimationDesc> animationList, Widget& parentWidget);
 
     void Update(float deltaTime);
 

@@ -5,6 +5,7 @@
 class WidgetImage : public Widget {
 public:
     WidgetImage();
+    WidgetImage(WidgetDesc const& desc);
     virtual ~WidgetImage();
 
     void Draw(SDL_Renderer& renderer) override;

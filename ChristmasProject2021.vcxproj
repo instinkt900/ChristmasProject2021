@@ -215,7 +215,9 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ui\widget.h" />
     <ClInclude Include="src\ui\widget_animation.h" />
     <ClInclude Include="src\ui\widget_button.h" />
+    <ClInclude Include="src\ui\widget_desc.h" />
     <ClInclude Include="src\ui\widget_image.h" />
+    <ClInclude Include="src\ui\widget_types.h" />
     <ClInclude Include="src\utils.h" />
   </ItemGroup>
   <ItemGroup>

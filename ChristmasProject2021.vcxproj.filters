@@ -241,6 +241,12 @@
     <ClInclude Include="src\ui\widget_animation.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\widget_desc.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\widget_types.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

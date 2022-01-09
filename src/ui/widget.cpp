@@ -3,8 +3,18 @@
 #include "events/event_dispatch.h"
 #include "events/widget_events.h"
 #include "debug/inspectors.h"
+#include "widget_animation.h"
+#include "widget_image.h"
 
 Widget::Widget() {
+}
+
+Widget::Widget(WidgetDesc const& desc)
+    : m_id(desc.id)
+    , m_layoutBounds(desc.layoutBounds) {
+    for (auto&& childDesc : desc.children) {
+
+    }
 }
 
 Widget::~Widget() {
@@ -61,7 +71,7 @@ void Widget::SetScreenRect(WidgetRect const& rect) {
 
 void Widget::RecalculateBounds(bool propagate) {
     if (nullptr != m_parent) {
-        auto& parentBounds = m_parent->GetScreenRect();
+        auto const& parentBounds = m_parent->GetScreenRect();
         auto const parentWidth = parentBounds.bottomRight.x - parentBounds.topLeft.x;
         auto const parentHeight = parentBounds.bottomRight.y - parentBounds.topLeft.y;
         m_screenRect.topLeft.x = parentBounds.topLeft.x + static_cast<int>(m_layoutBounds.topLeft.offset.x + parentWidth * m_layoutBounds.topLeft.anchor.x);
@@ -94,6 +104,24 @@ IntVec2 Widget::TranslatePosition(IntVec2 const& point) const {
     return translated;
 }
 
+bool Widget::HasAnimation(std::string const& name) {
+    if (m_tracks) {
+        return m_tracks->HasAnimation(name);
+    }
+    return false;
+}
+bool Widget::SetAnimation(std::string const& name) {
+    if (m_tracks) {
+        return m_tracks->SetAnimation(name);
+    }
+    return false;
+}
+void Widget::StopAnimation() {
+    if (m_tracks) {
+        m_tracks->StopAnimation();
+    }
+}
+
 void Widget::DebugDraw() {
     auto const label = fmt::format("Widget({})", m_id);
     if (ImGui::TreeNode(label.c_str())) {
@@ -110,4 +138,14 @@ void Widget::DebugDraw() {
         }
         ImGui::TreePop();
     }
+}
+
+WidgetRef Widget::CreateWidget(WidgetDesc const& desc) {
+    if (desc.type == WidgetType::Node) {
+        return std::make_shared<WidgetImage>(desc);
+    } else if (desc.type == WidgetType::Image) {
+        return std::make_shared<Widget>(desc);
+    }
+    assert(false);
+    return nullptr;
 }
