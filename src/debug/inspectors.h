@@ -20,6 +20,10 @@ inline void ImGuiInspectMember(char const* name, char const* value) {
     ImGui::LabelText(name, "%s", value);
 }
 
+inline void ImGuiInspectMember(char const* name, std::string const& value) {
+    ImGui::LabelText(name, "%s", value.c_str());
+}
+
 inline void ImGuiInspectMember(char const* name, entt::entity value) {
     ImGui::LabelText(name, "%d", static_cast<uint32_t>(value));
 }

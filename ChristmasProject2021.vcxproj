@@ -167,10 +167,10 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\states\state_post_game.cpp" />
     <ClCompile Include="src\states\state_pre_game.cpp" />
     <ClCompile Include="src\tile_map.cpp" />
-    <ClCompile Include="src\ui\widget.cpp" />
-    <ClCompile Include="src\ui\widget_animation.cpp" />
-    <ClCompile Include="src\ui\widget_button.cpp" />
-    <ClCompile Include="src\ui\widget_image.cpp" />
+    <ClCompile Include="src\ui\group.cpp" />
+    <ClCompile Include="src\ui\layout_entity.cpp" />
+    <ClCompile Include="src\ui\node.cpp" />
+    <ClCompile Include="src\ui\node_image.cpp" />
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -212,12 +212,12 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\states\state_post_game.h" />
     <ClInclude Include="src\states\state_pre_game.h" />
     <ClInclude Include="src\tile_map.h" />
-    <ClInclude Include="src\ui\widget.h" />
-    <ClInclude Include="src\ui\widget_animation.h" />
-    <ClInclude Include="src\ui\widget_button.h" />
-    <ClInclude Include="src\ui\widget_desc.h" />
-    <ClInclude Include="src\ui\widget_image.h" />
-    <ClInclude Include="src\ui\widget_types.h" />
+    <ClInclude Include="src\ui\group.h" />
+    <ClInclude Include="src\ui\inspectors.h" />
+    <ClInclude Include="src\ui\layout_entity.h" />
+    <ClInclude Include="src\ui\layout_types.h" />
+    <ClInclude Include="src\ui\node.h" />
+    <ClInclude Include="src\ui\node_image.h" />
     <ClInclude Include="src\utils.h" />
   </ItemGroup>
   <ItemGroup>

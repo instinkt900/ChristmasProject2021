@@ -81,22 +81,22 @@
     <ClCompile Include="src\layers\background_layer.cpp">
       <Filter>layers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\widget.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\widget_image.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
     <ClCompile Include="src\events\event.cpp">
       <Filter>events</Filter>
     </ClCompile>
     <ClCompile Include="src\events\event_key.cpp">
       <Filter>events</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\widget_button.cpp">
+    <ClCompile Include="src\ui\layout_entity.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\widget_animation.cpp">
+    <ClCompile Include="src\ui\node.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\group.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\node_image.cpp">
       <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -199,12 +199,6 @@
     <ClInclude Include="src\layers\background_layer.h">
       <Filter>layers</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\widget.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\widget_image.h">
-      <Filter>ui</Filter>
-    </ClInclude>
     <ClInclude Include="src\events\event.h">
       <Filter>events</Filter>
     </ClInclude>
@@ -232,19 +226,25 @@
     <ClInclude Include="src\events\event_mouse.h">
       <Filter>events</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\widget_button.h">
-      <Filter>ui</Filter>
-    </ClInclude>
     <ClInclude Include="src\debug\inspectors.h">
       <Filter>debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\widget_animation.h">
+    <ClInclude Include="src\ui\layout_entity.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\widget_desc.h">
+    <ClInclude Include="src\ui\node.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\widget_types.h">
+    <ClInclude Include="src\ui\layout_types.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\group.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\inspectors.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\node_image.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>

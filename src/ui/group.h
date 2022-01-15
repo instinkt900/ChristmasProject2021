@@ -1,0 +1,28 @@
+#pragma once
+
+#include "node.h"
+
+class LayoutEntityGroup;
+
+class Group : public Node {
+public:
+    Group();
+    Group(LayoutEntityGroup const& layoutEntityGroup);
+    virtual ~Group();
+
+    bool OnEvent(Event const& event) override;
+    void Update(uint32_t ticks) override;
+    void Draw(SDL_Renderer& renderer) override;
+
+    void UpdateChildBounds() override;
+
+    void AddChild(std::shared_ptr<Node> child);
+    void RemoveChild(std::shared_ptr<Node> child);
+    auto& GetChildren() { return m_children; }
+    auto const& GetChildren() const { return m_children; }
+
+    void DebugDraw() override;
+
+protected:
+    std::vector<std::shared_ptr<Node>> m_children;
+};

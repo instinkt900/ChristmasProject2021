@@ -1,19 +1,16 @@
 #include "game_pch.h"
 #include "menu_layer.h"
 #include "game.h"
-#include "ui/widget_image.h"
-#include "ui/widget_button.h"
 #include "layers/game_layer.h"
+#include "ui/node.h"
+#include "ui/layout_entity.h"
 
 MenuLayer::MenuLayer(Game& game)
     : m_game(game) {
 
-    std::ifstream f("test_widget.json");
-    nlohmann::json j;
-    f >> j;
-    WidgetDesc d = j;
-
-    m_rootWidget = std::make_shared<Widget>(d);
+    auto entity = LoadLayout("test_widget.json");
+    m_rootWidget = entity->Instantiate();
+    
 
     //auto imageWidget = std::make_shared<WidgetImage>();
     //imageWidget->SetImage(CreateTextureRef(game.GetRenderer(), "ship003.png"));
@@ -60,15 +57,19 @@ void MenuLayer::Draw(SDL_Renderer& renderer) {
 
 void MenuLayer::DebugDraw() {
     if (ImGui::CollapsingHeader("MenuLayer")) {
-        m_rootWidget->DebugDraw();
+        if (ImGui::TreeNode("root")) {
+            m_rootWidget->DebugDraw();
+            ImGui::TreePop();
+        }
     }
 }
 
 void MenuLayer::OnAddedToStack(LayerStack* stack) {
     Layer::OnAddedToStack(stack);
 
-    WidgetRect widgetRect;
-    widgetRect.topLeft = { 0, 0 };
-    widgetRect.bottomRight = { GetWidth(), GetHeight() };
-    m_rootWidget->SetScreenRect(widgetRect);
+    //WidgetRect widgetRect;
+    //widgetRect.topLeft = { 0, 0 };
+    //widgetRect.bottomRight = { GetWidth(), GetHeight() };
+    //m_rootWidget->SetScreenRect(widgetRect);
+    m_rootWidget->SetScreenRect({ 0, 0, GetWidth(), GetHeight() });
 }

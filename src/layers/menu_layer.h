@@ -1,9 +1,9 @@
 #pragma once
 
 #include "layer.h"
-#include "ui/widget.h"
 
 class Game;
+class Node;
 
 class MenuLayer : public Layer {
 public:
@@ -19,5 +19,5 @@ public:
 
 private:
     Game& m_game;
-    WidgetRef m_rootWidget;
+    std::unique_ptr<Node> m_rootWidget;
 };
