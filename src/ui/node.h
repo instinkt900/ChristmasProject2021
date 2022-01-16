@@ -2,6 +2,7 @@
 
 #include "events/event_listener.h"
 #include "layout_types.h"
+#include "layout_entity.h"
 
 class LayoutEntity;
 class Group;
@@ -9,7 +10,7 @@ class Group;
 class Node : public EventListener {
 public:
     Node();
-    Node(LayoutEntity const& layoutEntity);
+    Node(std::shared_ptr<LayoutEntity> layoutEntity);
     virtual ~Node();
 
     virtual bool OnEvent(Event const& event) override;
@@ -34,9 +35,16 @@ public:
     bool IsInBounds(IntVec2 const& point) const;
     IntVec2 TranslatePosition(IntVec2 const& point) const;
 
+    virtual bool SetAnimation(std::string const& name) { return false; }
+    void ActivateClip(std::string const& name);
+    void DeactivateClip();
+    void SetAnimTime(float time);
+
     virtual void DebugDraw();
 
 protected:
+    std::shared_ptr<LayoutEntity> m_layout;
+
     Group* m_parent = nullptr;
 
     std::string m_id;
@@ -46,4 +54,6 @@ protected:
     bool m_showRect = false;
     bool m_overrideScreenRect = false;
     IntRect m_screenRect;
+
+    AnimationClip* m_currentAnimationClip = nullptr;
 };

@@ -78,7 +78,83 @@
                         "y": 64
                     }
                 }
-            }
+            },
+            "tracks":
+            [
+                {
+                    "target": "top_offset",
+                    "keyframes":
+                    [
+                        {
+                            "time": 0,
+                            "value": -25
+                        },
+                        {
+                            "time": 0.9,
+                            "value": -50
+                        }
+                    ]
+                },
+                {
+                    "target": "bottom_offset",
+                    "keyframes":
+                    [
+                        {
+                            "time": 0,
+                            "value": 25
+                        },
+                        {
+                            "time": 0.9,
+                            "value": 50
+                        }
+                    ]
+                },
+                {
+                    "target": "left_offset",
+                    "keyframes":
+                    [
+                        {
+                            "time": 0,
+                            "value": -50
+                        },
+                        {
+                            "time": 0.9,
+                            "value": -100
+                        }
+                    ]
+                },
+                {
+                    "target": "right_offset",
+                    "keyframes":
+                    [
+                        {
+                            "time": 0,
+                            "value": 50
+                        },
+                        {
+                            "time": 0.9,
+                            "value": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "clips":
+    [
+        {
+            "name": "test",
+            "start_frame": 0,
+            "end_frame": 30,
+            "fps": 60,
+            "loop_type": "loop"
+        },
+        {
+            "name": "test2",
+            "start_frame": 31,
+            "end_frame": 61,
+            "fps": 30,
+            "loop_type": "loop"
         }
     ]
 }

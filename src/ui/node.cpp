@@ -9,18 +9,17 @@
 Node::Node() {
 }
 
-Node::Node(LayoutEntity const& layoutEntity)
-    : m_id(layoutEntity.GetId())
-    , m_layoutRect(layoutEntity.GetBounds()) {
+Node::Node(std::shared_ptr<LayoutEntity> layoutEntity)
+    : m_layout(layoutEntity)
+    , m_id(m_layout->GetId())
+    , m_layoutRect(m_layout->GetBounds()) {
 }
 
 Node::~Node() {
 }
 
 bool Node::OnEvent(Event const& event) {
-    EventDispatch dispatch(event);
-    //dispatch.Dispatch<EventWidgetResize>([this](auto event) { RecalculateBounds(false); return false; });
-    return dispatch.GetHandled();
+    return false;
 }
 
 void Node::Update(uint32_t ticks) {
@@ -72,6 +71,42 @@ IntVec2 Node::TranslatePosition(IntVec2 const& point) const {
     translated.x -= m_screenRect.topLeft.x;
     translated.y -= m_screenRect.topLeft.y;
     return translated;
+}
+
+void Node::ActivateClip(std::string const& name) {
+    if (m_layout) {
+        auto& animationClips = m_layout->GetAnimationClips();
+        auto it = animationClips.find(name);
+        if (std::end(animationClips) != it) {
+            m_currentAnimationClip = it->second.get();
+        }
+    }
+}
+
+void Node::DeactivateClip() {
+    m_currentAnimationClip = nullptr;
+}
+
+void Node::SetAnimTime(float time) {
+    if (m_currentAnimationClip) {
+        for (auto&& track : m_currentAnimationClip->GetTracks()) {
+            switch (track->GetTarget()) {
+            case AnimationTrack::Target::TopOffset:
+                m_layoutRect.topLeft.offset.y = track->GetValue(time);
+                break;
+            case AnimationTrack::Target::BottomOffset:
+                m_layoutRect.bottomRight.offset.y = track->GetValue(time);
+                break;
+            case AnimationTrack::Target::LeftOffset:
+                m_layoutRect.topLeft.offset.x = track->GetValue(time);
+                break;
+            case AnimationTrack::Target::RightOffset:
+                m_layoutRect.bottomRight.offset.x = track->GetValue(time);
+                break;
+            }
+        }
+        RecalculateBounds();
+    }
 }
 
 void Node::DebugDraw() {

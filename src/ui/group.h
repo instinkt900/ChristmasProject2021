@@ -7,7 +7,7 @@ class LayoutEntityGroup;
 class Group : public Node {
 public:
     Group();
-    Group(LayoutEntityGroup const& layoutEntityGroup);
+    Group(std::shared_ptr<LayoutEntityGroup> layoutEntityGroup);
     virtual ~Group();
 
     bool OnEvent(Event const& event) override;
@@ -21,8 +21,12 @@ public:
     auto& GetChildren() { return m_children; }
     auto const& GetChildren() const { return m_children; }
 
+    bool SetAnimation(std::string const& name) override;
+
     void DebugDraw() override;
 
 protected:
     std::vector<std::shared_ptr<Node>> m_children;
+    AnimationClipInfo* m_currentAnimationClip = nullptr;
+    float m_animTime = 0;
 };

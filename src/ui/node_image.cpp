@@ -12,10 +12,10 @@ extern SDL_Renderer* g_renderer;
 NodeImage::NodeImage() {
 }
 
-NodeImage::NodeImage(LayoutEntityImage const& layoutEntity)
+NodeImage::NodeImage(std::shared_ptr<LayoutEntityImage> layoutEntity)
     : Node(layoutEntity) {
-    m_texture = CreateTextureRef(g_renderer, layoutEntity.GetTexturePath().c_str());
-    auto const& sourceRect = layoutEntity.GetSourceRect();
+    m_texture = CreateTextureRef(g_renderer, layoutEntity->GetTexturePath().c_str());
+    auto const& sourceRect = layoutEntity->GetSourceRect();
     m_sourceRect.x = sourceRect.topLeft.x;
     m_sourceRect.y = sourceRect.topLeft.y;
     m_sourceRect.w = sourceRect.bottomRight.x - sourceRect.topLeft.x;

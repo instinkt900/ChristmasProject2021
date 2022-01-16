@@ -8,9 +8,9 @@
 Group::Group() {
 }
 
-Group::Group(LayoutEntityGroup const& layoutEntityGroup)
+Group::Group(std::shared_ptr<LayoutEntityGroup> layoutEntityGroup)
     : Node(layoutEntityGroup) {
-    for (auto&& childEntity : layoutEntityGroup.GetChildren()) {
+    for (auto&& childEntity : layoutEntityGroup->GetChildren()) {
         AddChild(childEntity->Instantiate());
     }
 }
@@ -30,6 +30,34 @@ bool Group::OnEvent(Event const& event) {
 }
 
 void Group::Update(uint32_t ticks) {
+    if (m_currentAnimationClip) {
+        m_animTime += ticks / 1000.0f;
+        if (m_animTime >= m_currentAnimationClip->GetDuration()) {
+            switch (m_currentAnimationClip->GetLoopType()) {
+            case AnimationClipInfo::LoopType::Stop:
+                m_currentAnimationClip = nullptr;
+                break;
+            case AnimationClipInfo::LoopType::Loop:
+                m_animTime -= m_currentAnimationClip->GetDuration();
+                break;
+            case AnimationClipInfo::LoopType::Reset:
+                m_animTime = 0;
+                m_currentAnimationClip = nullptr;
+                break;
+            }
+        }
+
+        for (auto&& child : m_children) {
+            child->SetAnimTime(m_animTime);
+        }
+
+        if (m_currentAnimationClip == nullptr) {
+            for (auto&& child : m_children) {
+                child->DeactivateClip();
+            }
+        }
+    }
+
     for (auto&& child : m_children) {
         child->Update(ticks);
     }
@@ -53,6 +81,23 @@ void Group::RemoveChild(std::shared_ptr<Node> child) {
         (*it)->SetParent(nullptr);
         m_children.erase(it);
     }
+}
+
+bool Group::SetAnimation(std::string const& name) {
+    if (m_layout) {
+        auto layout = std::static_pointer_cast<LayoutEntityGroup>(m_layout);
+        auto& animationClips = layout->GetAnimationClips();
+        auto it = animationClips.find(name);
+        if (std::end(animationClips) != it) {
+            m_currentAnimationClip = it->second.get();
+            m_animTime = 0;
+            for (auto&& child : m_children) {
+                child->ActivateClip(name);
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 void Group::DebugDraw() {

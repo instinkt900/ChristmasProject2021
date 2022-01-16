@@ -7,7 +7,7 @@ class LayoutEntityImage;
 class NodeImage : public Node {
 public:
     NodeImage();
-    NodeImage(LayoutEntityImage const& layoutEntity);
+    NodeImage(std::shared_ptr<LayoutEntityImage> layoutEntity);
     virtual ~NodeImage();
 
     void Draw(SDL_Renderer& renderer) override;
