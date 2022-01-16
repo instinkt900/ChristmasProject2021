@@ -87,9 +87,6 @@
     <ClCompile Include="src\events\event_key.cpp">
       <Filter>events</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\layout_entity.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\node.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -98,6 +95,27 @@
     </ClCompile>
     <ClCompile Include="src\ui\node_image.cpp">
       <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\layouts\layout_entity.cpp">
+      <Filter>ui\layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\layouts\animation_clip_info.cpp">
+      <Filter>ui\layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\layouts\animation_track.cpp">
+      <Filter>ui\layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\layouts\animation_clip.cpp">
+      <Filter>ui\layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\layouts\layout_entity_group.cpp">
+      <Filter>ui\layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\layouts\layout_entity_image.cpp">
+      <Filter>ui\layouts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\layouts\layout.cpp">
+      <Filter>ui\layouts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +145,9 @@
     </Filter>
     <Filter Include="debug">
       <UniqueIdentifier>{9d75a4f3-92ef-4455-bfe6-80e139dd0657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\layouts">
+      <UniqueIdentifier>{597c1300-a227-4e4c-8232-6afb3d805807}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -229,13 +250,7 @@
     <ClInclude Include="src\debug\inspectors.h">
       <Filter>debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\layout_entity.h">
-      <Filter>ui</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\node.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layout_types.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\group.h">
@@ -245,6 +260,33 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\node_image.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\layouts\layout_entity.h">
+      <Filter>ui\layouts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\layouts\layout_types.h">
+      <Filter>ui\layouts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\layouts\animation_clip_info.h">
+      <Filter>ui\layouts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\layouts\animation_track.h">
+      <Filter>ui\layouts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\layouts\animation_clip.h">
+      <Filter>ui\layouts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\layouts\layout_entity_group.h">
+      <Filter>ui\layouts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\layouts\layout_entity_image.h">
+      <Filter>ui\layouts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\layouts\layout.h">
+      <Filter>ui\layouts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\ui_fwd.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>

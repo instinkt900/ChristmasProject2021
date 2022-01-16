@@ -3,12 +3,13 @@
 #include "game.h"
 #include "layers/game_layer.h"
 #include "ui/node.h"
-#include "ui/layout_entity.h"
+#include "ui/layouts/layout.h"
+#include "ui/layouts/layout_entity_group.h"
 
 MenuLayer::MenuLayer(Game& game)
     : m_game(game) {
 
-    auto entity = LoadLayout("test_widget.json");
+    auto entity = ui::LoadLayout("test_widget.json");
     m_rootWidget = entity->Instantiate();
     
 

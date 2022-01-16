@@ -2,31 +2,35 @@
 
 #include "node.h"
 
-class LayoutEntityGroup;
+namespace ui {
 
-class Group : public Node {
-public:
-    Group();
-    Group(std::shared_ptr<LayoutEntityGroup> layoutEntityGroup);
-    virtual ~Group();
+    class LayoutEntityGroup;
+    class AnimationClipInfo;
 
-    bool OnEvent(Event const& event) override;
-    void Update(uint32_t ticks) override;
-    void Draw(SDL_Renderer& renderer) override;
+    class Group : public Node {
+    public:
+        Group();
+        Group(std::shared_ptr<LayoutEntityGroup> layoutEntityGroup);
+        virtual ~Group();
 
-    void UpdateChildBounds() override;
+        bool OnEvent(Event const& event) override;
+        void Update(uint32_t ticks) override;
+        void Draw(SDL_Renderer& renderer) override;
 
-    void AddChild(std::shared_ptr<Node> child);
-    void RemoveChild(std::shared_ptr<Node> child);
-    auto& GetChildren() { return m_children; }
-    auto const& GetChildren() const { return m_children; }
+        void UpdateChildBounds() override;
 
-    bool SetAnimation(std::string const& name) override;
+        void AddChild(std::shared_ptr<Node> child);
+        void RemoveChild(std::shared_ptr<Node> child);
+        auto& GetChildren() { return m_children; }
+        auto const& GetChildren() const { return m_children; }
 
-    void DebugDraw() override;
+        bool SetAnimation(std::string const& name) override;
 
-protected:
-    std::vector<std::shared_ptr<Node>> m_children;
-    AnimationClipInfo* m_currentAnimationClip = nullptr;
-    float m_animTime = 0;
-};
+        void DebugDraw() override;
+
+    protected:
+        std::vector<std::shared_ptr<Node>> m_children;
+        AnimationClipInfo* m_currentAnimationClip = nullptr;
+        float m_animTime = 0;
+    };
+}

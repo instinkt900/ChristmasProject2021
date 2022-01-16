@@ -2,19 +2,21 @@
 
 #include "node.h"
 
-class LayoutEntityImage;
+namespace ui {
+    class LayoutEntityImage;
 
-class NodeImage : public Node {
-public:
-    NodeImage();
-    NodeImage(std::shared_ptr<LayoutEntityImage> layoutEntity);
-    virtual ~NodeImage();
+    class NodeImage : public Node {
+    public:
+        NodeImage();
+        NodeImage(std::shared_ptr<LayoutEntityImage> layoutEntity);
+        virtual ~NodeImage();
 
-    void Draw(SDL_Renderer& renderer) override;
+        void Draw(SDL_Renderer& renderer) override;
 
-    void DebugDraw();
+        void DebugDraw();
 
-protected:
-    TextureRef m_texture;
-    SDL_Rect m_sourceRect;
-};
+    protected:
+        TextureRef m_texture;
+        SDL_Rect m_sourceRect;
+    };
+}

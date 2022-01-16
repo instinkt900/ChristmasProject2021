@@ -1,8 +1,8 @@
 #pragma once
 
-#include "layout_types.h"
+#include "layouts/layout_types.h"
 
-inline void ImGuiInspectMember(char const* label, LayoutRect& widgetBounds) {
+inline void ImGuiInspectMember(char const* label, ui::LayoutRect& widgetBounds) {
     ImGui::PushItemWidth(50);
     ImGui::PushID(&widgetBounds.topLeft.offset.y);
     ImGui::InputFloat("", &widgetBounds.topLeft.offset.y, 0, 0, "%.0f");
@@ -27,7 +27,7 @@ inline void ImGuiInspectMember(char const* label, LayoutRect& widgetBounds) {
     ImGui::PopItemWidth();
 }
 
-inline void ImGuiInspectMember(char const* label, IntRect& widgetRect) {
+inline void ImGuiInspectMember(char const* label, ui::IntRect& widgetRect) {
     ImGui::PushItemWidth(108);
     ImGui::InputInt("Top", &widgetRect.topLeft.y, 0);
     ImGui::InputInt("Left", &widgetRect.topLeft.x, 0);
