@@ -113,7 +113,7 @@ namespace ui {
     }
 
     void Node::DebugDraw() {
-        if (ImGui::CollapsingHeader("Node")) {
+        if (ImGui::TreeNode("Node")) {
             ImGuiInspectMember("id", m_id);
             ImGuiInspectMember("visible", m_visible);
             ImGuiInspectMember("show rect", m_showRect);
@@ -123,6 +123,7 @@ namespace ui {
             if (ImGui::Button("Recalculate")) {
                 RecalculateBounds();
             }
+            ImGui::TreePop();
         }
     }
 }

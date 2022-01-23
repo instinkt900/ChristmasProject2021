@@ -46,9 +46,10 @@ namespace ui {
 
     void NodeImage::DebugDraw() {
         Node::DebugDraw();
-        if (ImGui::CollapsingHeader("NodeImage")) {
+        if (ImGui::TreeNode("NodeImage")) {
             ImGuiInspectMember("texture", m_texture);
             ImGuiInspectMember("source rect", m_sourceRect);
+            ImGui::TreePop();
         }
     }
 }
