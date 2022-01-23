@@ -2,6 +2,8 @@
 #include "layout_entity_group.h"
 #include "layout.h"
 #include "ui/group.h"
+#include "debug/inspectors.h"
+#include "ui/inspectors.h"
 
 namespace ui {
     LayoutEntityGroup::LayoutEntityGroup(nlohmann::json const& json, LayoutEntityGroup* parent)
@@ -25,5 +27,16 @@ namespace ui {
         }
 
         m_animationClips = other.m_animationClips;
+    }
+
+    void LayoutEntityGroup::OnEditDraw() {
+        if (ImGui::TreeNode("group")) {
+            ImGuiInspectMember("id", m_id);
+            ImGuiInspectMember("bounds", m_bounds);
+            for (auto&& child : m_children) {
+                child->OnEditDraw();
+            }
+            ImGui::TreePop();
+        }
     }
 }

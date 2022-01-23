@@ -22,6 +22,8 @@ namespace ui {
 
         virtual std::unique_ptr<Node> Instantiate();
 
+        virtual void OnEditDraw();
+
     protected:
         std::string m_id;
         LayoutRect m_bounds;

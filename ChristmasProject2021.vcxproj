@@ -47,13 +47,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SDL_PATH)\include;$(SDL_IMAGE_PATH)\include;$(SDL_TTF_PATH)\include;$(SDL_MIXER_PATH)\include;external\imgui;external\entt\single_include;external\spdlog\include;external\json\single_include;external\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SDL_PATH)\include;$(SDL_IMAGE_PATH)\include;$(SDL_TTF_PATH)\include;$(SDL_MIXER_PATH)\include;external\imgui;external\entt\single_include;external\spdlog\include;external\json\single_include;external\glm;external\imgui-filebrowser;$(IncludePath)</IncludePath>
     <LibraryPath>$(SDL_PATH)\lib\x64;$(SDL_IMAGE_PATH)\lib\x64;$(SDL_TTF_PATH)\lib\x64;$(SDL_MIXER_PATH)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(SDL_PATH)\lib\x64;$(SDL_IMAGE_PATH)\lib\x64;$(SDL_TTF_PATH)\lib\x64;$(SDL_MIXER_PATH)\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SDL_PATH)\include;$(SDL_IMAGE_PATH)\include;$(SDL_TTF_PATH)\include;$(SDL_MIXER_PATH)\include;external\imgui;external\entt\single_include;external\spdlog\include;external\json\single_include;external\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SDL_PATH)\include;$(SDL_IMAGE_PATH)\include;$(SDL_TTF_PATH)\include;$(SDL_MIXER_PATH)\include;external\imgui;external\entt\single_include;external\spdlog\include;external\json\single_include;external\glm;external\imgui-filebrowser;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -167,6 +167,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\states\state_post_game.cpp" />
     <ClCompile Include="src\states\state_pre_game.cpp" />
     <ClCompile Include="src\tile_map.cpp" />
+    <ClCompile Include="src\ui\editor\editor_layer.cpp" />
     <ClCompile Include="src\ui\group.cpp" />
     <ClCompile Include="src\ui\layouts\animation_clip.cpp" />
     <ClCompile Include="src\ui\layouts\animation_clip_info.cpp" />
@@ -180,6 +181,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\imgui-filebrowser\imfilebrowser.h" />
     <ClInclude Include="src\audio_factory.h" />
     <ClInclude Include="src\debug\inspectors.h" />
     <ClInclude Include="src\ecs\components\components.h" />
@@ -218,6 +220,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\states\state_post_game.h" />
     <ClInclude Include="src\states\state_pre_game.h" />
     <ClInclude Include="src\tile_map.h" />
+    <ClInclude Include="src\ui\editor\editor_layer.h" />
     <ClInclude Include="src\ui\group.h" />
     <ClInclude Include="src\ui\inspectors.h" />
     <ClInclude Include="src\ui\layouts\animation_clip.h" />

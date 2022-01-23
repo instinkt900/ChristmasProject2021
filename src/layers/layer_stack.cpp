@@ -2,9 +2,11 @@
 #include "layer_stack.h"
 #include "layer.h"
 
-LayerStack::LayerStack(int width, int height)
-    : m_width(width)
-    , m_height(height) {
+LayerStack::LayerStack(int renderWidth, int renderHeight, int windowWidth, int windowHeight)
+    : m_renderWidth(renderWidth)
+    , m_renderHeight(renderHeight)
+    , m_windowWidth(windowWidth)
+    , m_windowHeight(windowHeight) {
 }
 
 LayerStack::~LayerStack() {
@@ -49,6 +51,11 @@ void LayerStack::Update(uint32_t ticks) {
 
 void LayerStack::Draw(SDL_Renderer& renderer) {
     for (auto&& layer : m_layers) {
+        if (layer->UseRenderSize()) {
+            SDL_RenderSetLogicalSize(&renderer, m_renderWidth, m_renderHeight);
+        } else {
+            SDL_RenderSetLogicalSize(&renderer, m_windowWidth, m_windowHeight);
+        }
         layer->Draw(renderer);
     }
 }

@@ -34,12 +34,12 @@ int Layer::GetWidth() const {
     if (nullptr == m_layerStack) {
         return 0;
     }
-    return m_layerStack->GetWidth();
+    return UseRenderSize() ? m_layerStack->GetRenderWidth() : m_layerStack->GetWindowWidth();
 }
 
 int Layer::GetHeight() const {
     if (nullptr == m_layerStack) {
         return 0;
     }
-    return m_layerStack->GetHeight();
+    return UseRenderSize() ? m_layerStack->GetRenderHeight() : m_layerStack->GetWindowHeight();
 }

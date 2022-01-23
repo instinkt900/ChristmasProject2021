@@ -3,6 +3,8 @@
 #include "layout_entity_group.h"
 #include "ui/node.h"
 #include "animation_clip.h"
+#include "debug/inspectors.h"
+#include "ui/inspectors.h"
 
 namespace ui {
     LayoutEntity::LayoutEntity(nlohmann::json const& json, LayoutEntityGroup* parent)
@@ -21,5 +23,13 @@ namespace ui {
 
     std::unique_ptr<Node> LayoutEntity::Instantiate() {
         return std::make_unique<Node>(shared_from_this());
+    }
+
+    void LayoutEntity::OnEditDraw() {
+        if (ImGui::TreeNode("node")) {
+            ImGuiInspectMember("id", m_id);
+            ImGuiInspectMember("bounds", m_bounds);
+            ImGui::TreePop();
+        }
     }
 }

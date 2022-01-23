@@ -117,6 +117,9 @@
     <ClCompile Include="src\ui\layouts\layout.cpp">
       <Filter>ui\layouts</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\editor\editor_layer.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -148,6 +151,12 @@
     </Filter>
     <Filter Include="ui\layouts">
       <UniqueIdentifier>{597c1300-a227-4e4c-8232-6afb3d805807}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\editor">
+      <UniqueIdentifier>{192ea2df-c5ec-4bf7-b764-d29940ac7314}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui-filebrowser">
+      <UniqueIdentifier>{78267036-8873-4380-8ed8-0346a85c2ade}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -288,6 +297,12 @@
     </ClInclude>
     <ClInclude Include="src\ui\ui_fwd.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\editor_layer.h">
+      <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui-filebrowser\imfilebrowser.h">
+      <Filter>imgui-filebrowser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

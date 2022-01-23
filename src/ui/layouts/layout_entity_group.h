@@ -17,6 +17,8 @@ namespace ui {
 
         std::unique_ptr<Node> Instantiate() override;
 
+        void OnEditDraw() override;
+
         static constexpr char const* LABEL = "layout_data";
 
     protected:

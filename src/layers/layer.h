@@ -21,6 +21,8 @@ public:
     int GetWidth() const;
     int GetHeight() const;
 
+    virtual bool UseRenderSize() const { return true; }
+
 protected:
     LayerStack* m_layerStack = nullptr;
 };

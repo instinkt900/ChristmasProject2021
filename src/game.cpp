@@ -6,6 +6,7 @@
 #include "events/event_key.h"
 #include "events/event_quit.h"
 #include "events/event_mouse.h"
+#include "ui/editor/editor_layer.h"
 
 // TODO needed a few places but we dont want to pass this around
 // not strictly needed as we can remove its use by being smarter
@@ -129,7 +130,7 @@ bool Game::Initialise() {
         return false;
     }
 
-    m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight);
+    m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight, m_windowWidth, m_windowHeight);
 
     auto backgroundLayer = std::make_unique<BackgroundLayer>(*GetRenderer());
     m_layerStack->PushLayer(std::move(backgroundLayer));
@@ -159,6 +160,9 @@ void Game::OnEvent(Event const& event) {
                 break;
             case Key::G:
                 SetEditorMode(!m_editorMode);
+                break;
+            case Key::F1:
+                m_layerStack->PushLayer(std::make_unique<ui::EditorLayer>());
                 break;
             }
         }
@@ -203,8 +207,6 @@ void Game::Draw() {
     ImGui_ImplSDL2_NewFrame(m_window);
     ImGui::NewFrame();
 
-    SDL_RenderSetLogicalSize(m_renderer, m_renderWidth, m_renderHeight);
-
     if (m_editorMode) {
         SDL_SetRenderDrawColor(m_renderer, 0x11, 0x11, 0x11, 0xFF);
         SDL_RenderClear(m_renderer);
@@ -213,11 +215,15 @@ void Game::Draw() {
 
     SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(m_renderer);
+
+    int oldLogicalWidth;
+    int oldLogicalHeight;
+    SDL_RenderGetLogicalSize(m_renderer, &oldLogicalWidth, &oldLogicalHeight);
     m_layerStack->Draw(*m_renderer);
+    SDL_RenderSetLogicalSize(m_renderer, oldLogicalWidth, oldLogicalHeight);
 
     if (m_editorMode) {
         SDL_SetRenderTarget(m_renderer, nullptr);
-        SDL_RenderSetLogicalSize(m_renderer, m_editorWindowWidth, m_editorWindowHeight);
 
         if (ImGui::Begin("Game")) {
             auto windowPos = ImGui::GetWindowPos();
