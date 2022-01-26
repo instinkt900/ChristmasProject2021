@@ -60,13 +60,7 @@ namespace ui {
     }
 
     bool Node::IsInBounds(IntVec2 const& point) const {
-        if (point.x > m_screenRect.bottomRight.x ||
-            point.x < m_screenRect.topLeft.x ||
-            point.y > m_screenRect.bottomRight.y ||
-            point.y < m_screenRect.topLeft.y) {
-            return false;
-        }
-        return true;
+        return IsInRect(point, m_screenRect);
     }
 
     IntVec2 Node::TranslatePosition(IntVec2 const& point) const {
@@ -118,9 +112,10 @@ namespace ui {
             ImGuiInspectMember("visible", m_visible);
             ImGuiInspectMember("show rect", m_showRect);
             ImGuiInspectMember("override bounds", m_overrideScreenRect);
-            ImGuiInspectMember("bounds", m_layoutRect);
-            ImGuiInspectMember("screen rect", m_screenRect);
-            if (ImGui::Button("Recalculate")) {
+            bool boundsChanged = false;
+            boundsChanged |= ImGuiInspectMember("bounds", m_layoutRect);
+            boundsChanged |= ImGuiInspectMember("screen rect", m_screenRect);
+            if (boundsChanged) {
                 RecalculateBounds();
             }
             ImGui::TreePop();

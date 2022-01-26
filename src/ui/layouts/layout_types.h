@@ -1,11 +1,6 @@
 #pragma once
 
 namespace ui {
-    struct IntRect {
-        IntVec2 topLeft;
-        IntVec2 bottomRight;
-    };
-
     struct LayoutVertex {
         FloatVec2 anchor;
         FloatVec2 offset;
@@ -30,15 +25,6 @@ namespace ui {
     }
 
     inline void from_json(nlohmann::json const& j, LayoutRect& rect) {
-        j.at("topLeft").get_to(rect.topLeft);
-        j.at("bottomRight").get_to(rect.bottomRight);
-    }
-
-    inline void to_json(nlohmann::json& j, IntRect const& rect) {
-        j = nlohmann::json{ { "topLeft", rect.topLeft }, { "bottomRight", rect.bottomRight } };
-    }
-
-    inline void from_json(nlohmann::json const& j, IntRect& rect) {
         j.at("topLeft").get_to(rect.topLeft);
         j.at("bottomRight").get_to(rect.bottomRight);
     }

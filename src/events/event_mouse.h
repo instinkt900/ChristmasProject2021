@@ -57,3 +57,21 @@ public:
     MouseButton m_button;
     IntVec2 m_position;
 };
+
+class EventMouseMove : public Event {
+public:
+    EventMouseMove(IntVec2 const& position, IntVec2 const& delta)
+        : Event(GetStaticType())
+        , m_position(position)
+        , m_delta(delta) {}
+    virtual ~EventMouseMove() {}
+
+    static int GetStaticType() { return EVENTTYPE_MOUSE_MOVE; }
+
+    IntVec2 const& GetPosition() const { return m_position; }
+    IntVec2 const& GetDelta() const { return m_delta; }
+
+public:
+    IntVec2 m_position;
+    IntVec2 m_delta;
+};

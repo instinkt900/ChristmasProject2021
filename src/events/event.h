@@ -9,6 +9,7 @@ enum EventType : int {
     EVENTTYPE_WIDGET_RESIZE,
     EVENTTYPE_MOUSE_DOWN,
     EVENTTYPE_MOUSE_UP,
+    EVENTTYPE_MOUSE_MOVE,
 };
 
 class Event {

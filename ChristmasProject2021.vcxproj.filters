@@ -120,6 +120,18 @@
     <ClCompile Include="src\ui\editor\editor_layer.cpp">
       <Filter>ui\editor</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\editor\bounds_widget.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\bounds_handle.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\offset_bounds_handle.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\anchor_bounds_handle.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -303,6 +315,18 @@
     </ClInclude>
     <ClInclude Include="external\imgui-filebrowser\imfilebrowser.h">
       <Filter>imgui-filebrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\bounds_widget.h">
+      <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\bounds_handle.h">
+      <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\offset_bounds_handle.h">
+      <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\anchor_bounds_handle.h">
+      <Filter>ui\editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

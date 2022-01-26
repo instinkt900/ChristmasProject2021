@@ -2,8 +2,10 @@
 
 #include "layers/layer.h"
 #include "ui/layouts/layout_entity_group.h"
-
+#include "ui/group.h"
 #include "imfilebrowser.h"
+#include "bounds_widget.h"
+#include "events/event_mouse.h"
 
 namespace ui {
     class EditorLayer : public Layer {
@@ -24,6 +26,15 @@ namespace ui {
 
     private:
         ImGui::FileBrowser m_fileDialog;
-        std::shared_ptr<LayoutEntityGroup> m_currentLayout;
+        std::unique_ptr<ui::Group> m_root;
+        BoundsWidget m_boundsWidget;
+
+        int m_displayWidth = 200;
+        int m_displayHeight = 200;
+
+        void NewLayout();
+
+        bool OnMouseDown(EventMouseDown const& event);
+        bool OnMouseUp(EventMouseUp const& event);
     };
 };

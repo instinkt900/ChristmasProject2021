@@ -24,6 +24,9 @@ namespace ui {
         void SetVisible(bool visible) { m_visible = visible; }
         bool IsVisible() const { return m_visible; }
 
+        void SetShowRect(bool show) { m_showRect = show; }
+        bool GetShowRect() const { return m_showRect; }
+
         void SetParent(Group* parent) { m_parent = parent; }
         Group* GetParent() const { return m_parent; }
 

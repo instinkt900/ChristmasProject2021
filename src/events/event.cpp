@@ -38,6 +38,9 @@ std::unique_ptr<Event> Event::FromSDL(SDL_Event const& event) {
     case SDL_MOUSEBUTTONUP: {
         return std::make_unique<EventMouseUp>(FromSDLMouse(event.button.button), IntVec2{ event.button.x, event.button.y });
     }
+    case SDL_MOUSEMOTION: {
+        return std::make_unique<EventMouseMove>(IntVec2{ event.motion.x, event.motion.y }, IntVec2{ event.motion.xrel, event.motion.yrel });
+    }
     }
     return nullptr;
 }

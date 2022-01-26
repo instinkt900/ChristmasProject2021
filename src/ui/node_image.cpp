@@ -4,11 +4,18 @@
 #include "debug/inspectors.h"
 #include "layouts/layout_entity_image.h"
 
+#include "imfilebrowser.h"
+
 // TODO
 // this is needed to create sdl textures when we load a widget but
 // what probably needs to happen is we just reference a texture/sprite
 // sheet here and create the texture externally.
 extern SDL_Renderer* g_renderer;
+
+namespace {
+    ImGui::FileBrowser s_fileBrowser;
+    ui::NodeImage* s_loadingNodeImage = nullptr;
+}
 
 namespace ui {
     NodeImage::NodeImage() {
@@ -49,7 +56,22 @@ namespace ui {
         if (ImGui::TreeNode("NodeImage")) {
             ImGuiInspectMember("texture", m_texture);
             ImGuiInspectMember("source rect", m_sourceRect);
+            if (ImGui::Button("Load Image..")) {
+                s_fileBrowser.SetTitle("Load Image..");
+                s_fileBrowser.SetTypeFilters({ ".jpg", ".jpeg", ".png", ".bmp" });
+                s_fileBrowser.Open();
+                s_loadingNodeImage = this;
+            }
             ImGui::TreePop();
+        }
+
+        if (s_loadingNodeImage == this) {
+            s_fileBrowser.Display();
+            if (s_fileBrowser.HasSelected()) {
+                m_texture = CreateTextureRef(g_renderer, s_fileBrowser.GetSelected().string().c_str());
+                s_fileBrowser.ClearSelected();
+                s_loadingNodeImage = nullptr;
+            }
         }
     }
 }
