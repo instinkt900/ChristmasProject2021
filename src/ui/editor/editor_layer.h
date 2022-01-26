@@ -6,6 +6,7 @@
 #include "imfilebrowser.h"
 #include "bounds_widget.h"
 #include "events/event_mouse.h"
+#include "events/event_key.h"
 
 namespace ui {
     class EditorLayer : public Layer {
@@ -25,9 +26,15 @@ namespace ui {
         bool UseRenderSize() const override { return false; }
 
     private:
+        enum class FileOpenMode {
+            Layout,
+            SubLayout,
+        };
         ImGui::FileBrowser m_fileDialog;
+        FileOpenMode m_fileOpenMode;
         std::unique_ptr<ui::Group> m_root;
         BoundsWidget m_boundsWidget;
+        std::shared_ptr<Node> m_selection;
 
         int m_displayWidth = 200;
         int m_displayHeight = 200;
@@ -36,5 +43,6 @@ namespace ui {
 
         bool OnMouseDown(EventMouseDown const& event);
         bool OnMouseUp(EventMouseUp const& event);
+        bool OnKey(EventKey const& event);
     };
 };

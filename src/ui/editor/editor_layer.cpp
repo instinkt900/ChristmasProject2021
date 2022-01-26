@@ -17,6 +17,7 @@ namespace ui {
         dispatch.Dispatch(&m_boundsWidget);
         dispatch.Dispatch(this, &EditorLayer::OnMouseDown);
         dispatch.Dispatch(this, &EditorLayer::OnMouseUp);
+        dispatch.Dispatch(this, &EditorLayer::OnKey);
         return dispatch.GetHandled();
     }
 
@@ -33,6 +34,7 @@ namespace ui {
                     m_fileDialog.SetTitle("Open..");
                     m_fileDialog.SetTypeFilters({ ".json" });
                     m_fileDialog.Open();
+                    m_fileOpenMode = FileOpenMode::Layout;
                 }
                 ImGui::EndMenu();
             }
@@ -50,6 +52,11 @@ namespace ui {
                 newImageNode->SetShowRect(true);
                 m_root->AddChild(std::move(newImageNode));
                 m_root->RecalculateBounds();
+            } else if (ImGui::Button("SubLayout")) {
+                m_fileDialog.SetTitle("Open..");
+                m_fileDialog.SetTypeFilters({ ".json" });
+                m_fileDialog.Open();
+                m_fileOpenMode = FileOpenMode::SubLayout;
             }
             ImGui::End();
         }
@@ -57,8 +64,22 @@ namespace ui {
         m_fileDialog.Display();
 
         if (m_fileDialog.HasSelected()) {
-            //m_currentLayout = ui::LoadLayout(m_fileDialog.GetSelected().string());
-            m_fileDialog.ClearSelected();
+            if (m_fileOpenMode == FileOpenMode::Layout) {
+                //m_currentLayout = ui::LoadLayout(m_fileDialog.GetSelected().string());
+                m_fileDialog.ClearSelected();
+            } else if (m_fileOpenMode == FileOpenMode::SubLayout) {
+                auto newSubLayout = ui::LoadLayout(m_fileDialog.GetSelected().string());
+                auto newNode = std::make_unique<ui::Group>(newSubLayout);
+                auto& layoutRect = newNode->GetLayoutRect();
+                layoutRect.topLeft.anchor = { 0.5f, 0.5f };
+                layoutRect.bottomRight.anchor = { 0.5f, 0.5f };
+                layoutRect.topLeft.offset = { -50, -50 };
+                layoutRect.bottomRight.offset = { 50, 50 };
+                newNode->SetShowRect(true);
+                m_root->AddChild(std::move(newNode));
+                m_root->RecalculateBounds();
+                m_fileDialog.ClearSelected();
+            }
         }
 
         if (m_root) {
@@ -95,16 +116,32 @@ namespace ui {
     bool EditorLayer::OnMouseDown(EventMouseDown const& event) {
         for (auto&& child : m_root->GetChildren()) {
             if (child->IsInBounds(event.GetPosition())) {
-                m_boundsWidget.SetSelection(child.get());
+                m_selection = child;
+                m_boundsWidget.SetSelection(m_selection.get());
                 return true;
             }
         }
-
+        m_selection = nullptr;
         m_boundsWidget.SetSelection(nullptr);
         return false;
     }
 
     bool EditorLayer::OnMouseUp(EventMouseUp const& event) {
+        return false;
+    }
+
+    bool EditorLayer::OnKey(EventKey const& event) {
+        if (event.GetAction() == KeyAction::Up) {
+            switch (event.GetKey()) {
+            case Key::Delete:
+                if (m_selection) {
+                    m_root->RemoveChild(m_selection);
+                    m_selection = nullptr;
+                    m_boundsWidget.SetSelection(nullptr);
+                }
+                return true;
+            }
+        }
         return false;
     }
 }
