@@ -2,22 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="external\imgui\imgui.cpp">
-      <Filter>imgui</Filter>
+      <Filter>external\imgui</Filter>
     </ClCompile>
     <ClCompile Include="external\imgui\imgui_draw.cpp">
-      <Filter>imgui</Filter>
+      <Filter>external\imgui</Filter>
     </ClCompile>
     <ClCompile Include="external\imgui\imgui_tables.cpp">
-      <Filter>imgui</Filter>
+      <Filter>external\imgui</Filter>
     </ClCompile>
     <ClCompile Include="external\imgui\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
+      <Filter>external\imgui</Filter>
     </ClCompile>
     <ClCompile Include="external\imgui\backends\imgui_impl_sdl.cpp">
-      <Filter>imgui</Filter>
+      <Filter>external\imgui</Filter>
     </ClCompile>
     <ClCompile Include="external\imgui\backends\imgui_impl_sdlrenderer.cpp">
-      <Filter>imgui</Filter>
+      <Filter>external\imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\ecs\systems\animation_system.cpp">
       <Filter>ecs\systems</Filter>
@@ -132,11 +132,26 @@
     <ClCompile Include="src\ui\editor\anchor_bounds_handle.cpp">
       <Filter>ui\editor</Filter>
     </ClCompile>
+    <ClCompile Include="external\ImGuizmo\GraphEditor.cpp">
+      <Filter>external\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="external\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>external\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="external\ImGuizmo\ImGradient.cpp">
+      <Filter>external\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="external\ImGuizmo\ImGuizmo.cpp">
+      <Filter>external\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="external\ImGuizmo\ImSequencer.cpp">
+      <Filter>external\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\im_animation_tracks.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{1d5e9893-3369-4d10-93f4-03567cf2c360}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ecs">
       <UniqueIdentifier>{0351c7ff-485a-4cc5-aabb-e5a0e1b3b52d}</UniqueIdentifier>
     </Filter>
@@ -167,8 +182,17 @@
     <Filter Include="ui\editor">
       <UniqueIdentifier>{192ea2df-c5ec-4bf7-b764-d29940ac7314}</UniqueIdentifier>
     </Filter>
-    <Filter Include="imgui-filebrowser">
+    <Filter Include="external">
+      <UniqueIdentifier>{10ed9e54-9c81-4209-bbb3-1202f33ed6e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\imgui">
+      <UniqueIdentifier>{1d5e9893-3369-4d10-93f4-03567cf2c360}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\imgui-filebrowser">
       <UniqueIdentifier>{78267036-8873-4380-8ed8-0346a85c2ade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\ImGuizmo">
+      <UniqueIdentifier>{0c2bd573-2b52-43ad-8952-e1babfe304c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -314,7 +338,7 @@
       <Filter>ui\editor</Filter>
     </ClInclude>
     <ClInclude Include="external\imgui-filebrowser\imfilebrowser.h">
-      <Filter>imgui-filebrowser</Filter>
+      <Filter>external\imgui-filebrowser</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\editor\bounds_widget.h">
       <Filter>ui\editor</Filter>
@@ -326,6 +350,45 @@
       <Filter>ui\editor</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\editor\anchor_bounds_handle.h">
+      <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="external\ImGuizmo\GraphEditor.h">
+      <Filter>external\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="external\ImGuizmo\ImCurveEdit.h">
+      <Filter>external\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="external\ImGuizmo\ImGradient.h">
+      <Filter>external\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="external\ImGuizmo\ImGuizmo.h">
+      <Filter>external\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="external\ImGuizmo\ImSequencer.h">
+      <Filter>external\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="external\ImGuizmo\ImZoomSlider.h">
+      <Filter>external\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imconfig.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imgui.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imgui_internal.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imstb_rectpack.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imstb_textedit.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="external\imgui\imstb_truetype.h">
+      <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\im_animation_tracks.h">
       <Filter>ui\editor</Filter>
     </ClInclude>
   </ItemGroup>
