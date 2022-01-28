@@ -73,5 +73,5 @@ void MenuLayer::OnAddedToStack(LayerStack* stack) {
     //widgetRect.bottomRight = { GetWidth(), GetHeight() };
     //m_rootWidget->SetScreenRect(widgetRect);
     m_rootWidget->SetScreenRect({ 0, 0, GetWidth(), GetHeight() });
-    m_rootWidget->SetAnimation("test");
+    m_rootWidget->SetAnimation("test2");
 }

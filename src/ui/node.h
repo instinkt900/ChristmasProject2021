@@ -6,7 +6,7 @@
 namespace ui {
     class LayoutEntity;
     class Group;
-    class AnimationClip;
+    class AnimationController;
 
     class Node : public EventListener {
     public:
@@ -40,8 +40,6 @@ namespace ui {
         IntVec2 TranslatePosition(IntVec2 const& point) const;
 
         virtual bool SetAnimation(std::string const& name) { return false; }
-        void ActivateClip(std::string const& name);
-        void DeactivateClip();
         void SetAnimTime(float time);
 
         virtual void DebugDraw();
@@ -59,6 +57,6 @@ namespace ui {
         bool m_overrideScreenRect = false;
         IntRect m_screenRect;
 
-        AnimationClip* m_currentAnimationClip = nullptr;
+        std::unique_ptr<AnimationController> m_animationController;
     };
 }

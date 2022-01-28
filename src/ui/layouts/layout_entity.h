@@ -5,7 +5,7 @@
 namespace ui {
     class LayoutEntityGroup;
     class Node;
-    class AnimationClip;
+    class AnimationTrack;
 
     class LayoutEntity : public std::enable_shared_from_this<LayoutEntity> {
     public:
@@ -17,8 +17,7 @@ namespace ui {
         void SetParent(LayoutEntity* parent) { m_parent = parent; }
         LayoutEntity* GetParent() const { return m_parent; }
 
-        auto& GetAnimationClips() { return m_animationClips; }
-        auto const& GetAnimationClips() const { return m_animationClips; }
+        auto& GetAnimationTracks() const { return m_tracks; }
 
         virtual std::unique_ptr<Node> Instantiate();
 
@@ -29,6 +28,6 @@ namespace ui {
         LayoutRect m_bounds;
         LayoutEntity* m_parent = nullptr;
 
-        std::map<std::string, std::shared_ptr<AnimationClip>> m_animationClips;
+        std::vector<std::shared_ptr<AnimationTrack>> m_tracks;
     };
 }

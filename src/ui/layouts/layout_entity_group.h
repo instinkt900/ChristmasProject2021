@@ -3,7 +3,7 @@
 #include "layout_entity.h"
 
 namespace ui {
-    class AnimationClipInfo;
+    class AnimationClip;
 
     class LayoutEntityGroup : public LayoutEntity {
     public:
@@ -24,7 +24,8 @@ namespace ui {
     protected:
         std::string m_layoutPath;
         std::vector<std::shared_ptr<LayoutEntity>> m_children;
-        std::map<std::string, std::shared_ptr<AnimationClipInfo>> m_animationClips;
+
+        std::vector<std::unique_ptr<AnimationClip>> m_animationClips; // sorted by time/frame
 
         void Clone(LayoutEntityGroup const& other);
     };

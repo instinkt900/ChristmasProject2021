@@ -182,6 +182,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\states\state_post_game.cpp" />
     <ClCompile Include="src\states\state_pre_game.cpp" />
     <ClCompile Include="src\tile_map.cpp" />
+    <ClCompile Include="src\ui\animation_controller.cpp" />
     <ClCompile Include="src\ui\editor\anchor_bounds_handle.cpp" />
     <ClCompile Include="src\ui\editor\bounds_handle.cpp" />
     <ClCompile Include="src\ui\editor\bounds_widget.cpp" />
@@ -190,7 +191,6 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\ui\editor\offset_bounds_handle.cpp" />
     <ClCompile Include="src\ui\group.cpp" />
     <ClCompile Include="src\ui\layouts\animation_clip.cpp" />
-    <ClCompile Include="src\ui\layouts\animation_clip_info.cpp" />
     <ClCompile Include="src\ui\layouts\animation_track.cpp" />
     <ClCompile Include="src\ui\layouts\layout.cpp" />
     <ClCompile Include="src\ui\layouts\layout_entity.cpp" />
@@ -252,6 +252,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\states\state_post_game.h" />
     <ClInclude Include="src\states\state_pre_game.h" />
     <ClInclude Include="src\tile_map.h" />
+    <ClInclude Include="src\ui\animation_controller.h" />
     <ClInclude Include="src\ui\editor\anchor_bounds_handle.h" />
     <ClInclude Include="src\ui\editor\bounds_handle.h" />
     <ClInclude Include="src\ui\editor\bounds_widget.h" />
@@ -261,7 +262,6 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ui\group.h" />
     <ClInclude Include="src\ui\inspectors.h" />
     <ClInclude Include="src\ui\layouts\animation_clip.h" />
-    <ClInclude Include="src\ui\layouts\animation_clip_info.h" />
     <ClInclude Include="src\ui\layouts\animation_track.h" />
     <ClInclude Include="src\ui\layouts\layout.h" />
     <ClInclude Include="src\ui\layouts\layout_entity.h" />

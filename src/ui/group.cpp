@@ -4,7 +4,7 @@
 #include "debug/inspectors.h"
 #include "inspectors.h"
 #include "layouts/layout_entity_group.h"
-#include "layouts/animation_clip_info.h"
+#include "layouts/animation_clip.h"
 
 namespace ui {
     Group::Group() {
@@ -34,16 +34,17 @@ namespace ui {
     void Group::Update(uint32_t ticks) {
         if (m_currentAnimationClip) {
             m_animTime += ticks / 1000.0f;
-            if (m_animTime >= m_currentAnimationClip->GetDuration()) {
+            if (m_animTime >= m_currentAnimationClip->GetEndTime()) {
                 switch (m_currentAnimationClip->GetLoopType()) {
-                case AnimationClipInfo::LoopType::Stop:
+                case AnimationClip::LoopType::Stop:
+                    m_animTime = m_currentAnimationClip->GetEndTime();
                     m_currentAnimationClip = nullptr;
                     break;
-                case AnimationClipInfo::LoopType::Loop:
+                case AnimationClip::LoopType::Loop:
                     m_animTime -= m_currentAnimationClip->GetDuration();
                     break;
-                case AnimationClipInfo::LoopType::Reset:
-                    m_animTime = 0;
+                case AnimationClip::LoopType::Reset:
+                    m_animTime = m_currentAnimationClip->GetStartTime();
                     m_currentAnimationClip = nullptr;
                     break;
                 }
@@ -51,12 +52,6 @@ namespace ui {
 
             for (auto&& child : m_children) {
                 child->SetAnimTime(m_animTime);
-            }
-
-            if (m_currentAnimationClip == nullptr) {
-                for (auto&& child : m_children) {
-                    child->DeactivateClip();
-                }
             }
         }
 
@@ -89,13 +84,10 @@ namespace ui {
         if (m_layout) {
             auto layout = std::static_pointer_cast<LayoutEntityGroup>(m_layout);
             auto& animationClips = layout->GetAnimationClips();
-            auto it = animationClips.find(name);
+            auto it = std::find_if(std::begin(animationClips), std::end(animationClips), [&name](auto& clip) { return clip->GetName() == name; });
             if (std::end(animationClips) != it) {
-                m_currentAnimationClip = it->second.get();
-                m_animTime = 0;
-                for (auto&& child : m_children) {
-                    child->ActivateClip(name);
-                }
+                m_currentAnimationClip = it->get();
+                m_animTime = m_currentAnimationClip->GetStartTime();
                 return true;
             }
         }

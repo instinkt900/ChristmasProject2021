@@ -99,13 +99,10 @@
     <ClCompile Include="src\ui\layouts\layout_entity.cpp">
       <Filter>ui\layouts</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\layouts\animation_clip_info.cpp">
+    <ClCompile Include="src\ui\layouts\animation_clip.cpp">
       <Filter>ui\layouts</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\layouts\animation_track.cpp">
-      <Filter>ui\layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\layouts\animation_clip.cpp">
       <Filter>ui\layouts</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\layouts\layout_entity_group.cpp">
@@ -149,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="src\ui\editor\im_animation_tracks.cpp">
       <Filter>ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\animation_controller.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -313,13 +313,10 @@
     <ClInclude Include="src\ui\layouts\layout_types.h">
       <Filter>ui\layouts</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\layouts\animation_clip_info.h">
+    <ClInclude Include="src\ui\layouts\animation_clip.h">
       <Filter>ui\layouts</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\layouts\animation_track.h">
-      <Filter>ui\layouts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layouts\animation_clip.h">
       <Filter>ui\layouts</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\layouts\layout_entity_group.h">
@@ -390,6 +387,9 @@
     </ClInclude>
     <ClInclude Include="src\ui\editor\im_animation_tracks.h">
       <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\animation_controller.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@
 #include "ui/group.h"
 #include "debug/inspectors.h"
 #include "ui/inspectors.h"
+#include "animation_clip.h"
 
 namespace ui {
     LayoutEntityGroup::LayoutEntityGroup(nlohmann::json const& json, LayoutEntityGroup* parent)
@@ -26,7 +27,9 @@ namespace ui {
             child->SetParent(this);
         }
 
-        m_animationClips = other.m_animationClips;
+        for (auto&& clip : other.m_animationClips) {
+            m_animationClips.push_back(std::make_unique<AnimationClip>(*clip));
+        }
     }
 
     void LayoutEntityGroup::OnEditDraw() {

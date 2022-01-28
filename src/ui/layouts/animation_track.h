@@ -1,12 +1,14 @@
 #pragma once
 
 namespace ui {
-    class AnimationClipInfo;
+    class AnimationClip;
 
     class Keyframe {
     public:
-        float m_time;
+        int m_frame;
         float m_value;
+
+        float m_time; // calculated based on clips
     };
 
     class AnimationTrack {
@@ -22,12 +24,10 @@ namespace ui {
             RightAnchor
         };
 
-        AnimationTrack(AnimationClipInfo const& info, nlohmann::json const& json);
+        AnimationTrack(nlohmann::json const& json);
 
-        Target GetTarget() const { return m_target; }
-        float GetValue(float time) const;
+        void UpdateTrackTimings(std::vector<std::unique_ptr<AnimationClip>> const& clips);
 
-    private:
         Target m_target;
         std::vector<Keyframe> m_keyframes;
     };

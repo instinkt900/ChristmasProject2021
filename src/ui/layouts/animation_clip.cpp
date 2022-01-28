@@ -1,13 +1,20 @@
 #include "game_pch.h"
 #include "animation_clip.h"
-#include "animation_clip_info.h"
-#include "animation_track.h"
 
 namespace ui {
-    AnimationClip::AnimationClip(AnimationClipInfo const& info, nlohmann::json const& tracksJson)
-        : m_name(info.GetName()) {
-        for (auto&& trackJson : tracksJson) {
-            m_tracks.push_back(std::make_shared<AnimationTrack>(info, trackJson));
-        }
+    NLOHMANN_JSON_SERIALIZE_ENUM(AnimationClip::LoopType, {
+                                                              { AnimationClip::LoopType::Stop, "stop" },
+                                                              { AnimationClip::LoopType::Loop, "loop" },
+                                                              { AnimationClip::LoopType::Reset, "reset" },
+                                                          })
+
+    AnimationClip::AnimationClip(nlohmann::json const& json)
+        : m_name(json["name"])
+        , m_startFrame(json["start_frame"])
+        , m_endFrame(json["end_frame"])
+        , m_fps(json["fps"])
+        , m_loopType(json["loop_type"])
+        , m_startTime(0)
+        , m_endTime(0) {
     }
 }

@@ -1,6 +1,6 @@
 #include "game_pch.h"
 #include "animation_track.h"
-#include "animation_clip_info.h"
+#include "animation_clip.h"
 
 namespace ui {
     NLOHMANN_JSON_SERIALIZE_ENUM(AnimationTrack::Target, {
@@ -14,35 +14,28 @@ namespace ui {
                                                              { AnimationTrack::Target::RightAnchor, "right_anchor" },
                                                          })
 
-    AnimationTrack::AnimationTrack(AnimationClipInfo const& info, nlohmann::json const& json)
+    AnimationTrack::AnimationTrack(nlohmann::json const& json)
         : m_target(json["target"]) {
-        float frameTime;
         for (auto&& keyframeJson : json["keyframes"]) {
-            keyframeJson.at("time").get_to(frameTime);
-            if (frameTime >= info.GetStartTime()) {
-                frameTime -= info.GetStartTime();
-                m_keyframes.push_back({ frameTime, keyframeJson["value"] });
-            } else if (frameTime > info.GetEndTime()) {
-                break;
-            }
+            m_keyframes.push_back({ keyframeJson["frame"], keyframeJson["value"] });
         }
     }
 
-    float AnimationTrack::GetValue(float time) const {
-        Keyframe const* firstKey = nullptr;
-        Keyframe const* secondKey = nullptr;
-        for (auto&& keyframe : m_keyframes) {
-            if (time < keyframe.m_time) {
-                secondKey = &keyframe;
-                break;
+    void AnimationTrack::UpdateTrackTimings(std::vector<std::unique_ptr<AnimationClip>> const& clips) {
+        auto keyframeIt = std::begin(m_keyframes);
+        for (auto&& clip : clips) {
+            // seek to the start of the clip
+            while (keyframeIt != std::end(m_keyframes) && keyframeIt->m_frame < clip->GetStartFrame()) {
+                ++keyframeIt;
             }
-            firstKey = &keyframe;
-        }
 
-        if (firstKey && secondKey) {
-            return firstKey->m_value + (secondKey->m_value - firstKey->m_value) * (time - firstKey->m_time);
+            // cycle through all keyframes in clip
+            while (keyframeIt != std::end(m_keyframes) && keyframeIt->m_frame <= clip->GetEndFrame()) {
+                int const frameDelta = keyframeIt->m_frame - clip->GetStartFrame();
+                float const timeDelta = frameDelta / clip->GetFPS();
+                keyframeIt->m_time = clip->GetStartTime() + timeDelta;
+                ++keyframeIt;
+            }
         }
-
-        return m_keyframes[0].m_value;
     }
 }

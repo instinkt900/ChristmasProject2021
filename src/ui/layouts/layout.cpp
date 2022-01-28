@@ -3,7 +3,7 @@
 #include "layout_entity.h"
 #include "layout_entity_image.h"
 #include "layout_entity_group.h"
-#include "animation_clip_info.h"
+#include "animation_clip.h"
 
 namespace ui {
     std::unique_ptr<LayoutEntity> LoadEntity(nlohmann::json const& json, LayoutEntityGroup* parent) {
@@ -31,12 +31,19 @@ namespace ui {
         auto layout = std::make_unique<LayoutEntityGroup>(json, nullptr);
 
         if (json.contains("clips")) {
+            std::vector<std::unique_ptr<AnimationClip>> rawAnimationClips;
+            for (auto&& clipJson : json["clips"]) {
+                rawAnimationClips.push_back(std::make_unique<AnimationClip>(clipJson));
+            }
+            std::sort(std::begin(rawAnimationClips), std::end(rawAnimationClips), [](auto& clip1, auto& clip2) {
+                return clip1->GetStartFrame() < clip2->GetStartFrame();
+            });
             auto& animationClips = layout->GetAnimationClips();
             float startTime = 0;
-            for (auto&& clipJson : json["clips"]) {
-                auto clip = std::make_shared<AnimationClipInfo>(clipJson, startTime);
+            for (auto&& clip : rawAnimationClips) {
+                clip->SetStartTime(startTime);
                 startTime = clip->GetEndTime();
-                animationClips.insert(std::make_pair(clip->GetName(), clip));
+                animationClips.push_back(std::move(clip));
             }
         }
 

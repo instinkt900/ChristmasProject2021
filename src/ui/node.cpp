@@ -7,6 +7,7 @@
 #include "layouts/layout_entity.h"
 #include "layouts/animation_clip.h"
 #include "layouts/animation_track.h"
+#include "animation_controller.h"
 
 namespace ui {
     Node::Node() {
@@ -16,6 +17,7 @@ namespace ui {
         : m_layout(layoutEntity)
         , m_id(m_layout->GetId())
         , m_layoutRect(m_layout->GetBounds()) {
+        m_animationController = std::make_unique<AnimationController>(this, m_layout->GetAnimationTracks());
     }
 
     Node::~Node() {
@@ -70,40 +72,9 @@ namespace ui {
         return translated;
     }
 
-    void Node::ActivateClip(std::string const& name) {
-        if (m_layout) {
-            auto& animationClips = m_layout->GetAnimationClips();
-            auto it = animationClips.find(name);
-            if (std::end(animationClips) != it) {
-                m_currentAnimationClip = it->second.get();
-            }
-        }
-    }
-
-    void Node::DeactivateClip() {
-        m_currentAnimationClip = nullptr;
-    }
-
     void Node::SetAnimTime(float time) {
-        if (m_currentAnimationClip) {
-            for (auto&& track : m_currentAnimationClip->GetTracks()) {
-                switch (track->GetTarget()) {
-                case AnimationTrack::Target::TopOffset:
-                    m_layoutRect.topLeft.offset.y = track->GetValue(time);
-                    break;
-                case AnimationTrack::Target::BottomOffset:
-                    m_layoutRect.bottomRight.offset.y = track->GetValue(time);
-                    break;
-                case AnimationTrack::Target::LeftOffset:
-                    m_layoutRect.topLeft.offset.x = track->GetValue(time);
-                    break;
-                case AnimationTrack::Target::RightOffset:
-                    m_layoutRect.bottomRight.offset.x = track->GetValue(time);
-                    break;
-                }
-            }
-            RecalculateBounds();
-        }
+        m_animationController->SetTime(time);
+        RecalculateBounds();
     }
 
     void Node::DebugDraw() {

@@ -5,7 +5,7 @@
 namespace ui {
 
     class LayoutEntityGroup;
-    class AnimationClipInfo;
+    class AnimationClip;
 
     class Group : public Node {
     public:
@@ -30,7 +30,7 @@ namespace ui {
 
     protected:
         std::vector<std::shared_ptr<Node>> m_children;
-        AnimationClipInfo* m_currentAnimationClip = nullptr;
+        AnimationClip* m_currentAnimationClip = nullptr;
         float m_animTime = 0;
     };
 }

@@ -86,11 +86,11 @@
                     "keyframes":
                     [
                         {
-                            "time": 0,
+                            "frame": 0,
                             "value": -25
                         },
                         {
-                            "time": 0.9,
+                            "frame": 30,
                             "value": -50
                         }
                     ]
@@ -100,11 +100,11 @@
                     "keyframes":
                     [
                         {
-                            "time": 0,
+                            "frame": 0,
                             "value": 25
                         },
                         {
-                            "time": 0.9,
+                            "frame": 30,
                             "value": 50
                         }
                     ]
@@ -114,11 +114,11 @@
                     "keyframes":
                     [
                         {
-                            "time": 0,
+                            "frame": 30,
                             "value": -50
                         },
                         {
-                            "time": 0.9,
+                            "frame": 60,
                             "value": -100
                         }
                     ]
@@ -128,11 +128,11 @@
                     "keyframes":
                     [
                         {
-                            "time": 0,
+                            "frame": 30,
                             "value": 50
                         },
                         {
-                            "time": 0.9,
+                            "frame": 60,
                             "value": 100
                         }
                     ]
@@ -152,7 +152,7 @@
         {
             "name": "test2",
             "start_frame": 31,
-            "end_frame": 61,
+            "end_frame": 60,
             "fps": 30,
             "loop_type": "loop"
         }
