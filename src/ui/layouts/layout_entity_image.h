@@ -5,6 +5,7 @@
 namespace ui {
     class LayoutEntityImage : public LayoutEntity {
     public:
+        LayoutEntityImage();
         LayoutEntityImage(nlohmann::json const& json, LayoutEntityGroup* parent);
 
         std::string const& GetTexturePath() const { return m_texturePath; }

@@ -40,7 +40,10 @@ namespace ui {
         IntVec2 TranslatePosition(IntVec2 const& point) const;
 
         virtual bool SetAnimation(std::string const& name) { return false; }
-        void SetAnimTime(float time);
+        virtual void SetAnimTime(float time);
+        virtual void SetAnimFrame(int frame);
+
+        auto GetLayoutEntity() const { return m_layout.get(); }
 
         virtual void DebugDraw();
 

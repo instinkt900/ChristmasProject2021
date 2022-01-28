@@ -8,6 +8,7 @@ namespace ImAnimation {
         return ImVec2(a.x + b.x, a.y + b.y);
     }
 #endif
+
     static bool SequencerAddDelButton(ImDrawList* draw_list, ImVec2 pos, bool add = true) {
         ImGuiIO& io = ImGui::GetIO();
         ImRect delRect(pos, ImVec2(pos.x + 16, pos.y + 16));
@@ -22,7 +23,7 @@ namespace ImAnimation {
         return overDel;
     }
 
-    bool Animation(IAnimation* animation, int* currentFrame, bool* expanded, int* firstFrame) {
+    bool Animation(IAnimation* animation, int* currentFrame, bool* expanded, int minFrame, int maxFrame, int* firstFrame) {
         bool ret = false;
         ImGuiIO& io = ImGui::GetIO();
         int cx = (int)(io.MousePos.x);
@@ -39,8 +40,8 @@ namespace ImAnimation {
 
         bool popupOpened = false;
         int trackCount = animation->GetTrackCount();
-        if (!trackCount)
-            return false;
+        //if (!trackCount)
+        //    return false;
         ImGui::BeginGroup();
 
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -50,9 +51,7 @@ namespace ImAnimation {
 
 
         int controlHeight = (trackCount + 1) * ItemHeight;
-        for (int i = 0; i < trackCount; i++)
-            controlHeight += int(animation->GetCustomHeight(i));
-        int frameCount = ImMax(animation->GetFrameMax() - animation->GetFrameMin(), 1);
+        int frameCount = ImMax(maxFrame - minFrame, 1);
 
         static bool MovingScrollBar = false;
         static bool MovingCurrentFrame = false;
@@ -82,7 +81,7 @@ namespace ImAnimation {
                 panningViewFrame = *firstFrame;
             }
             *firstFrame = panningViewFrame - int((io.MousePos.x - panningViewSource.x) / framePixelWidth);
-            *firstFrame = ImClamp(*firstFrame, animation->GetFrameMin(), animation->GetFrameMax() - visibleFrameCount);
+            *firstFrame = ImClamp(*firstFrame, minFrame, maxFrame - visibleFrameCount);
         }
         if (panningView && !io.MouseDown[2]) {
             panningView = false;
@@ -91,9 +90,9 @@ namespace ImAnimation {
 
         framePixelWidth = ImLerp(framePixelWidth, framePixelWidthTarget, 0.33f);
 
-        frameCount = animation->GetFrameMax() - animation->GetFrameMin();
+        frameCount = maxFrame - minFrame;
         if (visibleFrameCount >= frameCount && firstFrame)
-            *firstFrame = animation->GetFrameMin();
+            *firstFrame = minFrame;
 
 
         // --
@@ -141,10 +140,10 @@ namespace ImAnimation {
             if (MovingCurrentFrame) {
                 if (frameCount) {
                     *currentFrame = (int)((io.MousePos.x - topRect.Min.x) / framePixelWidth) + firstFrameUsed;
-                    if (*currentFrame < animation->GetFrameMin())
-                        *currentFrame = animation->GetFrameMin();
-                    if (*currentFrame >= animation->GetFrameMax())
-                        *currentFrame = animation->GetFrameMax();
+                    if (*currentFrame < minFrame)
+                        *currentFrame = minFrame;
+                    if (*currentFrame >= maxFrame)
+                        *currentFrame = maxFrame;
                 }
                 if (!io.MouseDown[0])
                     MovingCurrentFrame = false;
@@ -251,7 +250,7 @@ namespace ImAnimation {
             int halfModFrameCount = modFrameCount / 2;
 
             auto drawLine = [&](int i, int regionHeight) {
-                bool baseIndex = ((i % modFrameCount) == 0) || (i == animation->GetFrameMax() || i == animation->GetFrameMin());
+                bool baseIndex = ((i % modFrameCount) == 0) || (i == maxFrame || i == minFrame);
                 bool halfIndex = (i % halfModFrameCount) == 0;
                 int px = int(contentMin.x + legendWidth + (i - firstFrameUsed) * framePixelWidth);
                 int tiretStart = baseIndex ? 4 : (halfIndex ? 10 : 14);
@@ -282,11 +281,11 @@ namespace ImAnimation {
                 }
             };
 
-            for (int i = animation->GetFrameMin(); i <= animation->GetFrameMax(); i += frameStep) {
+            for (int i = minFrame; i <= maxFrame; i += frameStep) {
                 drawLine(i, ItemHeight);
             }
-            drawLine(animation->GetFrameMin(), ItemHeight);
-            drawLine(animation->GetFrameMax(), ItemHeight);
+            drawLine(minFrame, ItemHeight);
+            drawLine(maxFrame, ItemHeight);
 
             // clip content
             draw_list->PushClipRect(childFramePos, childFramePos + childFrameSize);
@@ -301,8 +300,6 @@ namespace ImAnimation {
                     int index = i - 1;
                     ImVec2 tpos(contentMin.x + 3, contentMin.y + i * ItemHeight + 2 + customHeight);
                     draw_list->AddText(tpos, 0xFFFFFFFF, animation->GetTrackLabel(index));
-
-                    customHeight += animation->GetCustomHeight(index);
                 }
             }
 
@@ -314,30 +311,26 @@ namespace ImAnimation {
             for (int i = 0; i < trackCount; i++) {
                 unsigned int col = (i & 1) ? 0xFF3A3636 : 0xFF413D3D;
 
-                size_t localCustomHeight = animation->GetCustomHeight(i);
                 ImVec2 pos = ImVec2(contentMin.x + legendWidth, contentMin.y + ItemHeight * i + 1 + customHeight);
-                ImVec2 sz = ImVec2(canvas_size.x + canvas_pos.x, pos.y + ItemHeight - 1 + localCustomHeight);
+                ImVec2 sz = ImVec2(canvas_size.x + canvas_pos.x, pos.y + ItemHeight - 1);
                 draw_list->AddRectFilled(pos, sz, col, 0);
-                customHeight += localCustomHeight;
             }
 
             draw_list->PushClipRect(childFramePos + ImVec2(float(legendWidth), 0.f), childFramePos + childFrameSize);
 
             // vertical frame lines in content area
-            for (int i = animation->GetFrameMin(); i <= animation->GetFrameMax(); i += frameStep) {
+            for (int i = minFrame; i <= maxFrame; i += frameStep) {
                 drawLineContent(i, int(contentHeight));
             }
-            drawLineContent(animation->GetFrameMin(), int(contentHeight));
-            drawLineContent(animation->GetFrameMax(), int(contentHeight));
+            drawLineContent(minFrame, int(contentHeight));
+            drawLineContent(maxFrame, int(contentHeight));
 
             // keyframes
             customHeight = 0;
             for (int i = 0; i < trackCount; i++) {
                 int* keyframes;
-                int* keyframeTypes;
                 int keyframeCount;
-                animation->GetKeyframes(i, &keyframes, &keyframeTypes, &keyframeCount);
-                size_t localCustomHeight = animation->GetCustomHeight(i);
+                animation->GetKeyframes(i, &keyframes, &keyframeCount);
 
                 unsigned int keyframeColor = 0xFFc4c4c4;
                 ImVec2 pos = ImVec2(contentMin.x + legendWidth - firstFrameUsed * framePixelWidth, contentMin.y + ItemHeight * (i + 1) + 1 + customHeight);
@@ -365,26 +358,6 @@ namespace ImAnimation {
                         }
                     }
                 }
-
-                // custom draw
-                if (localCustomHeight > 0) {
-                    ImVec2 rp(canvas_pos.x, contentMin.y + ItemHeight * i + 1 + customHeight);
-                    ImRect customRect(rp + ImVec2(legendWidth - (firstFrameUsed - animation->GetFrameMin() - 0.5f) * framePixelWidth, float(ItemHeight)),
-                                      rp + ImVec2(legendWidth + (animation->GetFrameMax() - firstFrameUsed - 0.5f + 2.f) * framePixelWidth, float(localCustomHeight + ItemHeight)));
-                    ImRect clippingRect(rp + ImVec2(float(legendWidth), float(ItemHeight)), rp + ImVec2(canvas_size.x, float(localCustomHeight + ItemHeight)));
-
-                    ImRect legendRect(rp + ImVec2(0.f, float(ItemHeight)), rp + ImVec2(float(legendWidth), float(localCustomHeight)));
-                    ImRect legendClippingRect(canvas_pos + ImVec2(0.f, float(ItemHeight)), canvas_pos + ImVec2(float(legendWidth), float(localCustomHeight + ItemHeight)));
-                    customDraws.push_back({ i, customRect, legendRect, clippingRect, legendClippingRect });
-                } else {
-                    ImVec2 rp(canvas_pos.x, contentMin.y + ItemHeight * i + customHeight);
-                    ImRect customRect(rp + ImVec2(legendWidth - (firstFrameUsed - animation->GetFrameMin() - 0.5f) * framePixelWidth, float(0.f)),
-                                      rp + ImVec2(legendWidth + (animation->GetFrameMax() - firstFrameUsed - 0.5f + 2.f) * framePixelWidth, float(ItemHeight)));
-                    ImRect clippingRect(rp + ImVec2(float(legendWidth), float(0.f)), rp + ImVec2(canvas_size.x, float(ItemHeight)));
-
-                    compactCustomDraws.push_back({ i, customRect, ImRect(), clippingRect, ImRect() });
-                }
-                customHeight += localCustomHeight;
             }
 
 
@@ -394,7 +367,7 @@ namespace ImAnimation {
                 int diffFrame = int((cx - movingPos) / framePixelWidth);
                 if (std::abs(diffFrame) > 0) {
                     int* keyframes;
-                    animation->GetKeyframes(movingEntry, &keyframes, NULL, NULL);
+                    animation->GetKeyframes(movingEntry, &keyframes, NULL);
                     int& k = keyframes[movingPart];
                     k += diffFrame;
                     if (k < 0) {
@@ -409,7 +382,7 @@ namespace ImAnimation {
             }
 
             // cursor
-            if (currentFrame && firstFrame && *currentFrame >= *firstFrame && *currentFrame <= animation->GetFrameMax()) {
+            if (currentFrame && firstFrame && *currentFrame >= *firstFrame && *currentFrame <= maxFrame) {
                 float cursorOffset = contentMin.x + legendWidth + (*currentFrame - firstFrameUsed) * framePixelWidth + framePixelWidth / 2;
                 draw_list->AddLine(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset, contentMax.y), 0xA02A2AFF, framePixelWidth);
                 //draw_list->AddRectFilled(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset + framePixelWidth, contentMax.y), 0xA02A2AFF, 2);
@@ -421,11 +394,6 @@ namespace ImAnimation {
             draw_list->PopClipRect();
             draw_list->PopClipRect();
 
-            for (auto& customDraw : customDraws)
-                animation->CustomDraw(customDraw.index, draw_list, customDraw.customRect, customDraw.legendRect, customDraw.clippingRect, customDraw.legendClippingRect);
-            for (auto& customDraw : compactCustomDraws)
-                animation->CustomDrawCompact(customDraw.index, draw_list, customDraw.customRect, customDraw.clippingRect);
-
             ImGui::EndChildFrame();
             ImGui::PopStyleColor();
             if (hasScrollBar) {
@@ -435,7 +403,7 @@ namespace ImAnimation {
 
                 // ratio = number of frames visible in control / number to total frames
 
-                float startFrameOffset = ((float)(firstFrameUsed - animation->GetFrameMin()) / (float)frameCount) * (canvas_size.x - legendWidth);
+                float startFrameOffset = ((float)(firstFrameUsed - minFrame) / (float)frameCount) * (canvas_size.x - legendWidth);
                 ImVec2 scrollBarA(scrollBarMin.x + legendWidth, scrollBarMin.y - 2);
                 ImVec2 scrollBarB(scrollBarMin.x + canvas_size.x, scrollBarMax.y - 1);
                 draw_list->AddRectFilled(scrollBarA, scrollBarB, 0xFF222222, 0);
@@ -473,8 +441,8 @@ namespace ImAnimation {
                         framePixelWidthTarget = framePixelWidth = framePixelWidth / barRatio;
                         int newVisibleFrameCount = int((canvas_size.x - legendWidth) / framePixelWidthTarget);
                         int lastFrame = *firstFrame + newVisibleFrameCount;
-                        if (lastFrame > animation->GetFrameMax()) {
-                            framePixelWidthTarget = framePixelWidth = (canvas_size.x - legendWidth) / float(animation->GetFrameMax() - *firstFrame);
+                        if (lastFrame > maxFrame) {
+                            framePixelWidthTarget = framePixelWidth = (canvas_size.x - legendWidth) / float(maxFrame - *firstFrame);
                         }
                     }
                 } else if (sizingLBar) {
@@ -488,7 +456,7 @@ namespace ImAnimation {
                             framePixelWidthTarget = framePixelWidth = framePixelWidth / barRatio;
                             int newVisibleFrameCount = int(visibleFrameCount / barRatio);
                             int newFirstFrame = *firstFrame + newVisibleFrameCount - visibleFrameCount;
-                            newFirstFrame = ImClamp(newFirstFrame, animation->GetFrameMin(), ImMax(animation->GetFrameMax() - visibleFrameCount, animation->GetFrameMin()));
+                            newFirstFrame = ImClamp(newFirstFrame, minFrame, ImMax(maxFrame - visibleFrameCount, minFrame));
                             if (newFirstFrame == *firstFrame) {
                                 framePixelWidth = framePixelWidthTarget = previousFramePixelWidthTarget;
                             } else {
@@ -503,7 +471,7 @@ namespace ImAnimation {
                         } else {
                             float framesPerPixelInBar = barWidthInPixels / (float)visibleFrameCount;
                             *firstFrame = int((io.MousePos.x - panningViewSource.x) / framesPerPixelInBar) - panningViewFrame;
-                            *firstFrame = ImClamp(*firstFrame, animation->GetFrameMin(), ImMax(animation->GetFrameMax() - visibleFrameCount, animation->GetFrameMin()));
+                            *firstFrame = ImClamp(*firstFrame, minFrame, ImMax(maxFrame - visibleFrameCount, minFrame));
                         }
                     } else {
                         if (scrollBarThumb.Contains(io.MousePos) && ImGui::IsMouseClicked(0) && firstFrame && !MovingCurrentFrame && movingEntry == -1) {

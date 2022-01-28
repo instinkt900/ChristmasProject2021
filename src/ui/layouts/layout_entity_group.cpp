@@ -7,6 +7,9 @@
 #include "animation_clip.h"
 
 namespace ui {
+    LayoutEntityGroup::LayoutEntityGroup() {
+    }
+
     LayoutEntityGroup::LayoutEntityGroup(nlohmann::json const& json, LayoutEntityGroup* parent)
         : LayoutEntity(json, parent) {
         if (json.contains(LABEL)) {

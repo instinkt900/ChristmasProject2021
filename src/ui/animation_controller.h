@@ -9,6 +9,7 @@ namespace ui {
         AnimationTrackController(float& target, AnimationTrack& track);
 
         void SetTime(float time);
+        void SetFrame(int frame);
 
     private:
         float& m_target;
@@ -20,6 +21,7 @@ namespace ui {
         AnimationController(Node* node, std::vector<std::shared_ptr<AnimationTrack>> tracks);
 
         void SetTime(float time);
+        void SetFrame(int frame);
 
     private:
         std::vector<std::unique_ptr<AnimationTrackController>> m_trackControllers;

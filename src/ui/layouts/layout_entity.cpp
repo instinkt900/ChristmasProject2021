@@ -7,6 +7,9 @@
 #include "ui/inspectors.h"
 
 namespace ui {
+    LayoutEntity::LayoutEntity() {
+    }
+
     LayoutEntity::LayoutEntity(nlohmann::json const& json, LayoutEntityGroup* parent)
         : m_id(json["id"])
         , m_bounds(json["bounds"])

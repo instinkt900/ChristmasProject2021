@@ -5,7 +5,7 @@
 namespace ui {
 
     class LayoutEntityGroup;
-    class AnimationClip;
+    struct AnimationClip;
 
     class Group : public Node {
     public:
@@ -25,6 +25,8 @@ namespace ui {
         auto const& GetChildren() const { return m_children; }
 
         bool SetAnimation(std::string const& name) override;
+        void SetAnimTime(float time) override;
+        void SetAnimFrame(int frame) override;
 
         void DebugDraw() override;
 

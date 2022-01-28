@@ -36,13 +36,13 @@ namespace ui {
                 rawAnimationClips.push_back(std::make_unique<AnimationClip>(clipJson));
             }
             std::sort(std::begin(rawAnimationClips), std::end(rawAnimationClips), [](auto& clip1, auto& clip2) {
-                return clip1->GetStartFrame() < clip2->GetStartFrame();
+                return clip1->m_startFrame < clip2->m_startFrame;
             });
             auto& animationClips = layout->GetAnimationClips();
             float startTime = 0;
             for (auto&& clip : rawAnimationClips) {
                 clip->SetStartTime(startTime);
-                startTime = clip->GetEndTime();
+                startTime = clip->m_endTime;
                 animationClips.push_back(std::move(clip));
             }
         }

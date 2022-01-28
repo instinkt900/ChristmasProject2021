@@ -184,6 +184,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\tile_map.cpp" />
     <ClCompile Include="src\ui\animation_controller.cpp" />
     <ClCompile Include="src\ui\editor\anchor_bounds_handle.cpp" />
+    <ClCompile Include="src\ui\editor\animation_editor.cpp" />
     <ClCompile Include="src\ui\editor\bounds_handle.cpp" />
     <ClCompile Include="src\ui\editor\bounds_widget.cpp" />
     <ClCompile Include="src\ui\editor\editor_layer.cpp" />
@@ -254,6 +255,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\tile_map.h" />
     <ClInclude Include="src\ui\animation_controller.h" />
     <ClInclude Include="src\ui\editor\anchor_bounds_handle.h" />
+    <ClInclude Include="src\ui\editor\animation_editor.h" />
     <ClInclude Include="src\ui\editor\bounds_handle.h" />
     <ClInclude Include="src\ui\editor\bounds_widget.h" />
     <ClInclude Include="src\ui\editor\editor_layer.h" />

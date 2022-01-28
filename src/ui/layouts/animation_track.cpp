@@ -25,15 +25,15 @@ namespace ui {
         auto keyframeIt = std::begin(m_keyframes);
         for (auto&& clip : clips) {
             // seek to the start of the clip
-            while (keyframeIt != std::end(m_keyframes) && keyframeIt->m_frame < clip->GetStartFrame()) {
+            while (keyframeIt != std::end(m_keyframes) && keyframeIt->m_frame < clip->m_startFrame) {
                 ++keyframeIt;
             }
 
             // cycle through all keyframes in clip
-            while (keyframeIt != std::end(m_keyframes) && keyframeIt->m_frame <= clip->GetEndFrame()) {
-                int const frameDelta = keyframeIt->m_frame - clip->GetStartFrame();
-                float const timeDelta = frameDelta / clip->GetFPS();
-                keyframeIt->m_time = clip->GetStartTime() + timeDelta;
+            while (keyframeIt != std::end(m_keyframes) && keyframeIt->m_frame <= clip->m_endFrame) {
+                int const frameDelta = keyframeIt->m_frame - clip->m_startFrame;
+                float const timeDelta = frameDelta / clip->m_fps;
+                keyframeIt->m_time = clip->m_startTime + timeDelta;
                 ++keyframeIt;
             }
         }

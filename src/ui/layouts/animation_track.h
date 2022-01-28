@@ -1,7 +1,7 @@
 #pragma once
 
 namespace ui {
-    class AnimationClip;
+    struct AnimationClip;
 
     class Keyframe {
     public:

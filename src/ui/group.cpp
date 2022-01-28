@@ -34,17 +34,17 @@ namespace ui {
     void Group::Update(uint32_t ticks) {
         if (m_currentAnimationClip) {
             m_animTime += ticks / 1000.0f;
-            if (m_animTime >= m_currentAnimationClip->GetEndTime()) {
-                switch (m_currentAnimationClip->GetLoopType()) {
+            if (m_animTime >= m_currentAnimationClip->m_endTime) {
+                switch (m_currentAnimationClip->m_loopType) {
                 case AnimationClip::LoopType::Stop:
-                    m_animTime = m_currentAnimationClip->GetEndTime();
+                    m_animTime = m_currentAnimationClip->m_endTime;
                     m_currentAnimationClip = nullptr;
                     break;
                 case AnimationClip::LoopType::Loop:
                     m_animTime -= m_currentAnimationClip->GetDuration();
                     break;
                 case AnimationClip::LoopType::Reset:
-                    m_animTime = m_currentAnimationClip->GetStartTime();
+                    m_animTime = m_currentAnimationClip->m_startTime;
                     m_currentAnimationClip = nullptr;
                     break;
                 }
@@ -84,14 +84,26 @@ namespace ui {
         if (m_layout) {
             auto layout = std::static_pointer_cast<LayoutEntityGroup>(m_layout);
             auto& animationClips = layout->GetAnimationClips();
-            auto it = std::find_if(std::begin(animationClips), std::end(animationClips), [&name](auto& clip) { return clip->GetName() == name; });
+            auto it = std::find_if(std::begin(animationClips), std::end(animationClips), [&name](auto& clip) { return clip->m_name == name; });
             if (std::end(animationClips) != it) {
                 m_currentAnimationClip = it->get();
-                m_animTime = m_currentAnimationClip->GetStartTime();
+                m_animTime = m_currentAnimationClip->m_startTime;
                 return true;
             }
         }
         return false;
+    }
+
+    void Group::SetAnimTime(float time) {
+        for (auto&& child : m_children) {
+            child->SetAnimTime(time);
+        }
+    }
+
+    void Group::SetAnimFrame(int frame) {
+        for (auto&& child : m_children) {
+            child->SetAnimFrame(frame);
+        }
     }
 
     void Group::DebugDraw() {

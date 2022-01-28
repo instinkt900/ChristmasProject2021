@@ -77,6 +77,11 @@ namespace ui {
         RecalculateBounds();
     }
 
+    void Node::SetAnimFrame(int frame) {
+        m_animationController->SetFrame(frame);
+        RecalculateBounds();
+    }
+
     void Node::DebugDraw() {
         if (ImGui::TreeNode("Node")) {
             ImGuiInspectMember("id", m_id);

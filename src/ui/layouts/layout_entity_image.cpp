@@ -3,6 +3,9 @@
 #include "ui/node_image.h"
 
 namespace ui {
+    LayoutEntityImage::LayoutEntityImage() {
+    }
+
     LayoutEntityImage::LayoutEntityImage(nlohmann::json const& json, LayoutEntityGroup* parent)
         : LayoutEntity(json, parent) {
         auto data = json[LABEL];

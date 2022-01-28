@@ -3,10 +3,11 @@
 #include "layout_entity.h"
 
 namespace ui {
-    class AnimationClip;
+    struct AnimationClip;
 
     class LayoutEntityGroup : public LayoutEntity {
     public:
+        LayoutEntityGroup();
         LayoutEntityGroup(nlohmann::json const& json, LayoutEntityGroup* parent);
 
         auto& GetChildren() { return m_children; }

@@ -150,6 +150,9 @@
     <ClCompile Include="src\ui\animation_controller.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\editor\animation_editor.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">
@@ -390,6 +393,9 @@
     </ClInclude>
     <ClInclude Include="src\ui\animation_controller.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\animation_editor.h">
+      <Filter>ui\editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
