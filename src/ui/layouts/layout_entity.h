@@ -26,7 +26,6 @@ namespace ui {
 
         virtual void OnEditDraw();
 
-    protected:
         std::string m_id;
         LayoutRect m_bounds;
         LayoutEntity* m_parent = nullptr;

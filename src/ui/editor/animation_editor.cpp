@@ -31,14 +31,14 @@ namespace ui {
     }
 
     int AnimationEditContext::GetClipCount() const {
-        if (auto layout = static_cast<LayoutEntityGroup*>(m_group->GetLayoutEntity())) {
+        if (auto layout = static_cast<LayoutEntityGroup*>(m_group->GetLayoutEntity().get())) {
             return static_cast<int>(layout->GetAnimationClips().size());
         }
         return 0;
     }
 
     void AnimationEditContext::GetClip(int clipIndex, int** startFrame, int** endFrame, char const** clipName, unsigned int* color) {
-        if (auto layout = static_cast<LayoutEntityGroup*>(m_group->GetLayoutEntity())) {
+        if (auto layout = static_cast<LayoutEntityGroup*>(m_group->GetLayoutEntity().get())) {
             auto& clips = layout->GetAnimationClips();
 
             if (startFrame)
@@ -75,7 +75,7 @@ namespace ui {
 
     void AnimationEditContext::Update() {
         m_tracks.clear();
-        if (auto layout = static_cast<LayoutEntityGroup*>(m_group->GetLayoutEntity())) {
+        if (auto layout = static_cast<LayoutEntityGroup*>(m_group->GetLayoutEntity().get())) {
             auto& children = m_group->GetChildren();
             int i = 0;
             for (auto&& child : children) {

@@ -5,7 +5,7 @@
 namespace ui {
     class AnchorBoundsHandle : public BoundsHandle {
     public:
-        AnchorBoundsHandle(BoundsHandleAnchor const& anchor);
+        AnchorBoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor);
         virtual ~AnchorBoundsHandle();
 
         void Draw(SDL_Renderer& renderer) override;

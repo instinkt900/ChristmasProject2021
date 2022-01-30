@@ -153,6 +153,15 @@
     <ClCompile Include="src\ui\editor\animation_editor.cpp">
       <Filter>ui\editor</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\editor\actions\add_action.cpp">
+      <Filter>ui\editor\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\actions\delete_action.cpp">
+      <Filter>ui\editor\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\actions\change_bounds_action.cpp">
+      <Filter>ui\editor\actions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">
@@ -196,6 +205,9 @@
     </Filter>
     <Filter Include="external\ImGuizmo">
       <UniqueIdentifier>{0c2bd573-2b52-43ad-8952-e1babfe304c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\editor\actions">
+      <UniqueIdentifier>{a837e879-acc0-4767-9fca-88e762595eb3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -396,6 +408,18 @@
     </ClInclude>
     <ClInclude Include="src\ui\editor\animation_editor.h">
       <Filter>ui\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\editor_action.h">
+      <Filter>ui\editor\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\add_action.h">
+      <Filter>ui\editor\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\delete_action.h">
+      <Filter>ui\editor\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\change_bounds_action.h">
+      <Filter>ui\editor\actions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -8,9 +8,11 @@
 #include "animation_editor.h"
 #include "ui/layouts/animation_clip.h"
 #include "ui/layouts/layout_entity_image.h"
+#include "ui/editor/actions/add_action.h"
+#include "ui/editor/actions/delete_action.h"
 
 namespace ui {
-    EditorLayer::EditorLayer() {
+    EditorLayer::EditorLayer():m_boundsWidget(*this) {
     }
 
     EditorLayer::~EditorLayer() {
@@ -63,12 +65,28 @@ namespace ui {
                 m_fileDialog.SetTypeFilters({ ".jpg", ".jpeg", ".png", ".bmp" });
                 m_fileDialog.Open();
                 m_fileOpenMode = FileOpenMode::Image;
-                Refresh();
             } else if (ImGui::Button("SubLayout")) {
                 m_fileDialog.SetTitle("Open..");
                 m_fileDialog.SetTypeFilters({ ".json" });
                 m_fileDialog.Open();
                 m_fileOpenMode = FileOpenMode::SubLayout;
+            }
+        }
+        ImGui::End();
+
+        if (ImGui::Begin("Change Stack")) {
+            int i = 0;
+            for (auto&& edit : m_editActions) {
+                ImGui::PushID(edit.get());
+                if (i == m_actionIndex) {
+                    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+                }
+                edit->OnImGui();
+                if (i == m_actionIndex) {
+                    ImGui::PopStyleColor();
+                }
+                ImGui::PopID();
+                ++i;
             }
         }
         ImGui::End();
@@ -114,6 +132,34 @@ namespace ui {
         Layer::OnRemovedFromStack();
     }
 
+    void EditorLayer::AddEditAction(std::unique_ptr<IEditorAction>&& editAction) {
+        // discard anything past the current action
+        while ((static_cast<int>(m_editActions.size()) - 1) > m_actionIndex) {
+            m_editActions.pop_back();
+        }
+        m_editActions.push_back(std::move(editAction));
+        ++m_actionIndex;
+    }
+
+    void EditorLayer::UndoEditAction() {
+        if (m_actionIndex >= 0) {
+            m_editActions[m_actionIndex]->Undo();
+            --m_actionIndex;
+        }
+    }
+
+    void EditorLayer::RedoEditAction() {
+        if (m_actionIndex < (static_cast<int>(m_editActions.size()) - 1)) {
+            ++m_actionIndex;
+            m_editActions[m_actionIndex]->Do();
+        }
+    }
+
+    void EditorLayer::ClearEditActions() {
+        m_editActions.clear();
+        m_actionIndex = -1;
+    }
+
     void EditorLayer::NewLayout() {
         m_rootLayout = std::make_shared<LayoutEntityGroup>();
         Refresh();
@@ -135,8 +181,9 @@ namespace ui {
         auto instance = newSubLayout->Instantiate();
         instance->SetShowRect(true);
 
-        m_root->AddChild(std::move(instance));
-        m_rootLayout->GetChildren().push_back(std::move(newSubLayout));
+        auto addAction = std::make_unique<AddAction>(std::move(instance), m_root);
+        addAction->Do();
+        AddEditAction(std::move(addAction));
 
         m_root->RecalculateBounds();
         m_animationEditorContext->Update();
@@ -154,8 +201,9 @@ namespace ui {
         auto instance = newImageLayout->Instantiate();
         instance->SetShowRect(true);
 
-        m_root->AddChild(std::move(instance));
-        m_rootLayout->GetChildren().push_back(std::move(newImageLayout));
+        auto addAction = std::make_unique<AddAction>(std::move(instance), m_root);
+        addAction->Do();
+        AddEditAction(std::move(addAction));
 
         m_root->RecalculateBounds();
         m_animationEditorContext->Update();
@@ -179,7 +227,7 @@ namespace ui {
         for (auto&& child : m_root->GetChildren()) {
             if (child->IsInBounds(event.GetPosition())) {
                 m_selection = child;
-                m_boundsWidget.SetSelection(m_selection.get());
+                m_boundsWidget.SetSelection(m_selection);
                 return true;
             }
         }
@@ -197,17 +245,21 @@ namespace ui {
             switch (event.GetKey()) {
             case Key::Delete:
                 if (m_selection) {
-                    auto selectedLayout = m_selection->GetLayoutEntity();
-                    auto& children = m_rootLayout->GetChildren();
-                    auto it = std::find_if(std::begin(children), std::end(children), [&selectedLayout](auto& child) { return child.get() == selectedLayout; });
-                    if (std::end(children) != it) {
-                        children.erase(it);
-                    }
-                    m_root->RemoveChild(m_selection);
+                    auto delAction = std::make_unique<DeleteAction>(m_selection, m_root);
+                    delAction->Do();
+                    AddEditAction(std::move(delAction));
                     m_selection = nullptr;
                     m_boundsWidget.SetSelection(nullptr);
                     m_animationEditorContext->Update();
                 }
+                return true;
+            case Key::Z:
+                UndoEditAction();
+                m_animationEditorContext->Update();
+                return true;
+            case Key::Y:
+                RedoEditAction();
+                m_animationEditorContext->Update();
                 return true;
             }
         }

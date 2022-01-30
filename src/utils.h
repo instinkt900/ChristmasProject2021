@@ -26,6 +26,20 @@ struct PositionComponent;
 IntVec2 ResolvePosition(entt::registry& registry, entt::entity entity);
 IntVec2 ResolvePosition(entt::registry& registry, PositionComponent const& positionComponent);
 
+template<typename T>
+inline Vec2<T>& operator+=(Vec2<T>& a, Vec2<T> const& b) {
+    a.x += b.x;
+    a.y += b.y;
+    return a;
+}
+
+template <typename T>
+inline Vec2<T>& operator-=(Vec2<T>& a, Vec2<T> const& b) {
+    a.x -= b.x;
+    a.y -= b.y;
+    return a;
+}
+
 inline void to_json(nlohmann::json& j, IntVec2 const& intVec) {
     j = nlohmann::json{ { "x", intVec.x }, { "y", intVec.y } };
 }

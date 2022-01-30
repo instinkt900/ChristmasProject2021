@@ -1,10 +1,12 @@
 #include "game_pch.h"
 #include "bounds_handle.h"
 #include "events/event_dispatch.h"
+#include "bounds_widget.h"
 
 namespace ui {
-    BoundsHandle::BoundsHandle(BoundsHandleAnchor const& anchor)
-        : m_anchor(anchor) {
+    BoundsHandle::BoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor)
+        : m_widget(widget)
+        , m_anchor(anchor) {
     }
 
     BoundsHandle::~BoundsHandle() {
@@ -29,6 +31,7 @@ namespace ui {
 
         if (IsInBounds(event.GetPosition())) {
             m_holding = true;
+            m_widget.BeginEdit();
             return true;
         }
 
@@ -38,6 +41,10 @@ namespace ui {
     bool BoundsHandle::OnMouseUp(EventMouseUp const& event) {
         if (event.GetButton() != MouseButton::Left) {
             return false;
+        }
+
+        if (m_holding) {
+            m_widget.EndEdit();
         }
 
         m_holding = false;

@@ -4,8 +4,8 @@
 #include "ui/layouts/layout_entity.h"
 
 namespace ui {
-    OffsetBoundsHandle::OffsetBoundsHandle(BoundsHandleAnchor const& anchor)
-        : BoundsHandle(anchor) {
+    OffsetBoundsHandle::OffsetBoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor)
+        : BoundsHandle(widget, anchor) {
     }
 
     OffsetBoundsHandle::~OffsetBoundsHandle() {

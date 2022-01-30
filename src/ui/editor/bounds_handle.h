@@ -5,6 +5,7 @@
 
 namespace ui {
     class Node;
+    class BoundsWidget;
 
     struct BoundsHandleAnchor {
         int Top = 0;
@@ -15,7 +16,7 @@ namespace ui {
 
     class BoundsHandle : public EventListener {
     public:
-        BoundsHandle(BoundsHandleAnchor const& anchor);
+        BoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor);
         virtual ~BoundsHandle();
 
         virtual void SetTarget(Node* node);
@@ -33,6 +34,8 @@ namespace ui {
         static BoundsHandleAnchor constexpr Right{ 0, 0, 0, 1 };
 
     protected:
+        BoundsWidget& m_widget;
+
         Node* m_target = nullptr;
         BoundsHandleAnchor m_anchor;
         IntVec2 m_position;

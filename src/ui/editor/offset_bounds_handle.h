@@ -5,7 +5,7 @@
 namespace ui {
     class OffsetBoundsHandle : public BoundsHandle {
     public:
-        OffsetBoundsHandle(BoundsHandleAnchor const& anchor);
+        OffsetBoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor);
         virtual ~OffsetBoundsHandle();
 
         void Draw(SDL_Renderer& renderer) override;

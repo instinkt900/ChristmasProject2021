@@ -44,7 +44,7 @@ namespace ui {
         virtual void SetAnimTime(float time);
         virtual void SetAnimFrame(int frame, bool propagate);
 
-        auto GetLayoutEntity() const { return m_layout.get(); }
+        auto GetLayoutEntity() const { return m_layout; }
 
         virtual void DebugDraw();
 

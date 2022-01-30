@@ -22,7 +22,6 @@ namespace ui {
 
         static constexpr char const* LABEL = "layout_data";
 
-    protected:
         std::string m_layoutPath;
         std::vector<std::shared_ptr<LayoutEntity>> m_children;
 

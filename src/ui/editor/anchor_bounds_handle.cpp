@@ -5,15 +5,15 @@
 #include "ui/layouts/layout_entity.h"
 
 namespace ui {
-    AnchorBoundsHandle::AnchorBoundsHandle(BoundsHandleAnchor const& anchor)
-        : BoundsHandle(anchor) {
+    AnchorBoundsHandle::AnchorBoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor)
+        : BoundsHandle(widget, anchor) {
     }
 
     AnchorBoundsHandle::~AnchorBoundsHandle() {
     }
 
     void AnchorBoundsHandle::Draw(SDL_Renderer& renderer) {
-        if (!m_target) {
+        if (!m_target || !m_target->GetParent()) {
             return;
         }
 
