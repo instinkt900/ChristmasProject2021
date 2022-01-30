@@ -2,6 +2,7 @@
 #include "anchor_bounds_handle.h"
 #include "ui/node.h"
 #include "ui/group.h"
+#include "ui/layouts/layout_entity.h"
 
 namespace ui {
     AnchorBoundsHandle::AnchorBoundsHandle(BoundsHandleAnchor const& anchor)
@@ -114,12 +115,13 @@ namespace ui {
             auto const xFact = event.GetDelta().x / static_cast<float>(canvasWidth);
             auto const yFact = event.GetDelta().y / static_cast<float>(canvasHeight);
 
-            auto& bounds = m_target->GetLayoutRect();
+            auto& bounds = m_target->GetLayoutEntity()->GetBounds();
             bounds.topLeft.anchor.x += xFact * m_anchor.Left;
             bounds.bottomRight.anchor.x += xFact * m_anchor.Right;
             bounds.topLeft.anchor.y += yFact * m_anchor.Top;
             bounds.bottomRight.anchor.y += yFact * m_anchor.Bottom;
-            m_target->RecalculateBounds();
+            m_target->RefreshBounds();
+            //m_target->RecalculateBounds();
         }
         return false;
     }

@@ -26,7 +26,7 @@ namespace ui {
 
         bool SetAnimation(std::string const& name) override;
         void SetAnimTime(float time) override;
-        void SetAnimFrame(int frame) override;
+        void SetAnimFrame(int frame, bool propagate) override;
 
         void DebugDraw() override;
 

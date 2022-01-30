@@ -1,6 +1,7 @@
 #include "game_pch.h"
 #include "offset_bounds_handle.h"
 #include "ui/node.h"
+#include "ui/layouts/layout_entity.h"
 
 namespace ui {
     OffsetBoundsHandle::OffsetBoundsHandle(BoundsHandleAnchor const& anchor)
@@ -44,12 +45,13 @@ namespace ui {
 
     bool OffsetBoundsHandle::OnMouseMove(EventMouseMove const& event) {
         if (m_holding) {
-            auto& bounds = m_target->GetLayoutRect();
+            auto& bounds = m_target->GetLayoutEntity()->GetBounds();
             bounds.topLeft.offset.x += event.GetDelta().x * m_anchor.Left;
             bounds.bottomRight.offset.x += event.GetDelta().x * m_anchor.Right;
             bounds.topLeft.offset.y += event.GetDelta().y * m_anchor.Top;
             bounds.bottomRight.offset.y += event.GetDelta().y * m_anchor.Bottom;
-            m_target->RecalculateBounds();
+            m_target->RefreshBounds();
+            //m_target->RecalculateBounds();
         }
         return false;
     }

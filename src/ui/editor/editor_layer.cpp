@@ -47,13 +47,10 @@ namespace ui {
 
         if (ImGui::Begin("Elements")) {
             if (ImGui::Button("Image")) {
-                auto newImageLayout = std::make_unique<LayoutEntityImage>();
-                auto& layoutRect = newImageLayout->GetBounds();
-                layoutRect.topLeft.anchor = { 0.5f, 0.5f };
-                layoutRect.bottomRight.anchor = { 0.5f, 0.5f };
-                layoutRect.topLeft.offset = { -50, -50 };
-                layoutRect.bottomRight.offset = { 50, 50 };
-                m_rootLayout->GetChildren().push_back(std::move(newImageLayout));
+                m_fileDialog.SetTitle("Open..");
+                m_fileDialog.SetTypeFilters({ ".jpg", ".jpeg", ".png", ".bmp" });
+                m_fileDialog.Open();
+                m_fileOpenMode = FileOpenMode::Image;
                 Refresh();
             } else if (ImGui::Button("SubLayout")) {
                 m_fileDialog.SetTitle("Open..");
@@ -71,14 +68,10 @@ namespace ui {
                 LoadLayout(m_fileDialog.GetSelected().string().c_str());
                 m_fileDialog.ClearSelected();
             } else if (m_fileOpenMode == FileOpenMode::SubLayout) {
-                auto newSubLayout = ui::LoadLayout(m_fileDialog.GetSelected().string());
-                auto& layoutRect = newSubLayout->GetBounds();
-                layoutRect.topLeft.anchor = { 0.5f, 0.5f };
-                layoutRect.bottomRight.anchor = { 0.5f, 0.5f };
-                layoutRect.topLeft.offset = { -50, -50 };
-                layoutRect.bottomRight.offset = { 50, 50 };
-                m_rootLayout->GetChildren().push_back(std::move(newSubLayout));
-                Refresh();
+                AddSubLayout(m_fileDialog.GetSelected().string().c_str());
+                m_fileDialog.ClearSelected();
+            } else if (m_fileOpenMode == FileOpenMode::Image) {
+                AddImage(m_fileDialog.GetSelected().string().c_str());
                 m_fileDialog.ClearSelected();
             }
         }
@@ -117,6 +110,43 @@ namespace ui {
     void EditorLayer::LoadLayout(char const* path) {
         m_rootLayout = ui::LoadLayout(path);
         Refresh();
+    }
+
+    void EditorLayer::AddSubLayout(char const* path) {
+        auto newSubLayout = ui::LoadLayout(path);
+        auto& layoutRect = newSubLayout->GetBounds();
+        layoutRect.topLeft.anchor = { 0.5f, 0.5f };
+        layoutRect.bottomRight.anchor = { 0.5f, 0.5f };
+        layoutRect.topLeft.offset = { -50, -50 };
+        layoutRect.bottomRight.offset = { 50, 50 };
+
+        auto instance = newSubLayout->Instantiate();
+        instance->SetShowRect(true);
+
+        m_root->AddChild(std::move(instance));
+        m_rootLayout->GetChildren().push_back(std::move(newSubLayout));
+
+        m_root->RecalculateBounds();
+        m_animationEditorContext->Update();
+    }
+
+    void EditorLayer::AddImage(char const* path) {
+        auto newImageLayout = std::make_shared<LayoutEntityImage>();
+        newImageLayout->m_texturePath = path;
+        auto& layoutRect = newImageLayout->GetBounds();
+        layoutRect.topLeft.anchor = { 0.5f, 0.5f };
+        layoutRect.bottomRight.anchor = { 0.5f, 0.5f };
+        layoutRect.topLeft.offset = { -50, -50 };
+        layoutRect.bottomRight.offset = { 50, 50 };
+
+        auto instance = newImageLayout->Instantiate();
+        instance->SetShowRect(true);
+
+        m_root->AddChild(std::move(instance));
+        m_rootLayout->GetChildren().push_back(std::move(newImageLayout));
+
+        m_root->RecalculateBounds();
+        m_animationEditorContext->Update();
     }
 
     void EditorLayer::Refresh() {
@@ -161,9 +191,10 @@ namespace ui {
                     if (std::end(children) != it) {
                         children.erase(it);
                     }
+                    m_root->RemoveChild(m_selection);
                     m_selection = nullptr;
                     m_boundsWidget.SetSelection(nullptr);
-                    Refresh();
+                    m_animationEditorContext->Update();
                 }
                 return true;
             }

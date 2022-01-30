@@ -31,6 +31,7 @@ namespace ui {
         enum class FileOpenMode {
             Layout,
             SubLayout,
+            Image,
         };
         ImGui::FileBrowser m_fileDialog;
         FileOpenMode m_fileOpenMode;
@@ -45,6 +46,8 @@ namespace ui {
 
         void NewLayout();
         void LoadLayout(char const* path);
+        void AddSubLayout(char const* path);
+        void AddImage(char const* path);
         void Refresh();
 
         bool OnMouseDown(EventMouseDown const& event);

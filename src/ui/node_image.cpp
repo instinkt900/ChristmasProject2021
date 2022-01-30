@@ -23,15 +23,28 @@ namespace ui {
 
     NodeImage::NodeImage(std::shared_ptr<LayoutEntityImage> layoutEntity)
         : Node(layoutEntity) {
-        m_texture = CreateTextureRef(g_renderer, layoutEntity->GetTexturePath().c_str());
-        auto const& sourceRect = layoutEntity->GetSourceRect();
-        m_sourceRect.x = sourceRect.topLeft.x;
-        m_sourceRect.y = sourceRect.topLeft.y;
-        m_sourceRect.w = sourceRect.bottomRight.x - sourceRect.topLeft.x;
-        m_sourceRect.h = sourceRect.bottomRight.y - sourceRect.topLeft.y;
+        Load(layoutEntity->m_texturePath.c_str());
+        auto const& sourceRect = layoutEntity->m_sourceRect;
+        if (sourceRect.topLeft.x == 0 && sourceRect.topLeft.y == 0 && sourceRect.bottomRight.x == 0 && sourceRect.bottomRight.y == 0) {
+            int x, y;
+            SDL_QueryTexture(m_texture.get(), NULL, NULL, &x, &y);
+            m_sourceRect.x = 0;
+            m_sourceRect.y = 0;
+            m_sourceRect.w = x;
+            m_sourceRect.h = y;
+        } else {
+            m_sourceRect.x = sourceRect.topLeft.x;
+            m_sourceRect.y = sourceRect.topLeft.y;
+            m_sourceRect.w = sourceRect.bottomRight.x - sourceRect.topLeft.x;
+            m_sourceRect.h = sourceRect.bottomRight.y - sourceRect.topLeft.y;
+        }
     }
 
     NodeImage::~NodeImage() {
+    }
+
+    void NodeImage::Load(char const* path) {
+        m_texture = CreateTextureRef(g_renderer, path);
     }
 
     void NodeImage::Draw(SDL_Renderer& renderer) {

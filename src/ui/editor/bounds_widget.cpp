@@ -4,6 +4,7 @@
 #include "offset_bounds_handle.h"
 #include "events/event_dispatch.h"
 #include "ui/node.h"
+#include "ui/layouts/layout_entity.h"
 
 namespace ui {
     BoundsWidget::BoundsWidget() {
@@ -88,12 +89,13 @@ namespace ui {
 
     bool BoundsWidget::OnMouseMove(EventMouseMove const& event) {
         if (m_holding) {
-            auto& bounds = m_selectedNode->GetLayoutRect();
+            auto& bounds = m_selectedNode->GetLayoutEntity()->GetBounds();
             bounds.topLeft.offset.x += event.GetDelta().x;
             bounds.bottomRight.offset.x += event.GetDelta().x;
             bounds.topLeft.offset.y += event.GetDelta().y;
             bounds.bottomRight.offset.y += event.GetDelta().y;
-            m_selectedNode->RecalculateBounds();
+            m_selectedNode->RefreshBounds();
+            //m_selectedNode->RecalculateBounds();
         }
         return false;
     }

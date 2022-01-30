@@ -48,6 +48,11 @@ namespace ui {
         UpdateChildBounds();
     }
 
+    void Node::RefreshBounds() {
+        m_layoutRect = m_layout->GetBounds();
+        RecalculateBounds();
+    }
+
     void Node::RecalculateBounds() {
         if (nullptr != m_parent && !m_overrideScreenRect) {
             auto const& parentBounds = m_parent->GetScreenRect();
@@ -77,7 +82,7 @@ namespace ui {
         RecalculateBounds();
     }
 
-    void Node::SetAnimFrame(int frame) {
+    void Node::SetAnimFrame(int frame, bool propagate) {
         m_animationController->SetFrame(frame);
         RecalculateBounds();
     }

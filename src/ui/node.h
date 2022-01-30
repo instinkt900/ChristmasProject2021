@@ -35,13 +35,14 @@ namespace ui {
         void SetScreenRect(IntRect const& rect);
         virtual void UpdateChildBounds() {}
 
+        void RefreshBounds();
         void RecalculateBounds();
         bool IsInBounds(IntVec2 const& point) const;
         IntVec2 TranslatePosition(IntVec2 const& point) const;
 
         virtual bool SetAnimation(std::string const& name) { return false; }
         virtual void SetAnimTime(float time);
-        virtual void SetAnimFrame(int frame);
+        virtual void SetAnimFrame(int frame, bool propagate);
 
         auto GetLayoutEntity() const { return m_layout.get(); }
 

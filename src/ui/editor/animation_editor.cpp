@@ -74,6 +74,7 @@ namespace ui {
     }
 
     void AnimationEditContext::Update() {
+        m_tracks.clear();
         if (auto layout = static_cast<LayoutEntityGroup*>(m_group->GetLayoutEntity())) {
             auto& children = m_group->GetChildren();
             int i = 0;
@@ -105,7 +106,9 @@ namespace ui {
             int lastFrame = m_currentFrame;
             ImAnimation::Animation(this, &m_currentFrame, &m_expanded, m_minFrame, m_maxFrame, &m_firstFrame);
             if (lastFrame != m_currentFrame) {
-                m_group->SetAnimFrame(m_currentFrame);
+                for (auto&& child : m_group->GetChildren()) {
+                    child->SetAnimFrame(m_currentFrame, false);
+                }
             }
         }
         ImGui::End();
