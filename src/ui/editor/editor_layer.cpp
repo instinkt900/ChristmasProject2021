@@ -29,6 +29,8 @@ namespace ui {
     }
 
     void EditorLayer::Draw(SDL_Renderer& renderer) {
+        ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
+
         SDL_SetRenderDrawColor(&renderer, 0xAA, 0xAA, 0xAA, 0xFF);
         SDL_RenderClear(&renderer);
 
@@ -46,6 +48,16 @@ namespace ui {
         }
 
         if (ImGui::Begin("Elements")) {
+            bool displayChanged = false;
+            displayChanged |= ImGui::InputInt("Display Width", &m_displayWidth);
+            displayChanged |= ImGui::InputInt("Display Height", &m_displayHeight);
+            if (displayChanged) {
+                IntRect displayRect;
+                displayRect.topLeft = { (GetWidth() - m_displayWidth) / 2, (GetHeight() - m_displayHeight) / 2 };
+                displayRect.bottomRight = { (GetWidth() + m_displayWidth) / 2, (GetHeight() + m_displayHeight) / 2 };
+                m_root->SetScreenRect(displayRect);
+            }
+
             if (ImGui::Button("Image")) {
                 m_fileDialog.SetTitle("Open..");
                 m_fileDialog.SetTypeFilters({ ".jpg", ".jpeg", ".png", ".bmp" });
@@ -58,8 +70,8 @@ namespace ui {
                 m_fileDialog.Open();
                 m_fileOpenMode = FileOpenMode::SubLayout;
             }
-            ImGui::End();
         }
+        ImGui::End();
 
         m_fileDialog.Display();
 
@@ -81,8 +93,8 @@ namespace ui {
             m_boundsWidget.Draw(renderer);
             if (ImGui::Begin("Layout")) {
                 m_root->DebugDraw();
-                ImGui::End();
             }
+            ImGui::End();
         }
 
         if (m_animationEditorContext) {
