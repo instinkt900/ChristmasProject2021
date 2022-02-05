@@ -9,7 +9,7 @@
 #include "events/event_key.h"
 
 namespace ui {
-    class AnimationEditContext;
+    class AnimationWidget;
     class IEditorAction;
     class ChangeBoundsAction;
 
@@ -43,7 +43,7 @@ namespace ui {
         std::shared_ptr<Group> m_root;
         BoundsWidget m_boundsWidget;
         std::shared_ptr<Node> m_selection;
-        std::unique_ptr<AnimationEditContext> m_animationEditorContext;
+        std::unique_ptr<AnimationWidget> m_animationWidget;
 
         int m_displayWidth = 200;
         int m_displayHeight = 200;

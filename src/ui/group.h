@@ -21,12 +21,12 @@ namespace ui {
 
         void AddChild(std::shared_ptr<Node> child);
         void RemoveChild(std::shared_ptr<Node> child);
+        int GetChildCount() const { return static_cast<int>(m_children.size()); }
         auto& GetChildren() { return m_children; }
         auto const& GetChildren() const { return m_children; }
 
         bool SetAnimation(std::string const& name) override;
         void SetAnimTime(float time) override;
-        void SetAnimFrame(int frame, bool propagate) override;
 
         void DebugDraw() override;
 

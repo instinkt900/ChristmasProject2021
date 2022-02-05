@@ -1,11 +1,11 @@
 #pragma once
 
 #include "layout_types.h"
+#include "animation_track.h"
 
 namespace ui {
     class LayoutEntityGroup;
     class Node;
-    class AnimationTrack;
 
     class LayoutEntity : public std::enable_shared_from_this<LayoutEntity> {
     public:
@@ -14,22 +14,37 @@ namespace ui {
 
         std::string GetId() const { return m_id; }
 
-        LayoutRect& GetBounds() { return m_bounds; }
-        LayoutRect const& GetBounds() const { return m_bounds; }
-
         void SetParent(LayoutEntity* parent) { m_parent = parent; }
         LayoutEntity* GetParent() const { return m_parent; }
 
+        LayoutRect const& GetBounds();
+        void SetBounds(LayoutRect const& newBounds);
+
         auto& GetAnimationTracks() const { return m_tracks; }
+
+        void SetCurrentFrame(int frame) {
+            m_currentFrame = frame;
+            m_cacheDirty = true;
+        }
+
+        int GetCurrentFrame() const { return m_currentFrame; }
 
         virtual std::unique_ptr<Node> Instantiate();
 
         virtual void OnEditDraw();
 
+    protected:
         std::string m_id;
-        LayoutRect m_bounds;
         LayoutEntity* m_parent = nullptr;
+        int m_currentFrame = 0;
 
-        std::vector<std::shared_ptr<AnimationTrack>> m_tracks;
+        LayoutRect m_cachedBounds;
+        bool m_cacheDirty = true;
+
+        std::map<AnimationTrack::Target, std::shared_ptr<AnimationTrack>> m_tracks;
+
+        float GetCurrentValue(AnimationTrack::Target target) const;
+        void SetCurrentValue(AnimationTrack::Target target, float value);
+        void CacheFrameBounds();
     };
 }

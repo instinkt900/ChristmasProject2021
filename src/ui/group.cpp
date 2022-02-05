@@ -100,15 +100,6 @@ namespace ui {
         }
     }
 
-    void Group::SetAnimFrame(int frame, bool propagate) {
-        Node::SetAnimFrame(frame, propagate);
-        if (propagate) {
-            for (auto&& child : m_children) {
-                child->SetAnimFrame(frame, propagate);
-            }
-        }
-    }
-
     void Group::DebugDraw() {
         Node::DebugDraw();
         ImGuiInspectMember("anim time", m_animTime);

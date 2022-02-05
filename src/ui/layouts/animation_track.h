@@ -24,11 +24,35 @@ namespace ui {
             RightAnchor
         };
 
+        AnimationTrack(Target target);
         AnimationTrack(nlohmann::json const& json);
 
+        Target GetTarget() const { return m_target; }
+
+        Keyframe& GetKeyframe(int frameNo);
+        void DeleteKeyframe(int frameNo);
+
         void UpdateTrackTimings(std::vector<std::unique_ptr<AnimationClip>> const& clips);
+        float GetValueAtTime(float time) const;
+        float GetValueAtFrame(int frame) const;
+
+        auto& GetKeyframes() { return m_keyframes; }
+
+    private:
+        void SortKeyframes();
 
         Target m_target;
         std::vector<Keyframe> m_keyframes;
     };
+
+    NLOHMANN_JSON_SERIALIZE_ENUM(AnimationTrack::Target, {
+                                                             { AnimationTrack::Target::TopOffset, "top_offset" },
+                                                             { AnimationTrack::Target::BottomOffset, "bottom_offset" },
+                                                             { AnimationTrack::Target::LeftOffset, "left_offset" },
+                                                             { AnimationTrack::Target::RightOffset, "right_offset" },
+                                                             { AnimationTrack::Target::TopAnchor, "top_anchor" },
+                                                             { AnimationTrack::Target::BottomAnchor, "bottom_anchor" },
+                                                             { AnimationTrack::Target::LeftAnchor, "left_anchor" },
+                                                             { AnimationTrack::Target::RightAnchor, "right_anchor" },
+                                                         })
 }

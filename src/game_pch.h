@@ -21,6 +21,8 @@
 #include <nlohmann/json.hpp>
 #include <glm/glm.hpp>
 
+#include <magic_enum.hpp>
+
 #include "smart_sdl.h"
 #include "utils.h"
 #include "events/event.h"

@@ -42,7 +42,6 @@ namespace ui {
 
         virtual bool SetAnimation(std::string const& name) { return false; }
         virtual void SetAnimTime(float time);
-        virtual void SetAnimFrame(int frame, bool propagate);
 
         auto GetLayoutEntity() const { return m_layout; }
 

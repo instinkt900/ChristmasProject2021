@@ -28,8 +28,8 @@ namespace ui {
         float const yAnchor = m_anchor.Top ? 0.0f : m_anchor.Bottom ? 1.0f : 0.5f;
         // clang-format on
 
-        auto const x = lerp(layoutRect.topLeft.anchor.x, layoutRect.bottomRight.anchor.x, xAnchor);
-        auto const y = lerp(layoutRect.topLeft.anchor.y, layoutRect.bottomRight.anchor.y, yAnchor);
+        auto const x = lerp(layoutRect.anchor.topLeft.x, layoutRect.anchor.bottomRight.x, xAnchor);
+        auto const y = lerp(layoutRect.anchor.topLeft.y, layoutRect.anchor.bottomRight.y, yAnchor);
 
         m_position.x = static_cast<int>(parentScreenRect.topLeft.x + canvasWidth * x);
         m_position.y = static_cast<int>(parentScreenRect.topLeft.y + canvasHeight * y);
@@ -115,11 +115,12 @@ namespace ui {
             auto const xFact = event.GetDelta().x / static_cast<float>(canvasWidth);
             auto const yFact = event.GetDelta().y / static_cast<float>(canvasHeight);
 
-            auto& bounds = m_target->GetLayoutEntity()->GetBounds();
-            bounds.topLeft.anchor.x += xFact * m_anchor.Left;
-            bounds.bottomRight.anchor.x += xFact * m_anchor.Right;
-            bounds.topLeft.anchor.y += yFact * m_anchor.Top;
-            bounds.bottomRight.anchor.y += yFact * m_anchor.Bottom;
+            LayoutRect bounds = m_target->GetLayoutEntity()->GetBounds();
+            bounds.anchor.topLeft.x += xFact * m_anchor.Left;
+            bounds.anchor.bottomRight.x += xFact * m_anchor.Right;
+            bounds.anchor.topLeft.y += yFact * m_anchor.Top;
+            bounds.anchor.bottomRight.y += yFact * m_anchor.Bottom;
+            m_target->GetLayoutEntity()->SetBounds(bounds);
             m_target->RefreshBounds();
             //m_target->RecalculateBounds();
         }

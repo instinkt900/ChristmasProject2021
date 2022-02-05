@@ -1,32 +1,24 @@
 #pragma once
 
-struct ViewParameters {
-    int m_offsetX;
-    int m_offsetY;
-    int m_width;
-    int m_height;
-};
-
 template <typename T>
 struct Vec2 {
     T x{ 0 };
     T y{ 0 };
 };
 
+template <typename T>
+struct Rect {
+    Vec2<T> topLeft;
+    Vec2<T> bottomRight;
+};
+
 using IntVec2 = Vec2<int>;
 using FloatVec2 = Vec2<float>;
 
-struct IntRect {
-    IntVec2 topLeft;
-    IntVec2 bottomRight;
-};
+using IntRect = Rect<int>;
+using FloatRect = Rect<float>;
 
-struct PositionComponent;
-
-IntVec2 ResolvePosition(entt::registry& registry, entt::entity entity);
-IntVec2 ResolvePosition(entt::registry& registry, PositionComponent const& positionComponent);
-
-template<typename T>
+template <typename T>
 inline Vec2<T>& operator+=(Vec2<T>& a, Vec2<T> const& b) {
     a.x += b.x;
     a.y += b.y;
@@ -40,34 +32,44 @@ inline Vec2<T>& operator-=(Vec2<T>& a, Vec2<T> const& b) {
     return a;
 }
 
-inline void to_json(nlohmann::json& j, IntVec2 const& intVec) {
-    j = nlohmann::json{ { "x", intVec.x }, { "y", intVec.y } };
+template <typename T>
+inline Rect<T>& operator+=(Rect<T>& a, Rect<T> const& b) {
+    a.topLeft += b.topLeft;
+    a.bottomRight += b.bottomRight;
+    return a;
 }
 
-inline void from_json(nlohmann::json const& j, IntVec2& intVec) {
-    j.at("x").get_to(intVec.x);
-    j.at("y").get_to(intVec.y);
+template <typename T>
+inline Rect<T>& operator-=(Rect<T>& a, Rect<T> const& b) {
+    a.topLeft -= b.topLeft;
+    a.bottomRight -= b.bottomRight;
+    return a;
 }
 
-inline void to_json(nlohmann::json& j, FloatVec2 const& floatVec) {
-    j = nlohmann::json{ { "x", floatVec.x }, { "y", floatVec.y } };
+template <typename T>
+inline void to_json(nlohmann::json& j, Vec2<T> const& vec) {
+    j = nlohmann::json{ { "x", vec.x }, { "y", vec.y } };
 }
 
-inline void from_json(nlohmann::json const& j, FloatVec2& floatVec) {
-    j.at("x").get_to(floatVec.x);
-    j.at("y").get_to(floatVec.y);
+template <typename T>
+inline void from_json(nlohmann::json const& j, Vec2<T>& vec) {
+    j.at("x").get_to(vec.x);
+    j.at("y").get_to(vec.y);
 }
 
-inline void to_json(nlohmann::json& j, IntRect const& rect) {
+template <typename T>
+inline void to_json(nlohmann::json& j, Rect<T> const& rect) {
     j = nlohmann::json{ { "topLeft", rect.topLeft }, { "bottomRight", rect.bottomRight } };
 }
 
-inline void from_json(nlohmann::json const& j, IntRect& rect) {
+template <typename T>
+inline void from_json(nlohmann::json const& j, Rect<T>& rect) {
     j.at("topLeft").get_to(rect.topLeft);
     j.at("bottomRight").get_to(rect.bottomRight);
 }
 
-inline bool IsInRect(IntVec2 const& point, IntRect const& rect) {
+template <typename T, typename U>
+inline bool IsInRect(Vec2<T> const& point, Rect<U> const& rect) {
     if (point.x > rect.bottomRight.x || point.x < rect.topLeft.x ||
         point.y > rect.bottomRight.y || point.y < rect.topLeft.y) {
         return false;
@@ -79,3 +81,15 @@ template <typename T>
 inline T lerp(T const& a, T const& b, float factor) {
     return a + (b - a) * factor;
 }
+
+struct ViewParameters {
+    int m_offsetX;
+    int m_offsetY;
+    int m_width;
+    int m_height;
+};
+
+struct PositionComponent;
+
+IntVec2 ResolvePosition(entt::registry& registry, entt::entity entity);
+IntVec2 ResolvePosition(entt::registry& registry, PositionComponent const& positionComponent);

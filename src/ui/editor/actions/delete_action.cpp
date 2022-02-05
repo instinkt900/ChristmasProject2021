@@ -23,7 +23,7 @@ namespace ui {
         if (std::end(parentLayoutEntity->m_children) != it) {
             parentLayoutEntity->m_children.erase(it);
         }
-        layoutEntity->m_parent = nullptr;
+        layoutEntity->SetParent(nullptr);
     }
 
     void DeleteAction::Undo() {
@@ -31,7 +31,7 @@ namespace ui {
         auto parentLayoutEntity = std::static_pointer_cast<LayoutEntityGroup>(m_parentNode->GetLayoutEntity());
         auto layoutEntity = m_deletedNode->GetLayoutEntity();
         parentLayoutEntity->m_children.push_back(layoutEntity);
-        layoutEntity->m_parent = parentLayoutEntity.get();
+        layoutEntity->SetParent(parentLayoutEntity.get());
 
         // merge the actual node instances
         m_parentNode->AddChild(m_deletedNode);

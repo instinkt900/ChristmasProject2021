@@ -20,22 +20,22 @@ namespace ui {
 
     bool ChangeBoundsAction::IsZero() const {
         // clang-format off
-        return m_delta.topLeft.anchor.x == 0
-            && m_delta.topLeft.anchor.y == 0
-            && m_delta.bottomRight.anchor.x == 0
-            && m_delta.bottomRight.anchor.y == 0
-            && m_delta.topLeft.offset.x == 0
-            && m_delta.topLeft.offset.y == 0
-            && m_delta.bottomRight.offset.x == 0
-            && m_delta.bottomRight.offset.y == 0;
+        return m_delta.anchor.topLeft.x == 0
+            && m_delta.anchor.topLeft.y == 0
+            && m_delta.anchor.bottomRight.x == 0
+            && m_delta.anchor.bottomRight.y == 0
+            && m_delta.offset.topLeft.x == 0
+            && m_delta.offset.topLeft.y == 0
+            && m_delta.offset.bottomRight.x == 0
+            && m_delta.offset.bottomRight.y == 0;
         // clang-format on
     }
 
     void ChangeBoundsAction::Do() {
         // layout entity
         auto layoutEntity = m_node->GetLayoutEntity();
-        auto& layoutBounds = layoutEntity->m_bounds;
-        layoutBounds += m_delta;
+        auto& layoutBounds = layoutEntity->GetBounds();
+        layoutEntity->SetBounds(layoutBounds + m_delta);
 
         // node instance
         m_node->GetLayoutRect() += m_delta;
@@ -45,8 +45,8 @@ namespace ui {
     void ChangeBoundsAction::Undo() {
         // layout entity
         auto layoutEntity = m_node->GetLayoutEntity();
-        auto& layoutBounds = layoutEntity->m_bounds;
-        layoutBounds -= m_delta;
+        auto& layoutBounds = layoutEntity->GetBounds();
+        layoutEntity->SetBounds(layoutBounds - m_delta);
 
         // node instance
         m_node->GetLayoutRect() -= m_delta;

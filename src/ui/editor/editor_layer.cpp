@@ -5,14 +5,15 @@
 #include "ui/node_image.h"
 #include "events/event_dispatch.h"
 #include "im_animation_tracks.h"
-#include "animation_editor.h"
+#include "animation_widget.h"
 #include "ui/layouts/animation_clip.h"
 #include "ui/layouts/layout_entity_image.h"
 #include "ui/editor/actions/add_action.h"
 #include "ui/editor/actions/delete_action.h"
 
 namespace ui {
-    EditorLayer::EditorLayer():m_boundsWidget(*this) {
+    EditorLayer::EditorLayer()
+        : m_boundsWidget(*this) {
     }
 
     EditorLayer::~EditorLayer() {
@@ -115,8 +116,8 @@ namespace ui {
             ImGui::End();
         }
 
-        if (m_animationEditorContext) {
-            m_animationEditorContext->Draw();
+        if (m_animationWidget) {
+            m_animationWidget->Draw();
         }
     }
 
@@ -172,11 +173,12 @@ namespace ui {
 
     void EditorLayer::AddSubLayout(char const* path) {
         auto newSubLayout = ui::LoadLayout(path);
-        auto& layoutRect = newSubLayout->GetBounds();
-        layoutRect.topLeft.anchor = { 0.5f, 0.5f };
-        layoutRect.bottomRight.anchor = { 0.5f, 0.5f };
-        layoutRect.topLeft.offset = { -50, -50 };
-        layoutRect.bottomRight.offset = { 50, 50 };
+        LayoutRect bounds;
+        bounds.anchor.topLeft = { 0.5f, 0.5f };
+        bounds.anchor.bottomRight = { 0.5f, 0.5f };
+        bounds.offset.topLeft = { -50, -50 };
+        bounds.offset.bottomRight = { 50, 50 };
+        newSubLayout->SetBounds(bounds);
 
         auto instance = newSubLayout->Instantiate();
         instance->SetShowRect(true);
@@ -186,17 +188,18 @@ namespace ui {
         AddEditAction(std::move(addAction));
 
         m_root->RecalculateBounds();
-        m_animationEditorContext->Update();
+        //m_animationWidget->Update();
     }
 
     void EditorLayer::AddImage(char const* path) {
         auto newImageLayout = std::make_shared<LayoutEntityImage>();
         newImageLayout->m_texturePath = path;
-        auto& layoutRect = newImageLayout->GetBounds();
-        layoutRect.topLeft.anchor = { 0.5f, 0.5f };
-        layoutRect.bottomRight.anchor = { 0.5f, 0.5f };
-        layoutRect.topLeft.offset = { -50, -50 };
-        layoutRect.bottomRight.offset = { 50, 50 };
+        LayoutRect bounds;
+        bounds.anchor.topLeft = { 0.5f, 0.5f };
+        bounds.anchor.bottomRight = { 0.5f, 0.5f };
+        bounds.offset.topLeft = { -50, -50 };
+        bounds.offset.bottomRight = { 50, 50 };
+        newImageLayout->SetBounds(bounds);
 
         auto instance = newImageLayout->Instantiate();
         instance->SetShowRect(true);
@@ -206,7 +209,7 @@ namespace ui {
         AddEditAction(std::move(addAction));
 
         m_root->RecalculateBounds();
-        m_animationEditorContext->Update();
+        //m_animationWidget->Update();
     }
 
     void EditorLayer::Refresh() {
@@ -220,7 +223,7 @@ namespace ui {
             child->SetShowRect(true);
         }
 
-        m_animationEditorContext = std::make_unique<AnimationEditContext>(m_root.get());
+        m_animationWidget = std::make_unique<AnimationWidget>(m_root.get());
     }
 
     bool EditorLayer::OnMouseDown(EventMouseDown const& event) {
@@ -250,16 +253,16 @@ namespace ui {
                     AddEditAction(std::move(delAction));
                     m_selection = nullptr;
                     m_boundsWidget.SetSelection(nullptr);
-                    m_animationEditorContext->Update();
+                    //m_animationWidget->Update();
                 }
                 return true;
             case Key::Z:
                 UndoEditAction();
-                m_animationEditorContext->Update();
+                //m_animationWidget->Update();
                 return true;
             case Key::Y:
                 RedoEditAction();
-                m_animationEditorContext->Update();
+                //m_animationWidget->Update();
                 return true;
             }
         }

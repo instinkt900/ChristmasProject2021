@@ -38,7 +38,7 @@ namespace ui {
     void LayoutEntityGroup::OnEditDraw() {
         if (ImGui::TreeNode("group")) {
             ImGuiInspectMember("id", m_id);
-            ImGuiInspectMember("bounds", m_bounds);
+            //ImGuiInspectMember("bounds", m_bounds);
             for (auto&& child : m_children) {
                 child->OnEditDraw();
             }

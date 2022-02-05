@@ -58,10 +58,10 @@ namespace ui {
             auto const& parentBounds = m_parent->GetScreenRect();
             auto const parentWidth = parentBounds.bottomRight.x - parentBounds.topLeft.x;
             auto const parentHeight = parentBounds.bottomRight.y - parentBounds.topLeft.y;
-            m_screenRect.topLeft.x = parentBounds.topLeft.x + static_cast<int>(m_layoutRect.topLeft.offset.x + parentWidth * m_layoutRect.topLeft.anchor.x);
-            m_screenRect.topLeft.y = parentBounds.topLeft.y + static_cast<int>(m_layoutRect.topLeft.offset.y + parentHeight * m_layoutRect.topLeft.anchor.y);
-            m_screenRect.bottomRight.x = parentBounds.topLeft.x + static_cast<int>(m_layoutRect.bottomRight.offset.x + parentWidth * m_layoutRect.bottomRight.anchor.x);
-            m_screenRect.bottomRight.y = parentBounds.topLeft.y + static_cast<int>(m_layoutRect.bottomRight.offset.y + parentHeight * m_layoutRect.bottomRight.anchor.y);
+            m_screenRect.topLeft.x = parentBounds.topLeft.x + static_cast<int>(m_layoutRect.offset.topLeft.x + parentWidth * m_layoutRect.anchor.topLeft.x);
+            m_screenRect.topLeft.y = parentBounds.topLeft.y + static_cast<int>(m_layoutRect.offset.topLeft.y + parentHeight * m_layoutRect.anchor.topLeft.y);
+            m_screenRect.bottomRight.x = parentBounds.topLeft.x + static_cast<int>(m_layoutRect.offset.bottomRight.x + parentWidth * m_layoutRect.anchor.bottomRight.x);
+            m_screenRect.bottomRight.y = parentBounds.topLeft.y + static_cast<int>(m_layoutRect.offset.bottomRight.y + parentHeight * m_layoutRect.anchor.bottomRight.y);
         }
         UpdateChildBounds();
     }
@@ -79,11 +79,6 @@ namespace ui {
 
     void Node::SetAnimTime(float time) {
         m_animationController->SetTime(time);
-        RecalculateBounds();
-    }
-
-    void Node::SetAnimFrame(int frame, bool propagate) {
-        m_animationController->SetFrame(frame);
         RecalculateBounds();
     }
 

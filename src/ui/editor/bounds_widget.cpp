@@ -123,11 +123,12 @@ namespace ui {
     bool BoundsWidget::OnMouseMove(EventMouseMove const& event) {
         if (m_holding) {
             auto selection = m_selectedNode.lock();
-            auto& bounds = selection->GetLayoutEntity()->GetBounds();
-            bounds.topLeft.offset.x += event.GetDelta().x;
-            bounds.bottomRight.offset.x += event.GetDelta().x;
-            bounds.topLeft.offset.y += event.GetDelta().y;
-            bounds.bottomRight.offset.y += event.GetDelta().y;
+            auto bounds = selection->GetLayoutEntity()->GetBounds();
+            bounds.offset.topLeft.x += event.GetDelta().x;
+            bounds.offset.bottomRight.x += event.GetDelta().x;
+            bounds.offset.topLeft.y += event.GetDelta().y;
+            bounds.offset.bottomRight.y += event.GetDelta().y;
+            selection->GetLayoutEntity()->SetBounds(bounds);
             selection->RefreshBounds();
         }
         return false;

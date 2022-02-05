@@ -45,11 +45,12 @@ namespace ui {
 
     bool OffsetBoundsHandle::OnMouseMove(EventMouseMove const& event) {
         if (m_holding) {
-            auto& bounds = m_target->GetLayoutEntity()->GetBounds();
-            bounds.topLeft.offset.x += event.GetDelta().x * m_anchor.Left;
-            bounds.bottomRight.offset.x += event.GetDelta().x * m_anchor.Right;
-            bounds.topLeft.offset.y += event.GetDelta().y * m_anchor.Top;
-            bounds.bottomRight.offset.y += event.GetDelta().y * m_anchor.Bottom;
+            LayoutRect bounds = m_target->GetLayoutEntity()->GetBounds();
+            bounds.offset.topLeft.x += event.GetDelta().x * m_anchor.Left;
+            bounds.offset.bottomRight.x += event.GetDelta().x * m_anchor.Right;
+            bounds.offset.topLeft.y += event.GetDelta().y * m_anchor.Top;
+            bounds.offset.bottomRight.y += event.GetDelta().y * m_anchor.Bottom;
+            m_target->GetLayoutEntity()->SetBounds(bounds);
             m_target->RefreshBounds();
             //m_target->RecalculateBounds();
         }
