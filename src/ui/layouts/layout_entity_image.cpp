@@ -3,7 +3,8 @@
 #include "ui/node_image.h"
 
 namespace ui {
-    LayoutEntityImage::LayoutEntityImage() {
+    LayoutEntityImage::LayoutEntityImage(LayoutRect const& initialBounds)
+        : LayoutEntity(initialBounds) {
     }
 
     LayoutEntityImage::LayoutEntityImage(nlohmann::json const& json, LayoutEntityGroup* parent)

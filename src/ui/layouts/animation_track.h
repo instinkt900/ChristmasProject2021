@@ -24,12 +24,13 @@ namespace ui {
             RightAnchor
         };
 
-        AnimationTrack(Target target);
+        AnimationTrack(Target target, float initialValue);
         AnimationTrack(nlohmann::json const& json);
 
         Target GetTarget() const { return m_target; }
 
-        Keyframe& GetKeyframe(int frameNo);
+        Keyframe* GetKeyframe(int frameNo);
+        Keyframe& GetOrCreateKeyframe(int frameNo);
         void DeleteKeyframe(int frameNo);
 
         void UpdateTrackTimings(std::vector<std::unique_ptr<AnimationClip>> const& clips);
@@ -38,9 +39,8 @@ namespace ui {
 
         auto& GetKeyframes() { return m_keyframes; }
 
-    private:
         void SortKeyframes();
-
+    private:
         Target m_target;
         std::vector<Keyframe> m_keyframes;
     };

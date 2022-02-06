@@ -16,7 +16,7 @@ namespace ui {
     Node::Node(std::shared_ptr<LayoutEntity> layoutEntity)
         : m_layout(layoutEntity)
         , m_id(m_layout->GetId())
-        , m_layoutRect(m_layout->GetBounds()) {
+        , m_layoutRect(m_layout->GetBoundsAtFrame(0)) {
         m_animationController = std::make_unique<AnimationController>(this, m_layout->GetAnimationTracks());
     }
 
@@ -48,8 +48,8 @@ namespace ui {
         UpdateChildBounds();
     }
 
-    void Node::RefreshBounds() {
-        m_layoutRect = m_layout->GetBounds();
+    void Node::RefreshBounds(int frameNo) {
+        m_layoutRect = m_layout->GetBoundsAtFrame(frameNo);
         RecalculateBounds();
     }
 

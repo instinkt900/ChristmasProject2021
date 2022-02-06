@@ -31,6 +31,11 @@ namespace ui {
 
         void AddEditAction(std::unique_ptr<IEditorAction>&& editAction);
 
+        void SetSelectedFrame(int frameNo);
+        int GetSelectedFrame() const { return m_selectedFrame; }
+
+        void Refresh();
+
     private:
         enum class FileOpenMode {
             Layout,
@@ -44,6 +49,7 @@ namespace ui {
         BoundsWidget m_boundsWidget;
         std::shared_ptr<Node> m_selection;
         std::unique_ptr<AnimationWidget> m_animationWidget;
+        int m_selectedFrame = 0;
 
         int m_displayWidth = 200;
         int m_displayHeight = 200;
@@ -59,7 +65,7 @@ namespace ui {
         void LoadLayout(char const* path);
         void AddSubLayout(char const* path);
         void AddImage(char const* path);
-        void Refresh();
+        void Rebuild();
 
         bool OnMouseDown(EventMouseDown const& event);
         bool OnMouseUp(EventMouseUp const& event);

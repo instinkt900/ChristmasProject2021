@@ -159,7 +159,19 @@
     <ClCompile Include="src\ui\editor\actions\delete_action.cpp">
       <Filter>ui\editor\actions</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\change_bounds_action.cpp">
+    <ClCompile Include="src\ui\editor\actions\move_keyframe_action.cpp">
+      <Filter>ui\editor\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\actions\composite_action.cpp">
+      <Filter>ui\editor\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\actions\add_keyframe_action.cpp">
+      <Filter>ui\editor\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\actions\delete_keyframe_action.cpp">
+      <Filter>ui\editor\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\actions\change_keyframe_action.cpp">
       <Filter>ui\editor\actions</Filter>
     </ClCompile>
   </ItemGroup>
@@ -421,11 +433,23 @@
     <ClInclude Include="src\ui\editor\actions\delete_action.h">
       <Filter>ui\editor\actions</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\change_bounds_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
     <ClInclude Include="external\magic_enum\include\magic_enum.hpp">
       <Filter>external\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\move_keyframe_action.h">
+      <Filter>ui\editor\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\composite_action.h">
+      <Filter>ui\editor\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\add_keyframe_action.h">
+      <Filter>ui\editor\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\delete_keyframe_action.h">
+      <Filter>ui\editor\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\change_keyframe_action.h">
+      <Filter>ui\editor\actions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

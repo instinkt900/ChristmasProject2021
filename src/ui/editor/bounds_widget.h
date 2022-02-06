@@ -2,12 +2,14 @@
 
 #include "events/event_listener.h"
 #include "events/event_mouse.h"
+#include "ui/layouts/layout_types.h"
 
 namespace ui {
     class Node;
     class BoundsHandle;
     class ChangeBoundsAction;
     class EditorLayer;
+    class LayoutEntity;
 
     class BoundsWidget : public EventListener {
     public:
@@ -34,6 +36,10 @@ namespace ui {
 
         void CheckSelectionValid();
 
-        std::unique_ptr<ChangeBoundsAction> m_pendingMoveAction;
+        struct EditContext {
+            std::shared_ptr<LayoutEntity> entity;
+            LayoutRect originalRect;
+        };
+        std::unique_ptr<EditContext> m_editContext;
     };
 }

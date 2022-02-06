@@ -7,7 +7,8 @@
 #include "animation_clip.h"
 
 namespace ui {
-    LayoutEntityGroup::LayoutEntityGroup() {
+    LayoutEntityGroup::LayoutEntityGroup(LayoutRect const& initialBounds)
+        : LayoutEntity(initialBounds) {
     }
 
     LayoutEntityGroup::LayoutEntityGroup(nlohmann::json const& json, LayoutEntityGroup* parent)

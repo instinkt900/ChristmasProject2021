@@ -5,8 +5,10 @@
 #include "events/event_dispatch.h"
 #include "ui/node.h"
 #include "ui/layouts/layout_entity.h"
-#include "ui/editor/actions/change_bounds_action.h"
 #include "ui/editor/editor_layer.h"
+#include "ui/editor/actions/composite_action.h"
+#include "ui/editor/actions/change_keyframe_action.h"
+#include "ui/editor/actions/add_keyframe_action.h"
 
 namespace ui {
     BoundsWidget::BoundsWidget(EditorLayer& editorLayer)
@@ -61,18 +63,88 @@ namespace ui {
 
     void BoundsWidget::BeginEdit() {
         auto selection = m_selectedNode.lock();
-        assert(!m_pendingMoveAction && selection);
-        m_pendingMoveAction = std::make_unique<ChangeBoundsAction>(selection);
+        assert(!m_editContext && selection);
+        auto entity = selection->GetLayoutEntity();
+        m_editContext = std::make_unique<EditContext>();
+        m_editContext->entity = entity;
+        m_editContext->originalRect = selection->GetLayoutRect();
+    }
+
+    //void LayoutEntity::SetCurrentValue(AnimationTrack::Target target, float value) {
+    //    // first get or create the track
+    //    auto track = [&]() {
+    //        auto trackIt = m_tracks.find(target);
+    //        if (std::end(m_tracks) == trackIt) {
+    //            // track doesnt already exist
+    //            auto track = std::make_unique<AnimationTrack>(target);
+    //            auto insertResult = m_tracks.insert(std::make_pair(track->GetTarget(), std::move(track)));
+    //            assert(insertResult.second);
+    //            trackIt = insertResult.first;
+    //        }
+    //        return trackIt->second;
+    //    }();
+
+    //    auto& keyframe = track->GetOrCreateKeyframe(m_currentFrame);
+    //    keyframe.m_value = value;
+    //    m_cacheDirty = true;
+    //}
+
+    void SetTrackValue(CompositeAction& compositeAction, std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, float value) {
+        auto& tracks = entity->GetAnimationTracks();
+        auto track = tracks.at(target);
+        if (auto keyframePtr = track->GetKeyframe(frameNo)) {
+            // keyframe exists
+            float oldValue = keyframePtr->m_value;
+            keyframePtr->m_value = value;
+            compositeAction.GetActions().push_back(std::make_unique<ChangeKeyframeAction>(entity, target, frameNo, oldValue, value));
+        } else {
+            // no keyframe
+            auto& keyframe = track->GetOrCreateKeyframe(frameNo);
+            keyframe.m_value = value;
+            compositeAction.GetActions().push_back(std::make_unique<AddKeyframeAction>(entity, target, frameNo, value));
+        }
     }
 
     void BoundsWidget::EndEdit() {
-        if (m_pendingMoveAction) {
-            m_pendingMoveAction->EndChange();
-            if (!m_pendingMoveAction->IsZero()) {
-                m_editorLayer.AddEditAction(std::move(m_pendingMoveAction));
-            }
-            m_pendingMoveAction.reset();
+        auto selection = m_selectedNode.lock();
+        assert(m_editContext && selection);
+        auto entity = selection->GetLayoutEntity();
+        auto& tracks = entity->GetAnimationTracks();
+        int frameNo = m_editorLayer.GetSelectedFrame();
+        auto const& newRect = selection->GetLayoutRect();
+        auto rectDelta = newRect - m_editContext->originalRect;
+
+        std::unique_ptr<CompositeAction> editAction = std::make_unique<CompositeAction>();
+        if (rectDelta.anchor.topLeft.x != 0) {
+            SetTrackValue(*editAction, entity, AnimationTrack::Target::LeftAnchor, frameNo, newRect.anchor.topLeft.x);
         }
+        if (rectDelta.anchor.topLeft.y != 0) {
+            SetTrackValue(*editAction, entity, AnimationTrack::Target::TopAnchor, frameNo, newRect.anchor.topLeft.y);
+        }
+        if (rectDelta.anchor.bottomRight.x != 0) {
+            SetTrackValue(*editAction, entity, AnimationTrack::Target::RightAnchor, frameNo, newRect.anchor.bottomRight.x);
+        }
+        if (rectDelta.anchor.bottomRight.y != 0) {
+            SetTrackValue(*editAction, entity, AnimationTrack::Target::BottomAnchor, frameNo, newRect.anchor.bottomRight.y);
+        }
+        if (rectDelta.offset.topLeft.x != 0) {
+            SetTrackValue(*editAction, entity, AnimationTrack::Target::LeftOffset, frameNo, newRect.offset.topLeft.x);
+        }
+        if (rectDelta.offset.topLeft.y != 0) {
+            SetTrackValue(*editAction, entity, AnimationTrack::Target::TopOffset, frameNo, newRect.offset.topLeft.y);
+        }
+        if (rectDelta.offset.bottomRight.x != 0) {
+            SetTrackValue(*editAction, entity, AnimationTrack::Target::RightOffset, frameNo, newRect.offset.bottomRight.x);
+        }
+        if (rectDelta.offset.bottomRight.y != 0) {
+            SetTrackValue(*editAction, entity, AnimationTrack::Target::BottomOffset, frameNo, newRect.offset.bottomRight.y);
+        }
+
+        if (!editAction->GetActions().empty()) {
+            m_editorLayer.AddEditAction(std::move(editAction));
+        }
+
+        m_editContext.reset();
     }
 
     void BoundsWidget::Draw(SDL_Renderer& renderer) {
@@ -115,21 +187,22 @@ namespace ui {
         if (event.GetButton() != MouseButton::Left) {
             return false;
         }
-        m_holding = false;
-        EndEdit();
+        if (m_holding) {
+            m_holding = false;
+            EndEdit();
+        }
         return false;
     }
 
     bool BoundsWidget::OnMouseMove(EventMouseMove const& event) {
         if (m_holding) {
             auto selection = m_selectedNode.lock();
-            auto bounds = selection->GetLayoutEntity()->GetBounds();
+            auto& bounds = selection->GetLayoutRect();
             bounds.offset.topLeft.x += event.GetDelta().x;
             bounds.offset.bottomRight.x += event.GetDelta().x;
             bounds.offset.topLeft.y += event.GetDelta().y;
             bounds.offset.bottomRight.y += event.GetDelta().y;
-            selection->GetLayoutEntity()->SetBounds(bounds);
-            selection->RefreshBounds();
+            selection->RecalculateBounds();
         }
         return false;
     }

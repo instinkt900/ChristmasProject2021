@@ -3,8 +3,9 @@
 #include "animation_clip.h"
 
 namespace ui {
-    AnimationTrack::AnimationTrack(Target target)
+    AnimationTrack::AnimationTrack(Target target, float initialValue)
         : m_target(target) {
+        m_keyframes.push_back({ 0, initialValue });
     }
 
     AnimationTrack::AnimationTrack(nlohmann::json const& json)
@@ -16,7 +17,16 @@ namespace ui {
         SortKeyframes();
     }
 
-    Keyframe& AnimationTrack::GetKeyframe(int frameNo) {
+    Keyframe* AnimationTrack::GetKeyframe(int frameNo) {
+        auto keyframeIt = std::find_if(std::begin(m_keyframes), std::end(m_keyframes), [&](auto const& kf) { return kf.m_frame >= frameNo; });
+        if (std::end(m_keyframes) != keyframeIt && keyframeIt->m_frame == frameNo) {
+            // found an existing frame
+            return &(*keyframeIt);
+        }
+        return nullptr;
+    }
+
+    Keyframe& AnimationTrack::GetOrCreateKeyframe(int frameNo) {
         // find the frame or the first iterator after where it would be
         auto keyframeIt = std::find_if(std::begin(m_keyframes), std::end(m_keyframes), [&](auto const& kf) { return kf.m_frame >= frameNo; });
         if (std::end(m_keyframes) != keyframeIt && keyframeIt->m_frame == frameNo) {

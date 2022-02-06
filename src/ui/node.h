@@ -35,7 +35,7 @@ namespace ui {
         void SetScreenRect(IntRect const& rect);
         virtual void UpdateChildBounds() {}
 
-        void RefreshBounds();
+        void RefreshBounds(int frameNo);
         void RecalculateBounds();
         bool IsInBounds(IntVec2 const& point) const;
         IntVec2 TranslatePosition(IntVec2 const& point) const;

@@ -115,14 +115,14 @@ namespace ui {
             auto const xFact = event.GetDelta().x / static_cast<float>(canvasWidth);
             auto const yFact = event.GetDelta().y / static_cast<float>(canvasHeight);
 
-            LayoutRect bounds = m_target->GetLayoutEntity()->GetBounds();
+            auto& bounds = m_target->GetLayoutRect();
             bounds.anchor.topLeft.x += xFact * m_anchor.Left;
             bounds.anchor.bottomRight.x += xFact * m_anchor.Right;
             bounds.anchor.topLeft.y += yFact * m_anchor.Top;
             bounds.anchor.bottomRight.y += yFact * m_anchor.Bottom;
-            m_target->GetLayoutEntity()->SetBounds(bounds);
-            m_target->RefreshBounds();
-            //m_target->RecalculateBounds();
+            //m_target->GetLayoutEntity()->SetBounds(bounds);
+            //m_target->RefreshBounds();
+            m_target->RecalculateBounds();
         }
         return false;
     }

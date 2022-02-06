@@ -5,7 +5,7 @@
 namespace ui {
     class LayoutEntityImage : public LayoutEntity {
     public:
-        LayoutEntityImage();
+        LayoutEntityImage(LayoutRect const& initialBounds);
         LayoutEntityImage(nlohmann::json const& json, LayoutEntityGroup* parent);
 
         std::unique_ptr<Node> Instantiate() override;

@@ -7,7 +7,7 @@ namespace ui {
 
     class LayoutEntityGroup : public LayoutEntity {
     public:
-        LayoutEntityGroup();
+        LayoutEntityGroup(LayoutRect const& initialBounds);
         LayoutEntityGroup(nlohmann::json const& json, LayoutEntityGroup* parent);
 
         auto& GetChildren() { return m_children; }

@@ -142,10 +142,24 @@ namespace ui {
         ++m_actionIndex;
     }
 
+    void EditorLayer::SetSelectedFrame(int frameNo) {
+        if (m_selectedFrame != frameNo) {
+            m_selectedFrame = frameNo;
+            Refresh();
+        }
+    }
+
+    void EditorLayer::Refresh() {
+        for (auto&& child : m_root->GetChildren()) {
+            child->RefreshBounds(m_selectedFrame);
+        }
+    }
+
     void EditorLayer::UndoEditAction() {
         if (m_actionIndex >= 0) {
             m_editActions[m_actionIndex]->Undo();
             --m_actionIndex;
+            Refresh();
         }
     }
 
@@ -153,6 +167,7 @@ namespace ui {
         if (m_actionIndex < (static_cast<int>(m_editActions.size()) - 1)) {
             ++m_actionIndex;
             m_editActions[m_actionIndex]->Do();
+            Refresh();
         }
     }
 
@@ -162,13 +177,13 @@ namespace ui {
     }
 
     void EditorLayer::NewLayout() {
-        m_rootLayout = std::make_shared<LayoutEntityGroup>();
-        Refresh();
+        m_rootLayout = std::make_shared<LayoutEntityGroup>(LayoutRect{});
+        Rebuild();
     }
 
     void EditorLayer::LoadLayout(char const* path) {
         m_rootLayout = ui::LoadLayout(path);
-        Refresh();
+        Rebuild();
     }
 
     void EditorLayer::AddSubLayout(char const* path) {
@@ -192,14 +207,14 @@ namespace ui {
     }
 
     void EditorLayer::AddImage(char const* path) {
-        auto newImageLayout = std::make_shared<LayoutEntityImage>();
-        newImageLayout->m_texturePath = path;
         LayoutRect bounds;
         bounds.anchor.topLeft = { 0.5f, 0.5f };
         bounds.anchor.bottomRight = { 0.5f, 0.5f };
         bounds.offset.topLeft = { -50, -50 };
         bounds.offset.bottomRight = { 50, 50 };
-        newImageLayout->SetBounds(bounds);
+
+        auto newImageLayout = std::make_shared<LayoutEntityImage>(bounds);
+        newImageLayout->m_texturePath = path;
 
         auto instance = newImageLayout->Instantiate();
         instance->SetShowRect(true);
@@ -212,7 +227,7 @@ namespace ui {
         //m_animationWidget->Update();
     }
 
-    void EditorLayer::Refresh() {
+    void EditorLayer::Rebuild() {
         m_root = std::make_unique<Group>(m_rootLayout);
         IntRect displayRect;
         displayRect.topLeft = { (GetWidth() - m_displayWidth) / 2, (GetHeight() - m_displayHeight) / 2 };
@@ -223,7 +238,7 @@ namespace ui {
             child->SetShowRect(true);
         }
 
-        m_animationWidget = std::make_unique<AnimationWidget>(m_root.get());
+        m_animationWidget = std::make_unique<AnimationWidget>(*this, m_root.get());
     }
 
     bool EditorLayer::OnMouseDown(EventMouseDown const& event) {
