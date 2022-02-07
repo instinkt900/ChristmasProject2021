@@ -20,7 +20,7 @@ namespace ui {
 
     void DeleteKeyframeAction::Undo() {
         auto& track = m_entity->GetAnimationTracks().at(m_target);
-        auto keyframe = track->GetOrCreateKeyframe(m_frameNo);
+        auto& keyframe = track->GetOrCreateKeyframe(m_frameNo);
         keyframe.m_value = m_oldValue;
     }
 

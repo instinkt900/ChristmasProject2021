@@ -8,6 +8,7 @@
 #include "actions/move_keyframe_action.h"
 #include "actions/composite_action.h"
 #include "editor_layer.h"
+#include "actions/delete_keyframe_action.h"
 
 namespace {
     using namespace ui;
@@ -100,7 +101,7 @@ namespace ui {
 
         auto CreateAction = [](Keyframe* keyframePtr, KeyframeContext& context) -> std::unique_ptr<IEditorAction> {
             auto& track = context.entity->GetAnimationTracks().at(context.target);
-            if (context.initialFrame != keyframePtr->m_frame) {
+            if (context.frame != keyframePtr->m_frame) {
                 int const targetFrame = keyframePtr->m_frame;
                 std::optional<float> replacedValue;
                 if (auto replacingKeyframe = track->GetKeyframe(targetFrame)) {
@@ -108,7 +109,7 @@ namespace ui {
                         replacedValue = replacingKeyframe->m_value;
                     }
                 }
-                return std::make_unique<MoveKeyframeAction>(context.entity, context.target, context.initialFrame, targetFrame, replacedValue);
+                return std::make_unique<MoveKeyframeAction>(context.entity, context.target, context.frame, targetFrame, replacedValue);
             }
             return nullptr;
         };
@@ -131,6 +132,35 @@ namespace ui {
         }
 
         m_movingKeyframes.clear();
+        m_editorLayer.Refresh();
+    }
+
+    void AnimationWidget::DeleteContextKeyframes() {
+        if (m_contextMenuKeyframes.empty()) {
+            return;
+        }
+
+        std::vector<std::unique_ptr<IEditorAction>> actions;
+        for (auto&& context : m_contextMenuKeyframes) {
+            auto track = context.entity->GetAnimationTracks().at(context.target);
+            if (auto keyframe = track->GetKeyframe(context.frame)) {
+                float const oldValue = keyframe->m_value;
+                track->DeleteKeyframe(context.frame);
+                auto action = std::make_unique<DeleteKeyframeAction>(context.entity, context.target, context.frame, oldValue);
+                actions.push_back(std::move(action));
+            }
+        }
+
+        if (actions.size() > 1) {
+            auto compositeAction = std::make_unique<CompositeAction>();
+            auto& targetActions = compositeAction->GetActions();
+            targetActions.insert(std::end(targetActions), std::make_move_iterator(std::begin(actions)), std::make_move_iterator(std::end(actions)));
+            m_editorLayer.AddEditAction(std::move(compositeAction));
+        } else if (!actions.empty()) {
+            m_editorLayer.AddEditAction(std::move(actions[0]));
+        }
+
+        m_contextMenuKeyframes.clear();
         m_editorLayer.Refresh();
     }
 
@@ -384,6 +414,17 @@ namespace ui {
             rowYPos += ItemHeight;
         }
 
+        if (ImGui::BeginPopupContextItem("keyframe_popup"))
+        {
+            if (ImGui::MenuItem("Delete")) {
+                DeleteContextKeyframes();
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        } else {
+            m_contextMenuKeyframes.clear();
+        }
+
         // track rows
         for (int i = 0; i < childCount; ++i) {
             auto childEntity = m_group->GetChildren()[i]->GetLayoutEntity();
@@ -437,6 +478,8 @@ namespace ui {
                                 if (ImGui::IsMouseClicked(0) && !MovingScrollBar && !MovingCurrentFrame) {
                                     movingPos = cx;
                                     BeginMoveKeyframe(keyPtr, childEntity, target);
+                                } else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+                                    m_contextMenuKeyframes.push_back({ childEntity, target, keyframe.m_frame });
                                 }
                             }
                         }
@@ -446,6 +489,10 @@ namespace ui {
             }
 
             rowYPos += ItemHeight;
+        }
+
+        if (!m_contextMenuKeyframes.empty()) {
+            ImGui::OpenPopup("keyframe_popup");
         }
 
         // moving

@@ -30,12 +30,15 @@ namespace ui {
         struct KeyframeContext {
             std::shared_ptr<LayoutEntity> entity;
             AnimationTrack::Target target;
-            int initialFrame;
+            int frame;
         };
         std::map<Keyframe*, KeyframeContext> m_movingKeyframes;
+        std::vector<KeyframeContext> m_contextMenuKeyframes;
 
         void BeginMoveKeyframe(Keyframe* keyframe, std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target);
         void EndMoveKeyframe();
+
+        void DeleteContextKeyframes();
 
         int m_minFrame = 0;
         int m_maxFrame = 100;
