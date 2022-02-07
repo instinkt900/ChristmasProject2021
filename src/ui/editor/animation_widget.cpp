@@ -98,31 +98,36 @@ namespace ui {
             return;
         }
 
-        auto CreateAction = [](Keyframe* keyframePtr, KeyframeContext& context) {
+        auto CreateAction = [](Keyframe* keyframePtr, KeyframeContext& context) -> std::unique_ptr<IEditorAction> {
             auto& track = context.entity->GetAnimationTracks().at(context.target);
-            int const targetFrame = keyframePtr->m_frame;
-            std::optional<float> replacedValue;
-            if (auto replacingKeyframe = track->GetKeyframe(targetFrame)) {
-                if (replacingKeyframe != keyframePtr) {
-                    replacedValue = replacingKeyframe->m_value;
+            if (context.initialFrame != keyframePtr->m_frame) {
+                int const targetFrame = keyframePtr->m_frame;
+                std::optional<float> replacedValue;
+                if (auto replacingKeyframe = track->GetKeyframe(targetFrame)) {
+                    if (replacingKeyframe != keyframePtr) {
+                        replacedValue = replacingKeyframe->m_value;
+                    }
                 }
+                return std::make_unique<MoveKeyframeAction>(context.entity, context.target, context.initialFrame, targetFrame, replacedValue);
             }
-            return std::make_unique<MoveKeyframeAction>(context.entity, context.target, context.initialFrame, targetFrame, replacedValue);
+            return nullptr;
         };
 
-        if (m_movingKeyframes.size() == 1) {
-            for (auto&& [keyframePtr, context] : m_movingKeyframes) {
-                m_editorLayer.AddEditAction(CreateAction(keyframePtr, context));
+        std::vector<std::unique_ptr<IEditorAction>> actions;
+        for (auto&& [keyframePtr, context] : m_movingKeyframes) {
+            if (auto action = CreateAction(keyframePtr, context)) {
+                actions.push_back(std::move(action));
                 context.entity->GetAnimationTracks().at(context.target)->SortKeyframes();
             }
-        } else {
+        }
+
+        if (actions.size() > 1) {
             auto compositeAction = std::make_unique<CompositeAction>();
-            auto& actions = compositeAction->GetActions();
-            for (auto&& [keyframePtr, context] : m_movingKeyframes) {
-                actions.push_back(CreateAction(keyframePtr, context));
-                context.entity->GetAnimationTracks().at(context.target)->SortKeyframes();
-            }
+            auto& targetActions = compositeAction->GetActions();
+            targetActions.insert(std::end(targetActions), std::make_move_iterator(std::begin(actions)), std::make_move_iterator(std::end(actions)));
             m_editorLayer.AddEditAction(std::move(compositeAction));
+        } else if (!actions.empty()) {
+            m_editorLayer.AddEditAction(std::move(actions[0]));
         }
 
         m_movingKeyframes.clear();
