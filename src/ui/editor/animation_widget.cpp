@@ -90,35 +90,66 @@ namespace ui {
         ImGui::End();
     }
 
-    void AnimationWidget::BeginMoveKeyframe(Keyframe* keyframe, std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target) {
-        m_movingKeyframes.insert(std::make_pair(keyframe, KeyframeContext{ entity, target, keyframe->m_frame }));
+    void AnimationWidget::SelectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo) {
+        if (!IsKeyframeSelected(entity, target, frameNo)) {
+            if (auto keyframe = entity->GetAnimationTracks().at(target)->GetKeyframe(frameNo)) {
+                m_selectedKeyframes.push_back({ entity, target, frameNo, keyframe });
+            }
+        }
     }
 
-    void AnimationWidget::EndMoveKeyframe() {
-        if (m_movingKeyframes.empty()) {
-            return;
+    void AnimationWidget::DeselectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo) {
+        auto const it = std::find_if(std::begin(m_selectedKeyframes), std::end(m_selectedKeyframes), [&](auto context) {
+            return context.entity == entity && context.target == target && context.frameNo == frameNo;
+        });
+        if (std::end(m_selectedKeyframes) != it) {
+            m_selectedKeyframes.erase(it);
         }
+    }
 
-        auto CreateAction = [](Keyframe* keyframePtr, KeyframeContext& context) -> std::unique_ptr<IEditorAction> {
+    bool AnimationWidget::IsKeyframeSelected(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo) {
+        auto const it = std::find_if(std::begin(m_selectedKeyframes), std::end(m_selectedKeyframes), [&](auto context) {
+            return context.entity == entity && context.target == target && context.frameNo == frameNo;
+        });
+        return std::end(m_selectedKeyframes) != it;
+    }
+
+    void AnimationWidget::ClearSelectedKeyframes() {
+        m_selectedKeyframes.clear();
+    }
+
+    void AnimationWidget::ClearNonMatchingKeyframes(std::shared_ptr<LayoutEntity> entity, int frameNo) {
+        m_selectedKeyframes.erase(std::remove_if(std::begin(m_selectedKeyframes), std::end(m_selectedKeyframes), [&](auto& context) {
+                                      return context.entity != entity || context.frameNo != frameNo;
+                                  }),
+                                  std::end(m_selectedKeyframes));
+    }
+
+    void AnimationWidget::EndMoveKeyframes() {
+        auto CreateAction = [](KeyframeContext& context) -> std::unique_ptr<IEditorAction> {
             auto& track = context.entity->GetAnimationTracks().at(context.target);
-            if (context.frame != keyframePtr->m_frame) {
-                int const targetFrame = keyframePtr->m_frame;
+            if (context.frameNo != context.current->m_frame) {
+                int const targetFrame = context.current->m_frame;
                 std::optional<float> replacedValue;
                 if (auto replacingKeyframe = track->GetKeyframe(targetFrame)) {
-                    if (replacingKeyframe != keyframePtr) {
+                    if (replacingKeyframe != context.current) {
                         replacedValue = replacingKeyframe->m_value;
                     }
                 }
-                return std::make_unique<MoveKeyframeAction>(context.entity, context.target, context.frame, targetFrame, replacedValue);
+                return std::make_unique<MoveKeyframeAction>(context.entity, context.target, context.frameNo, targetFrame, replacedValue);
             }
             return nullptr;
         };
 
         std::vector<std::unique_ptr<IEditorAction>> actions;
-        for (auto&& [keyframePtr, context] : m_movingKeyframes) {
-            if (auto action = CreateAction(keyframePtr, context)) {
+        for (auto&& context : m_selectedKeyframes) {
+            if (auto action = CreateAction(context)) {
+                auto const newFrameNo = context.current->m_frame;
                 actions.push_back(std::move(action));
                 context.entity->GetAnimationTracks().at(context.target)->SortKeyframes();
+                context.current = context.entity->GetAnimationTracks().at(context.target)->GetKeyframe(newFrameNo);
+                assert(context.current);
+                context.frameNo = newFrameNo;
             }
         }
 
@@ -131,22 +162,24 @@ namespace ui {
             m_editorLayer.AddEditAction(std::move(actions[0]));
         }
 
-        m_movingKeyframes.clear();
         m_editorLayer.Refresh();
     }
 
-    void AnimationWidget::DeleteContextKeyframes() {
-        if (m_contextMenuKeyframes.empty()) {
+    void AnimationWidget::DeleteSelectedKeyframes() {
+        if (m_selectedKeyframes.empty()) {
             return;
         }
 
         std::vector<std::unique_ptr<IEditorAction>> actions;
-        for (auto&& context : m_contextMenuKeyframes) {
+        for (auto&& context : m_selectedKeyframes) {
+            if (context.frameNo == 0) { // dont delete frame 0
+                continue;
+            }
             auto track = context.entity->GetAnimationTracks().at(context.target);
-            if (auto keyframe = track->GetKeyframe(context.frame)) {
+            if (auto keyframe = track->GetKeyframe(context.frameNo)) {
                 float const oldValue = keyframe->m_value;
-                track->DeleteKeyframe(context.frame);
-                auto action = std::make_unique<DeleteKeyframeAction>(context.entity, context.target, context.frame, oldValue);
+                track->DeleteKeyframe(context.frameNo);
+                auto action = std::make_unique<DeleteKeyframeAction>(context.entity, context.target, context.frameNo, oldValue);
                 actions.push_back(std::move(action));
             }
         }
@@ -160,7 +193,7 @@ namespace ui {
             m_editorLayer.AddEditAction(std::move(actions[0]));
         }
 
-        m_contextMenuKeyframes.clear();
+        m_selectedKeyframes.clear();
         m_editorLayer.Refresh();
     }
 
@@ -201,6 +234,7 @@ namespace ui {
 
         static bool MovingScrollBar = false;
         static bool MovingCurrentFrame = false;
+        static bool KeyframeGrabbed = false;
 
         // zoom in/out
         const int visibleFrameCount = (int)floorf((canvas_size.x - legendWidth) / framePixelWidth);
@@ -414,16 +448,18 @@ namespace ui {
             rowYPos += ItemHeight;
         }
 
-        if (ImGui::BeginPopupContextItem("keyframe_popup"))
-        {
+        if (ImGui::BeginPopup("keyframe_popup")) {
             if (ImGui::MenuItem("Delete")) {
-                DeleteContextKeyframes();
+                DeleteSelectedKeyframes();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
-        } else {
-            m_contextMenuKeyframes.clear();
         }
+
+        ImVec2 tracksMin(contentMin.x + legendWidth - firstFrameUsed * framePixelWidth, childFramePos.y);
+        ImVec2 tracksMax(childFramePos.x + childFrameSize.x, childFramePos.y + childFrameSize.y);
+        ImRect tracksFrame(tracksMin, tracksMax);
+        bool pendingSelectionClear = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && tracksFrame.Contains(io.MousePos);
 
         // track rows
         for (int i = 0; i < childCount; ++i) {
@@ -448,7 +484,8 @@ namespace ui {
             auto& childTracks = childEntity->GetAnimationTracks();
             ImVec2 childTrackPos(contentMin.x + legendWidth - firstFrameUsed * framePixelWidth, rowYPos);
             unsigned int keyframeColor = 0xFFc4c4c4;
-            int u = 0;
+            unsigned int keyframeColorSelected = 0xFFFFa2a2;
+            bool subColorSelector = false;
             for (auto&& [target, track] : childTracks) {
 
                 if (expanded) {
@@ -459,7 +496,7 @@ namespace ui {
 
                     ImVec2 subRowMin(contentMin.x + legendWidth, rowYPos);
                     ImVec2 subRowMax(canvas_size.x + canvas_pos.x, rowYPos + ItemHeight);
-                    unsigned int col = (u & 1) ? 0xFF292525 : 0xFF302C2C;
+                    unsigned int col = subColorSelector ? 0xFF292525 : 0xFF302C2C;
                     draw_list->AddRectFilled(subRowMin, subRowMax, col, 0);
                 }
 
@@ -467,53 +504,69 @@ namespace ui {
                     ImVec2 keyP1(childTrackPos.x + keyframe.m_frame * framePixelWidth, rowYPos + 2);
                     ImVec2 keyP2(childTrackPos.x + keyframe.m_frame * framePixelWidth + framePixelWidth, rowYPos + ItemHeight - 2);
                     ImRect keyRect(keyP1, keyP2);
+                    bool selected = IsKeyframeSelected(childEntity, target, keyframe.m_frame);
                     if (keyP1.x <= (canvas_size.x + contentMin.x) && keyP2.x >= (contentMin.x + legendWidth)) {
-                        draw_list->AddRectFilled(keyP1, keyP2, keyframeColor, 2);
+                        draw_list->AddRectFilled(keyP1, keyP2, selected ? keyframeColorSelected : keyframeColor, 2);
                     }
 
-                    Keyframe* keyPtr = &keyframe;
-                    if (std::end(m_movingKeyframes) == m_movingKeyframes.find(keyPtr)) {
+                    if (!MovingScrollBar && !MovingCurrentFrame) {
                         if (keyRect.Contains(io.MousePos)) {
                             if (ImRect(childFramePos, childFramePos + childFrameSize).Contains(io.MousePos)) {
-                                if (ImGui::IsMouseClicked(0) && !MovingScrollBar && !MovingCurrentFrame) {
-                                    movingPos = cx;
-                                    BeginMoveKeyframe(keyPtr, childEntity, target);
-                                } else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
-                                    m_contextMenuKeyframes.push_back({ childEntity, target, keyframe.m_frame });
+                                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+                                    // selection rules
+                                    if (!IsKeyframeSelected(childEntity, target, keyframe.m_frame)) {
+                                        if ((io.KeyMods & ImGuiKeyModFlags_Ctrl) == 0) {
+                                            if (expanded) {
+                                                ClearSelectedKeyframes();
+                                            } else {
+                                                ClearNonMatchingKeyframes(childEntity, keyframe.m_frame);
+                                            }
+                                        }
+                                        SelectKeyframe(childEntity, target, keyframe.m_frame);
+                                    }
+
+                                    // action logic
+                                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                                        pendingSelectionClear = false;
+                                        KeyframeGrabbed = true;
+                                        movingPos = cx;
+                                    } else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+                                        ImGui::OpenPopup("keyframe_popup");
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                ++u;
+                subColorSelector = !subColorSelector;
             }
 
             rowYPos += ItemHeight;
         }
 
-        if (!m_contextMenuKeyframes.empty()) {
-            ImGui::OpenPopup("keyframe_popup");
-        }
-
         // moving
-        if (!m_movingKeyframes.empty()) {
+        if (KeyframeGrabbed) {
             ImGui::CaptureMouseFromApp();
             int diffFrame = int((cx - movingPos) / framePixelWidth);
             if (std::abs(diffFrame) > 0) {
-                for (auto&& [keyPtr, context] : m_movingKeyframes) {
-                    keyPtr->m_frame += diffFrame;
-                    if (keyPtr->m_frame < 0) {
-                        keyPtr->m_frame = 0;
+                for (auto&& context : m_selectedKeyframes) {
+                    context.current->m_frame += diffFrame;
+                    if (context.current->m_frame < 0) {
+                        context.current->m_frame = 0;
                     }
                 }
                 movingPos += int(diffFrame * framePixelWidth);
                 m_editorLayer.Refresh();
             }
             if (!io.MouseDown[0]) {
-                EndMoveKeyframe();
+                KeyframeGrabbed = false;
+                EndMoveKeyframes();
             }
         }
 
+        if (pendingSelectionClear && !ImGui::IsPopupOpen("keyframe_popup")) {
+            ClearSelectedKeyframes();
+        }
 
         //// draw item names in the legend rect on the left
         //float rowYPos = contentMin.y + 2;

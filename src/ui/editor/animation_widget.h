@@ -29,16 +29,22 @@ namespace ui {
 
         struct KeyframeContext {
             std::shared_ptr<LayoutEntity> entity;
-            AnimationTrack::Target target;
-            int frame;
+            AnimationTrack::Target target = AnimationTrack::Target::Unknown;
+            int frameNo = -1;
+            Keyframe* current = nullptr;
         };
-        std::map<Keyframe*, KeyframeContext> m_movingKeyframes;
-        std::vector<KeyframeContext> m_contextMenuKeyframes;
 
-        void BeginMoveKeyframe(Keyframe* keyframe, std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target);
-        void EndMoveKeyframe();
+        std::vector<KeyframeContext> m_selectedKeyframes;
 
-        void DeleteContextKeyframes();
+        void SelectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo);
+        void DeselectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo);
+        bool IsKeyframeSelected(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo);
+        void ClearSelectedKeyframes();
+        void ClearNonMatchingKeyframes(std::shared_ptr<LayoutEntity> entity, int frameNo);
+
+        void DeleteSelectedKeyframes();
+
+        void EndMoveKeyframes();
 
         int m_minFrame = 0;
         int m_maxFrame = 100;

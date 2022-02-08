@@ -14,6 +14,7 @@ namespace ui {
     class AnimationTrack {
     public:
         enum class Target {
+            Unknown,
             TopOffset,
             BottomOffset,
             LeftOffset,
@@ -46,6 +47,7 @@ namespace ui {
     };
 
     NLOHMANN_JSON_SERIALIZE_ENUM(AnimationTrack::Target, {
+                                                             { AnimationTrack::Target::Unknown, "unknown" },
                                                              { AnimationTrack::Target::TopOffset, "top_offset" },
                                                              { AnimationTrack::Target::BottomOffset, "bottom_offset" },
                                                              { AnimationTrack::Target::LeftOffset, "left_offset" },
