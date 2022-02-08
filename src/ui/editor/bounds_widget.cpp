@@ -49,7 +49,7 @@ namespace ui {
     }
 
     void BoundsWidget::SetSelection(std::shared_ptr<Node> selection) {
-        m_holding = true;
+        m_holding = false;
         m_selectedNode = selection;
 
         for (auto&& handle : m_handles) {
@@ -58,6 +58,7 @@ namespace ui {
 
         if (selection) {
             BeginEdit();
+            m_holding = true;
         }
     }
 
@@ -69,25 +70,6 @@ namespace ui {
         m_editContext->entity = entity;
         m_editContext->originalRect = selection->GetLayoutRect();
     }
-
-    //void LayoutEntity::SetCurrentValue(AnimationTrack::Target target, float value) {
-    //    // first get or create the track
-    //    auto track = [&]() {
-    //        auto trackIt = m_tracks.find(target);
-    //        if (std::end(m_tracks) == trackIt) {
-    //            // track doesnt already exist
-    //            auto track = std::make_unique<AnimationTrack>(target);
-    //            auto insertResult = m_tracks.insert(std::make_pair(track->GetTarget(), std::move(track)));
-    //            assert(insertResult.second);
-    //            trackIt = insertResult.first;
-    //        }
-    //        return trackIt->second;
-    //    }();
-
-    //    auto& keyframe = track->GetOrCreateKeyframe(m_currentFrame);
-    //    keyframe.m_value = value;
-    //    m_cacheDirty = true;
-    //}
 
     void SetTrackValue(CompositeAction& compositeAction, std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, float value) {
         auto& tracks = entity->GetAnimationTracks();
@@ -209,9 +191,8 @@ namespace ui {
 
     void BoundsWidget::CheckSelectionValid() {
         auto selection = m_selectedNode.lock();
-        if (!selection || !selection->GetParent()) {
-            m_selectedNode.reset();
-            m_holding = false;
+        if (!selection || !selection->GetParent() || !selection->IsVisible()) {
+            SetSelection(nullptr);
         }
     }
 }

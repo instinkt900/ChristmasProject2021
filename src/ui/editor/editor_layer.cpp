@@ -243,7 +243,7 @@ namespace ui {
 
     bool EditorLayer::OnMouseDown(EventMouseDown const& event) {
         for (auto&& child : m_root->GetChildren()) {
-            if (child->IsInBounds(event.GetPosition())) {
+            if (child->IsInBounds(event.GetPosition()) && child->IsVisible()) {
                 m_selection = child;
                 m_boundsWidget.SetSelection(m_selection);
                 return true;

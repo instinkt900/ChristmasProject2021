@@ -25,6 +25,10 @@ namespace ui {
     }
 
     bool BoundsHandle::OnMouseDown(EventMouseDown const& event) {
+        if (nullptr == m_target) {
+            return false;
+        }
+
         if (event.GetButton() != MouseButton::Left) {
             return false;
         }
@@ -39,6 +43,10 @@ namespace ui {
     }
 
     bool BoundsHandle::OnMouseUp(EventMouseUp const& event) {
+        if (nullptr == m_target) {
+            return false;
+        }
+
         if (event.GetButton() != MouseButton::Left) {
             return false;
         }

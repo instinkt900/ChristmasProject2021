@@ -107,6 +107,10 @@ namespace ui {
     }
 
     bool AnchorBoundsHandle::OnMouseMove(EventMouseMove const& event) {
+        if (nullptr == m_target) {
+            return false;
+        }
+
         if (m_holding) {
             auto const& parentScreenRect = m_target->GetParent()->GetScreenRect();
             auto const canvasWidth = parentScreenRect.bottomRight.x - parentScreenRect.topLeft.x;

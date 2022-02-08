@@ -44,6 +44,10 @@ namespace ui {
     }
 
     bool OffsetBoundsHandle::OnMouseMove(EventMouseMove const& event) {
+        if (nullptr == m_target) {
+            return false;
+        }
+
         if (m_holding) {
             auto& bounds = m_target->GetLayoutRect();
             bounds.offset.topLeft.x += event.GetDelta().x * m_anchor.Left;
