@@ -501,12 +501,12 @@ namespace ui {
                 }
 
                 for (auto&& keyframe : track->GetKeyframes()) {
-                    ImVec2 keyP1(childTrackPos.x + keyframe.m_frame * framePixelWidth, rowYPos + 2);
-                    ImVec2 keyP2(childTrackPos.x + keyframe.m_frame * framePixelWidth + framePixelWidth, rowYPos + ItemHeight - 2);
+                    ImVec2 keyP1(childTrackPos.x + keyframe.m_frame * framePixelWidth + 2, rowYPos + 2);
+                    ImVec2 keyP2(childTrackPos.x + keyframe.m_frame * framePixelWidth + framePixelWidth - 1, rowYPos + ItemHeight - 2);
                     ImRect keyRect(keyP1, keyP2);
                     bool selected = IsKeyframeSelected(childEntity, target, keyframe.m_frame);
                     if (keyP1.x <= (canvas_size.x + contentMin.x) && keyP2.x >= (contentMin.x + legendWidth)) {
-                        draw_list->AddRectFilled(keyP1, keyP2, selected ? keyframeColorSelected : keyframeColor, 2);
+                        draw_list->AddRectFilled(keyP1, keyP2, selected ? keyframeColorSelected : keyframeColor, 4);
                     }
 
                     if (!MovingScrollBar && !MovingCurrentFrame) {
@@ -578,7 +578,7 @@ namespace ui {
         // cursor
         if (m_currentFrame >= m_firstFrame && m_currentFrame <= m_maxFrame) {
             float cursorOffset = contentMin.x + legendWidth + (m_currentFrame - firstFrameUsed) * framePixelWidth + framePixelWidth / 2;
-            draw_list->AddLine(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset, contentMax.y), 0xA02A2AFF, framePixelWidth);
+            draw_list->AddLine(ImVec2(cursorOffset, canvas_pos.y), ImVec2(cursorOffset, contentMax.y), 0xA02A2AFF, framePixelWidth - 1);
             char tmps[512];
             ImFormatString(tmps, IM_ARRAYSIZE(tmps), "%d", m_currentFrame);
             draw_list->AddText(ImVec2(cursorOffset + 10, canvas_pos.y + 2), 0xFF2A2AFF, tmps);
