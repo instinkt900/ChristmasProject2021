@@ -71,55 +71,55 @@ namespace ui {
         m_editContext->originalRect = selection->GetLayoutRect();
     }
 
-    void SetTrackValue(CompositeAction& compositeAction, std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, float value) {
-        auto& tracks = entity->GetAnimationTracks();
-        auto track = tracks.at(target);
-        if (auto keyframePtr = track->GetKeyframe(frameNo)) {
-            // keyframe exists
-            float oldValue = keyframePtr->m_value;
-            keyframePtr->m_value = value;
-            compositeAction.GetActions().push_back(std::make_unique<ChangeKeyframeAction>(entity, target, frameNo, oldValue, value));
-        } else {
-            // no keyframe
-            auto& keyframe = track->GetOrCreateKeyframe(frameNo);
-            keyframe.m_value = value;
-            compositeAction.GetActions().push_back(std::make_unique<AddKeyframeAction>(entity, target, frameNo, value));
-        }
-    }
-
     void BoundsWidget::EndEdit() {
         auto selection = m_selectedNode.lock();
         assert(m_editContext && selection);
         auto entity = selection->GetLayoutEntity();
         auto& tracks = entity->GetAnimationTracks();
-        int frameNo = m_editorLayer.GetSelectedFrame();
-        auto const& newRect = selection->GetLayoutRect();
-        auto rectDelta = newRect - m_editContext->originalRect;
-
+        int const frameNo = m_editorLayer.GetSelectedFrame();
         std::unique_ptr<CompositeAction> editAction = std::make_unique<CompositeAction>();
+
+        auto const SetTrackValue = [&](AnimationTrack::Target target, float value) {
+            auto track = tracks.at(target);
+            if (auto keyframePtr = track->GetKeyframe(frameNo)) {
+                // keyframe exists
+                float oldValue = keyframePtr->m_value;
+                keyframePtr->m_value = value;
+                editAction->GetActions().push_back(std::make_unique<ChangeKeyframeAction>(entity, target, frameNo, oldValue, value));
+            } else {
+                // no keyframe
+                auto& keyframe = track->GetOrCreateKeyframe(frameNo);
+                keyframe.m_value = value;
+                editAction->GetActions().push_back(std::make_unique<AddKeyframeAction>(entity, target, frameNo, value));
+            }
+        };
+        
+        auto const& newRect = selection->GetLayoutRect();
+        auto const rectDelta = newRect - m_editContext->originalRect;
+
         if (rectDelta.anchor.topLeft.x != 0) {
-            SetTrackValue(*editAction, entity, AnimationTrack::Target::LeftAnchor, frameNo, newRect.anchor.topLeft.x);
+            SetTrackValue(AnimationTrack::Target::LeftAnchor, newRect.anchor.topLeft.x);
         }
         if (rectDelta.anchor.topLeft.y != 0) {
-            SetTrackValue(*editAction, entity, AnimationTrack::Target::TopAnchor, frameNo, newRect.anchor.topLeft.y);
+            SetTrackValue(AnimationTrack::Target::TopAnchor, newRect.anchor.topLeft.y);
         }
         if (rectDelta.anchor.bottomRight.x != 0) {
-            SetTrackValue(*editAction, entity, AnimationTrack::Target::RightAnchor, frameNo, newRect.anchor.bottomRight.x);
+            SetTrackValue(AnimationTrack::Target::RightAnchor, newRect.anchor.bottomRight.x);
         }
         if (rectDelta.anchor.bottomRight.y != 0) {
-            SetTrackValue(*editAction, entity, AnimationTrack::Target::BottomAnchor, frameNo, newRect.anchor.bottomRight.y);
+            SetTrackValue(AnimationTrack::Target::BottomAnchor, newRect.anchor.bottomRight.y);
         }
         if (rectDelta.offset.topLeft.x != 0) {
-            SetTrackValue(*editAction, entity, AnimationTrack::Target::LeftOffset, frameNo, newRect.offset.topLeft.x);
+            SetTrackValue(AnimationTrack::Target::LeftOffset, newRect.offset.topLeft.x);
         }
         if (rectDelta.offset.topLeft.y != 0) {
-            SetTrackValue(*editAction, entity, AnimationTrack::Target::TopOffset, frameNo, newRect.offset.topLeft.y);
+            SetTrackValue(AnimationTrack::Target::TopOffset, newRect.offset.topLeft.y);
         }
         if (rectDelta.offset.bottomRight.x != 0) {
-            SetTrackValue(*editAction, entity, AnimationTrack::Target::RightOffset, frameNo, newRect.offset.bottomRight.x);
+            SetTrackValue(AnimationTrack::Target::RightOffset, newRect.offset.bottomRight.x);
         }
         if (rectDelta.offset.bottomRight.y != 0) {
-            SetTrackValue(*editAction, entity, AnimationTrack::Target::BottomOffset, frameNo, newRect.offset.bottomRight.y);
+            SetTrackValue(AnimationTrack::Target::BottomOffset, newRect.offset.bottomRight.y);
         }
 
         if (!editAction->GetActions().empty()) {
