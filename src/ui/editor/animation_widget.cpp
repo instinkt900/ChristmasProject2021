@@ -9,6 +9,7 @@
 #include "actions/composite_action.h"
 #include "editor_layer.h"
 #include "actions/delete_keyframe_action.h"
+#include "utils.h"
 
 namespace {
     using namespace ui;
@@ -38,7 +39,8 @@ static ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
 namespace ui {
     AnimationWidget::AnimationWidget(EditorLayer& editorLayer, Group* group)
         : m_editorLayer(editorLayer)
-        , m_group(group) {
+        , m_group(group)
+        , m_keyframeWidget(m_editorLayer, m_selectedKeyframes) {
     }
 
     int AnimationWidget::GetClipCount() const {
@@ -67,12 +69,9 @@ namespace ui {
 
     char const* AnimationWidget::GetChildLabel(int index) const {
         auto child = m_group->GetChildren()[index];
-        if (child->GetId() != "") {
-            return child->GetId().c_str();
-        }
-        static std::string tmp;
-        tmp = fmt::format("Child {}", index);
-        return tmp.c_str();
+        static std::string stringBuffer;
+        stringBuffer = fmt::format("{}: {}", index, GetEntityLabel(child->GetLayoutEntity()));
+        return stringBuffer.c_str();
     }
 
     char const* AnimationWidget::GetTrackLabel(AnimationTrack::Target target) const {
@@ -88,6 +87,18 @@ namespace ui {
             m_editorLayer.SetSelectedFrame(m_currentFrame);
         }
         ImGui::End();
+
+        if (!m_selectedKeyframes.empty()) {
+            m_keyframeWidget.Draw();
+        }
+    }
+
+    void AnimationWidget::OnUndo() {
+        ClearSelectedKeyframes();
+    }
+
+    void AnimationWidget::OnRedo() {
+        ClearSelectedKeyframes();
     }
 
     void AnimationWidget::SelectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo) {
@@ -130,12 +141,14 @@ namespace ui {
             auto& track = context.entity->GetAnimationTracks().at(context.target);
             if (context.frameNo != context.current->m_frame) {
                 int const targetFrame = context.current->m_frame;
+                context.current->m_frame = -1; // allow us to get any existing frame at the target
                 std::optional<float> replacedValue;
                 if (auto replacingKeyframe = track->GetKeyframe(targetFrame)) {
-                    if (replacingKeyframe != context.current) {
-                        replacedValue = replacingKeyframe->m_value;
-                    }
+                    replacedValue = replacingKeyframe->m_value;
+                    track->DeleteKeyframe(replacingKeyframe); // this will invalidate current
+                    context.current = track->GetKeyframe(-1); // this bothers me
                 }
+                context.current->m_frame = targetFrame;
                 return std::make_unique<MoveKeyframeAction>(context.entity, context.target, context.frameNo, targetFrame, replacedValue);
             }
             return nullptr;
@@ -487,7 +500,6 @@ namespace ui {
             unsigned int keyframeColorSelected = 0xFFFFa2a2;
             bool subColorSelector = false;
             for (auto&& [target, track] : childTracks) {
-
                 if (expanded) {
                     rowYPos += ItemHeight;
 
@@ -550,9 +562,11 @@ namespace ui {
             int diffFrame = int((cx - movingPos) / framePixelWidth);
             if (std::abs(diffFrame) > 0) {
                 for (auto&& context : m_selectedKeyframes) {
-                    context.current->m_frame += diffFrame;
-                    if (context.current->m_frame < 0) {
-                        context.current->m_frame = 0;
+                    if (context.frameNo != 0) { // dont allow frame zero to be moved
+                        context.current->m_frame += diffFrame;
+                        if (context.current->m_frame < 0) {
+                            context.current->m_frame = 0;
+                        }
                     }
                 }
                 movingPos += int(diffFrame * framePixelWidth);

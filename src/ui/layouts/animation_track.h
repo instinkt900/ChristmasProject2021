@@ -33,6 +33,7 @@ namespace ui {
         Keyframe* GetKeyframe(int frameNo);
         Keyframe& GetOrCreateKeyframe(int frameNo);
         void DeleteKeyframe(int frameNo);
+        void DeleteKeyframe(Keyframe* frame);
 
         void UpdateTrackTimings(std::vector<std::unique_ptr<AnimationClip>> const& clips);
         float GetValueAtTime(float time) const;

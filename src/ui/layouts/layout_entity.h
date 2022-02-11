@@ -12,6 +12,8 @@ namespace ui {
         LayoutEntity(LayoutRect const& initialBounds);
         LayoutEntity(nlohmann::json const& json, LayoutEntityGroup* parent);
 
+        virtual LayoutEntityType GetType() const { return LayoutEntityType::Entity; }
+
         std::string GetId() const { return m_id; }
 
         void SetParent(LayoutEntity* parent) { m_parent = parent; }

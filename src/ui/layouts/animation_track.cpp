@@ -18,7 +18,7 @@ namespace ui {
     }
 
     Keyframe* AnimationTrack::GetKeyframe(int frameNo) {
-        auto keyframeIt = std::find_if(std::begin(m_keyframes), std::end(m_keyframes), [&](auto const& kf) { return kf.m_frame >= frameNo; });
+        auto keyframeIt = std::find_if(std::begin(m_keyframes), std::end(m_keyframes), [&](auto const& kf) { return kf.m_frame == frameNo; });
         if (std::end(m_keyframes) != keyframeIt && keyframeIt->m_frame == frameNo) {
             // found an existing frame
             return &(*keyframeIt);
@@ -41,6 +41,13 @@ namespace ui {
 
     void AnimationTrack::DeleteKeyframe(int frameNo) {
         auto keyframeIt = std::find_if(std::begin(m_keyframes), std::end(m_keyframes), [&](auto const& kf) { return kf.m_frame == frameNo; });
+        if (std::end(m_keyframes) != keyframeIt) {
+            m_keyframes.erase(keyframeIt);
+        }
+    }
+
+    void AnimationTrack::DeleteKeyframe(Keyframe* frame) {
+        auto keyframeIt = std::find_if(std::begin(m_keyframes), std::end(m_keyframes), [&](auto const& kf) { return &kf == frame; });
         if (std::end(m_keyframes) != keyframeIt) {
             m_keyframes.erase(keyframeIt);
         }

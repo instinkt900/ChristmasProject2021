@@ -43,6 +43,9 @@ namespace ui {
         if (ImGui::CollapsingHeader("MoveKeyframeAction")) {
             ImGui::LabelText("Initial Frame", "%d", m_initialFrame);
             ImGui::LabelText("Final Frame", "%d", m_finalFrame);
+            if (m_replacedValue.has_value()) {
+                ImGui::LabelText("Replaced Value", "%f", m_replacedValue.value());
+            }
         }
     }
 }

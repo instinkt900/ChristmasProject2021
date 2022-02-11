@@ -10,6 +10,8 @@ namespace ui {
         LayoutEntityGroup(LayoutRect const& initialBounds);
         LayoutEntityGroup(nlohmann::json const& json, LayoutEntityGroup* parent);
 
+        LayoutEntityType GetType() const override { return LayoutEntityType::Group; }
+
         auto& GetChildren() { return m_children; }
         auto const& GetChildren() const { return m_children; }
 

@@ -160,6 +160,7 @@ namespace ui {
             m_editActions[m_actionIndex]->Undo();
             --m_actionIndex;
             Refresh();
+            m_animationWidget->OnUndo();
         }
     }
 
@@ -168,6 +169,7 @@ namespace ui {
             ++m_actionIndex;
             m_editActions[m_actionIndex]->Do();
             Refresh();
+            m_animationWidget->OnRedo();
         }
     }
 

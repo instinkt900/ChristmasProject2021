@@ -2,6 +2,8 @@
 
 #include "im_animation_tracks.h"
 #include "ui/layouts/animation_track.h"
+#include "keyframe_context.h"
+#include "keyframe_widget.h"
 
 namespace ui {
     class EditorLayer;
@@ -15,6 +17,9 @@ namespace ui {
 
         void Draw();
 
+        void OnUndo();
+        void OnRedo();
+
     private:
         EditorLayer& m_editorLayer;
         Group* m_group;
@@ -27,14 +32,8 @@ namespace ui {
         char const* GetChildLabel(int index) const;
         char const* GetTrackLabel(AnimationTrack::Target target) const;
 
-        struct KeyframeContext {
-            std::shared_ptr<LayoutEntity> entity;
-            AnimationTrack::Target target = AnimationTrack::Target::Unknown;
-            int frameNo = -1;
-            Keyframe* current = nullptr;
-        };
-
         std::vector<KeyframeContext> m_selectedKeyframes;
+        KeyframeWidget m_keyframeWidget;
 
         void SelectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo);
         void DeselectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo);

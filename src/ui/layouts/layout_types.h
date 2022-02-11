@@ -1,6 +1,12 @@
 #pragma once
 
 namespace ui {
+    enum class LayoutEntityType {
+        Entity,
+        Group,
+        Image
+    };
+
     struct LayoutRect {
         FloatRect anchor;
         FloatRect offset;
