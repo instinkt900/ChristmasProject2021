@@ -22,13 +22,15 @@ namespace ui {
 
         void OnEditDraw() override;
 
-        static constexpr char const* LABEL = "layout_data";
-
         std::string m_layoutPath;
         std::vector<std::shared_ptr<LayoutEntity>> m_children;
 
         std::vector<std::unique_ptr<AnimationClip>> m_animationClips; // sorted by time/frame
 
         void Clone(LayoutEntityGroup const& other);
+
+        nlohmann::json Serialize() const override;
+        nlohmann::json SerializeAsChild() const override;
+        void Deserialize(nlohmann::json const& json) override;
     };
 }

@@ -12,7 +12,8 @@ namespace ui {
 
         std::unique_ptr<Node> Instantiate() override;
 
-        static constexpr char const* LABEL = "image_data";
+        nlohmann::json Serialize() const override;
+        void Deserialize(nlohmann::json const& json) override;
 
         std::string m_texturePath;
         IntRect m_sourceRect;

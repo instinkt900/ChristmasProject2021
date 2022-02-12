@@ -9,6 +9,8 @@ namespace ui {
         float m_value;
 
         float m_time; // calculated based on clips
+
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(Keyframe, m_frame, m_value);
     };
 
     class AnimationTrack {
@@ -25,8 +27,9 @@ namespace ui {
             RightAnchor
         };
 
+        AnimationTrack() = default;
         AnimationTrack(Target target, float initialValue);
-        AnimationTrack(nlohmann::json const& json);
+        explicit AnimationTrack(nlohmann::json const& json);
 
         Target GetTarget() const { return m_target; }
 
@@ -42,20 +45,11 @@ namespace ui {
         auto& GetKeyframes() { return m_keyframes; }
 
         void SortKeyframes();
+
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(AnimationTrack, m_target, m_keyframes);
+
     private:
         Target m_target;
         std::vector<Keyframe> m_keyframes;
     };
-
-    NLOHMANN_JSON_SERIALIZE_ENUM(AnimationTrack::Target, {
-                                                             { AnimationTrack::Target::Unknown, "unknown" },
-                                                             { AnimationTrack::Target::TopOffset, "top_offset" },
-                                                             { AnimationTrack::Target::BottomOffset, "bottom_offset" },
-                                                             { AnimationTrack::Target::LeftOffset, "left_offset" },
-                                                             { AnimationTrack::Target::RightOffset, "right_offset" },
-                                                             { AnimationTrack::Target::TopAnchor, "top_anchor" },
-                                                             { AnimationTrack::Target::BottomAnchor, "bottom_anchor" },
-                                                             { AnimationTrack::Target::LeftAnchor, "left_anchor" },
-                                                             { AnimationTrack::Target::RightAnchor, "right_anchor" },
-                                                         })
 }

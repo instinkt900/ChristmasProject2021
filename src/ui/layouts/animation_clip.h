@@ -3,7 +3,7 @@
 namespace ui {
     struct AnimationClip {
         AnimationClip();
-        AnimationClip(nlohmann::json const& json);
+        //AnimationClip(nlohmann::json const& json);
 
         void SetStartTime(float time) {
             m_startTime = time;
@@ -26,5 +26,7 @@ namespace ui {
 
         float m_startTime = 0;
         float m_endTime = 0;
+
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(AnimationClip, m_name, m_startFrame, m_endFrame, m_fps, m_loopType);
     };
 }

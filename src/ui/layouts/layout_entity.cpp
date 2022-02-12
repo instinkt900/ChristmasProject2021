@@ -11,19 +11,13 @@ namespace ui {
         InitTracks(initialBounds);
     }
 
-    LayoutEntity::LayoutEntity(nlohmann::json const& json, LayoutEntityGroup* parent)
-        : m_id(json["id"])
-        , m_parent(parent) {
+    LayoutEntity::LayoutEntity(LayoutEntityGroup* parent)
+        : m_parent(parent) {
+    }
 
-        if (json.contains("tracks")) {
-            auto const& animationClips = parent->GetAnimationClips();
-            auto const& tracksJson = json["tracks"];
-            for (auto&& trackJson : tracksJson) {
-                auto track = std::make_unique<AnimationTrack>(trackJson);
-                track->UpdateTrackTimings(animationClips);
-                m_tracks.insert(std::make_pair(track->GetTarget(), std::move(track)));
-            }
-        }
+    LayoutEntity::LayoutEntity(nlohmann::json const& json, LayoutEntityGroup* parent)
+        : m_parent(parent) {
+        Deserialize(json);
     }
 
     void LayoutEntity::SetBounds(LayoutRect const& bounds) {
@@ -115,6 +109,39 @@ namespace ui {
         for (auto&& [target, value] : targetList) {
             if (std::end(m_tracks) == m_tracks.find(target)) {
                 m_tracks.insert(std::make_pair(target, std::make_shared<AnimationTrack>(target, value)));
+            }
+        }
+    }
+
+    nlohmann::json LayoutEntity::Serialize() const {
+        nlohmann::json j;
+        j["type"] = GetType();
+        j["m_id"] = m_id;
+        nlohmann::json trackJson;
+        for (auto&& [target, track] : m_tracks) {
+            trackJson.push_back(*track);
+        }
+        j["m_tracks"] = trackJson;
+        return j;
+    }
+
+    nlohmann::json LayoutEntity::SerializeAsChild() const {
+        return Serialize();
+    }
+
+    void LayoutEntity::Deserialize(nlohmann::json const& json) {
+        assert(json["type"] == GetType());
+        json["m_id"].get_to(m_id);
+        if (json.contains("m_tracks")) {
+            m_tracks.clear();
+            auto const* animationClips = m_parent ? &m_parent->GetAnimationClips() : nullptr;
+            auto const& tracksJson = json["m_tracks"];
+            for (auto&& trackJson : tracksJson) {
+                auto track = std::make_unique<AnimationTrack>(trackJson);
+                if (animationClips) {
+                    track->UpdateTrackTimings(*animationClips);
+                }
+                m_tracks.insert(std::make_pair(track->GetTarget(), std::move(track)));
             }
         }
     }

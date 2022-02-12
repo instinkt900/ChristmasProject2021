@@ -5,6 +5,7 @@
 #include "debug/inspectors.h"
 #include "ui/inspectors.h"
 #include "animation_clip.h"
+#include "ui/serialize_utils.h"
 
 namespace ui {
     LayoutEntityGroup::LayoutEntityGroup(LayoutRect const& initialBounds)
@@ -12,13 +13,8 @@ namespace ui {
     }
 
     LayoutEntityGroup::LayoutEntityGroup(nlohmann::json const& json, LayoutEntityGroup* parent)
-        : LayoutEntity(json, parent) {
-        if (json.contains(LABEL)) {
-            auto data = json[LABEL];
-            data.at("layout_path").get_to(m_layoutPath);
-            auto subLayout = LoadLayout(m_layoutPath);
-            Clone(*subLayout);
-        }
+        : LayoutEntity(parent) {
+        Deserialize(json);
     }
 
     std::unique_ptr<Node> LayoutEntityGroup::Instantiate() {
@@ -44,6 +40,35 @@ namespace ui {
                 child->OnEditDraw();
             }
             ImGui::TreePop();
+        }
+    }
+
+    nlohmann::json LayoutEntityGroup::Serialize() const {
+        nlohmann::json j;
+        j = LayoutEntity::Serialize();
+        j["m_animationClips"] = m_animationClips;
+        std::vector<nlohmann::json> childJsons;
+        for (auto&& child : m_children) {
+            childJsons.push_back(child->SerializeAsChild());
+        }
+        j["m_children"] = childJsons;
+        j["m_animationClips"] = m_animationClips;
+        return j;
+    }
+
+    nlohmann::json LayoutEntityGroup::SerializeAsChild() const {
+        nlohmann::json j;
+        j = LayoutEntity::Serialize();
+        j["m_layoutPath"] = m_layoutPath;
+        return j;
+    }
+
+    void LayoutEntityGroup::Deserialize(nlohmann::json const& json) {
+        LayoutEntity::Deserialize(json);
+        if (json.contains("layout_path")) {
+            json["layout_path"].get_to(m_layoutPath);
+            auto subLayout = LoadLayout(m_layoutPath);
+            Clone(*subLayout);
         }
     }
 }

@@ -463,6 +463,9 @@
     <ClInclude Include="src\ui\editor\utils.h">
       <Filter>ui\editor</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\serialize_utils.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

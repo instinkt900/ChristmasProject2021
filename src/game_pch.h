@@ -26,3 +26,4 @@
 #include "smart_sdl.h"
 #include "utils.h"
 #include "events/event.h"
+#include "ui/serialize_utils.h"

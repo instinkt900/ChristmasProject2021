@@ -292,6 +292,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ui\layouts\layout_types.h" />
     <ClInclude Include="src\ui\node.h" />
     <ClInclude Include="src\ui\node_image.h" />
+    <ClInclude Include="src\ui\serialize_utils.h" />
     <ClInclude Include="src\ui\ui_fwd.h" />
     <ClInclude Include="src\utils.h" />
   </ItemGroup>

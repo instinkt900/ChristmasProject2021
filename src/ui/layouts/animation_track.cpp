@@ -9,10 +9,12 @@ namespace ui {
     }
 
     AnimationTrack::AnimationTrack(nlohmann::json const& json)
-        : m_target(json["target"]) {
-        for (auto&& keyframeJson : json["keyframes"]) {
-            m_keyframes.push_back({ keyframeJson["frame"], keyframeJson["value"] });
-        }
+        /*: m_target(json["m_target"])*/ {
+        //for (auto&& keyframeJson : json["m_keyframes"]) {
+        //    m_keyframes.push_back({ keyframeJson["frame"], keyframeJson["value"] });
+        //}
+
+        *this = json;
 
         SortKeyframes();
     }

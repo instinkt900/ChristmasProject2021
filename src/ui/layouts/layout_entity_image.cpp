@@ -8,13 +8,24 @@ namespace ui {
     }
 
     LayoutEntityImage::LayoutEntityImage(nlohmann::json const& json, LayoutEntityGroup* parent)
-        : LayoutEntity(json, parent) {
-        auto data = json[LABEL];
-        data.at("texture_path").get_to(m_texturePath);
-        data.at("source_rect").get_to(m_sourceRect);
+        : LayoutEntity(parent) {
+        Deserialize(json);
     }
 
     std::unique_ptr<Node> LayoutEntityImage::Instantiate() {
         return std::make_unique<NodeImage>(std::static_pointer_cast<LayoutEntityImage>(shared_from_this()));
+    }
+
+    nlohmann::json LayoutEntityImage::Serialize() const {
+        nlohmann::json j = LayoutEntity::Serialize();
+        j["m_texturePath"] = m_texturePath;
+        j["m_sourceRect"] = m_sourceRect;
+        return j;
+    }
+
+    void LayoutEntityImage::Deserialize(nlohmann::json const& json) {
+        LayoutEntity::Deserialize(json);
+        json["m_texturePath"].get_to(m_texturePath);
+        json["m_sourceRect"].get_to(m_sourceRect);
     }
 }

@@ -13,7 +13,8 @@
 
 namespace ui {
     EditorLayer::EditorLayer()
-        : m_boundsWidget(*this) {
+        : m_fileDialog(ImGuiFileBrowserFlags_EnterNewFilename)
+        , m_boundsWidget(*this) {
     }
 
     EditorLayer::~EditorLayer() {
@@ -44,6 +45,11 @@ namespace ui {
                     m_fileDialog.SetTypeFilters({ ".json" });
                     m_fileDialog.Open();
                     m_fileOpenMode = FileOpenMode::Layout;
+                } else if (ImGui::MenuItem("Save..", "Ctrl+S")) {
+                    m_fileDialog.SetTitle("Save..");
+                    m_fileDialog.SetTypeFilters({ ".json" });
+                    m_fileDialog.Open();
+                    m_fileOpenMode = FileOpenMode::Save;
                 }
                 ImGui::EndMenu();
             }
@@ -103,6 +109,9 @@ namespace ui {
                 m_fileDialog.ClearSelected();
             } else if (m_fileOpenMode == FileOpenMode::Image) {
                 AddImage(m_fileDialog.GetSelected().string().c_str());
+                m_fileDialog.ClearSelected();
+            } else if (m_fileOpenMode == FileOpenMode::Save) {
+                SaveLayout(m_fileDialog.GetSelected().string().c_str());
                 m_fileDialog.ClearSelected();
             }
         }
@@ -186,6 +195,16 @@ namespace ui {
     void EditorLayer::LoadLayout(char const* path) {
         m_rootLayout = ui::LoadLayout(path);
         Rebuild();
+    }
+
+    void EditorLayer::SaveLayout(char const* path) {
+        std::ofstream ofile(path);
+        if (!ofile.is_open()) {
+            return;
+        }
+
+        nlohmann::json json = m_rootLayout->Serialize();
+        ofile << json;
     }
 
     void EditorLayer::AddSubLayout(char const* path) {

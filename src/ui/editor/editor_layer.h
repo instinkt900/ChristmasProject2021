@@ -41,6 +41,7 @@ namespace ui {
             Layout,
             SubLayout,
             Image,
+            Save,
         };
         ImGui::FileBrowser m_fileDialog;
         FileOpenMode m_fileOpenMode;
@@ -63,6 +64,7 @@ namespace ui {
 
         void NewLayout();
         void LoadLayout(char const* path);
+        void SaveLayout(char const* path);
         void AddSubLayout(char const* path);
         void AddImage(char const* path);
         void Rebuild();
