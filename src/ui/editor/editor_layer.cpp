@@ -40,7 +40,9 @@ namespace ui {
 
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
-                if (ImGui::MenuItem("Open..", "Ctrl+O")) {
+                if (ImGui::MenuItem("New", "Ctrl+N")) {
+                    NewLayout();
+                } else if (ImGui::MenuItem("Open..", "Ctrl+O")) {
                     m_fileDialog.SetTitle("Open..");
                     m_fileDialog.SetTypeFilters({ ".json" });
                     m_fileDialog.Open();
@@ -189,11 +191,13 @@ namespace ui {
 
     void EditorLayer::NewLayout() {
         m_rootLayout = std::make_shared<LayoutEntityGroup>(LayoutRect{});
+        m_selectedFrame = 0;
         Rebuild();
     }
 
     void EditorLayer::LoadLayout(char const* path) {
         m_rootLayout = ui::LoadLayout(path);
+        m_selectedFrame = 0;
         Rebuild();
     }
 
