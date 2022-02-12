@@ -56,6 +56,43 @@ namespace ui {
         return temp_string.c_str();
     }
 
+    void AnimationWidget::DrawSelectedClipWindow() {
+        if (m_selectedClip) {
+            if (ImGui::Begin("Selected Clip", &m_clipWindowShown)) {
+                static char nameBuffer[1024];
+                strncpy(nameBuffer, m_selectedClip->m_name.c_str(), 1024);
+                if (ImGui::InputText("Name", nameBuffer, 1024)) {
+                    m_selectedClip->m_name = nameBuffer;
+                }
+                if (ImGui::InputInt("Start Frame", &m_selectedClip->m_startFrame, 0)) {
+                    m_selectedClip->m_startFrame = std::max(0, m_selectedClip->m_startFrame);
+                }
+                if (ImGui::InputInt("End Frame", &m_selectedClip->m_endFrame, 0)) {
+                    m_selectedClip->m_endFrame = std::max(0, m_selectedClip->m_endFrame);
+                }
+                if (ImGui::InputFloat("FPS", &m_selectedClip->m_fps)) {
+                    m_selectedClip->m_fps = std::max(0.0f, m_selectedClip->m_fps);
+                }
+                std::string preview = std::string(magic_enum::enum_name(m_selectedClip->m_loopType));
+                if (ImGui::BeginCombo("Loop Type", preview.c_str())) {
+                    for (int n = 0; n < magic_enum::enum_count<AnimationClip::LoopType>(); n++) {
+                        auto const enumValue = magic_enum::enum_value<AnimationClip::LoopType>(n);
+                        std::string enumName = std::string(magic_enum::enum_name(enumValue));
+                        const bool is_selected = m_selectedClip->m_loopType == enumValue;
+                        if (ImGui::Selectable(enumName.c_str(), is_selected))
+                            m_selectedClip->m_loopType = enumValue;
+
+                        // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                        if (is_selected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+            }
+            ImGui::End();
+        }
+    }
+
     void AnimationWidget::Draw() {
         if (ImGui::Begin("Animation")) {
             m_currentFrame = m_editorLayer.GetSelectedFrame();
@@ -67,6 +104,8 @@ namespace ui {
         if (!m_selectedKeyframes.empty()) {
             m_keyframeWidget.Draw();
         }
+
+        DrawSelectedClipWindow();
     }
 
     void AnimationWidget::OnUndo() {

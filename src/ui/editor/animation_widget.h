@@ -30,6 +30,9 @@ namespace ui {
         char const* GetChildLabel(int index) const;
         char const* GetTrackLabel(AnimationTrack::Target target) const;
 
+        bool m_clipWindowShown = true;
+        void DrawSelectedClipWindow();
+
         std::vector<KeyframeContext> m_selectedKeyframes;
         KeyframeWidget m_keyframeWidget;
         AnimationClip* m_selectedClip = nullptr;
