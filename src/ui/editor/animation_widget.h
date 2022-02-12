@@ -25,15 +25,14 @@ namespace ui {
         Group* m_group;
 
         bool DrawWidget();
-        int GetClipCount() const;
-        void GetClip(int clipIndex, int** startFrame, int** endFrame, char const** clipName, unsigned int* color);
-        void BeginEditClip(int clipIndex) {}
+        void BeginEditClip(AnimationClip* clip) {}
         void EndEditClip() {}
         char const* GetChildLabel(int index) const;
         char const* GetTrackLabel(AnimationTrack::Target target) const;
 
         std::vector<KeyframeContext> m_selectedKeyframes;
         KeyframeWidget m_keyframeWidget;
+        AnimationClip* m_selectedClip = nullptr;
 
         void SelectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo);
         void DeselectKeyframe(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo);

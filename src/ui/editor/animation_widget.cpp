@@ -43,30 +43,6 @@ namespace ui {
         , m_keyframeWidget(m_editorLayer, m_selectedKeyframes) {
     }
 
-    int AnimationWidget::GetClipCount() const {
-        auto layoutEntity = m_group->GetLayoutEntity();
-        if (auto layout = static_cast<LayoutEntityGroup*>(layoutEntity.get())) {
-            return static_cast<int>(layout->GetAnimationClips().size());
-        }
-        return 0;
-    }
-
-    void AnimationWidget::GetClip(int clipIndex, int** startFrame, int** endFrame, char const** clipName, unsigned int* color) {
-        auto layoutEntity = m_group->GetLayoutEntity();
-        if (auto layout = static_cast<LayoutEntityGroup*>(layoutEntity.get())) {
-            auto& clips = layout->GetAnimationClips();
-
-            if (startFrame)
-                *startFrame = &clips[clipIndex]->m_startFrame;
-            if (endFrame)
-                *endFrame = &clips[clipIndex]->m_endFrame;
-            if (clipName)
-                *clipName = clips[clipIndex]->m_name.c_str();
-            if (color)
-                *color = 0xFF00CCAA;
-        }
-    }
-
     char const* AnimationWidget::GetChildLabel(int index) const {
         auto child = m_group->GetChildren()[index];
         static std::string stringBuffer;
@@ -221,7 +197,6 @@ namespace ui {
         static float framePixelWidthTarget = 10.f;
         int legendWidth = 200;
 
-        static int movingClipEntry = -1;
         static int movingEntry = -1;
         static int movingPos = -1;
         static int movingPart = -1;
@@ -248,6 +223,7 @@ namespace ui {
         static bool MovingScrollBar = false;
         static bool MovingCurrentFrame = false;
         static bool KeyframeGrabbed = false;
+        static bool MovingClip = false;
 
         // zoom in/out
         const int visibleFrameCount = (int)floorf((canvas_size.x - legendWidth) / framePixelWidth);
@@ -302,7 +278,7 @@ namespace ui {
         ImRect topRect(ImVec2(canvas_pos.x + legendWidth, canvas_pos.y), ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + ItemHeight));
 
         // moving current frame
-        if (!MovingCurrentFrame && !MovingScrollBar && movingEntry == -1 && movingClipEntry == -1 && m_currentFrame >= 0 && topRect.Contains(io.MousePos) && io.MouseDown[0]) {
+        if (!MovingClip && !MovingCurrentFrame && !MovingScrollBar && movingEntry == -1 && m_currentFrame >= 0 && topRect.Contains(io.MousePos) && io.MouseDown[0]) {
             MovingCurrentFrame = true;
         }
         if (MovingCurrentFrame) {
@@ -321,26 +297,48 @@ namespace ui {
         draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_size.x + canvas_pos.x, canvas_pos.y + ItemHeight), 0xFF3D3837, 0);
 
         // clips
-        int clipCount = GetClipCount();
-        for (int i = 0; i < clipCount; i++) {
-            int* startFrame;
-            int* endFrame;
-            char const* clipName;
-            unsigned int clipColor;
-            GetClip(i, &startFrame, &endFrame, &clipName, &clipColor);
+        auto& animationClips = std::static_pointer_cast<LayoutEntityGroup>(m_group->GetLayoutEntity())->GetAnimationClips();
 
+        static int clipFramePopup = -1;
+        if (ImGui::BeginPopup("clip_popup")) {
+            if (m_selectedClip == nullptr) {
+                if (ImGui::MenuItem("Add")) {
+                    auto newClip = std::make_unique<AnimationClip>();
+                    newClip->m_startFrame = clipFramePopup;
+                    newClip->m_endFrame = newClip->m_startFrame + 10;
+                    animationClips.push_back(std::move(newClip));
+                    ImGui::CloseCurrentPopup();
+                }
+            } else {
+                if (ImGui::MenuItem("Delete")) {
+                    auto it = std::find_if(std::begin(animationClips), std::end(animationClips), [this](auto& target) {
+                        return target.get() == m_selectedClip;
+                    });
+                    if (std::end(animationClips) != it) {
+                        animationClips.erase(it);
+                    }
+                    m_selectedClip = nullptr;
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            ImGui::EndPopup();
+        }
+
+        ImVec2 clipTrackMin(contentMin.x + legendWidth - (firstFrameUsed * framePixelWidth), contentMin.y);
+        ImVec2 clipTrackMax(contentMax.x, clipTrackMin.y + ItemHeight);
+        ImRect clipTrackRect(clipTrackMin, clipTrackMax);
+        bool pendingClipSelectionClear = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && clipTrackRect.Contains(io.MousePos);
+
+        // draw clips
+        for (auto&& clip : animationClips) {
             int px = (int)contentMin.x + legendWidth - int(firstFrameUsed * framePixelWidth);
             int py = (int)contentMin.y;
-            ImVec2 slotP1(px + *startFrame * framePixelWidth, py + 2.0f);
-            ImVec2 slotP2(px + *endFrame * framePixelWidth + framePixelWidth, py + ItemHeight - 2.0f);
-            unsigned int slotColor = clipColor;
+            ImVec2 slotP1(px + clip->m_startFrame * framePixelWidth, py + 2.0f);
+            ImVec2 slotP2(px + clip->m_endFrame * framePixelWidth + framePixelWidth, py + ItemHeight - 2.0f);
+            unsigned int slotColor = (m_selectedClip == nullptr || m_selectedClip != clip.get()) ? 0xFF00CCAA : 0xFF13BDF3;
 
             if (slotP1.x <= (canvas_size.x + contentMin.x) && slotP2.x >= (contentMin.x + legendWidth)) {
                 draw_list->AddRectFilled(slotP1, slotP2, slotColor, 2);
-            }
-
-            if (ImRect(slotP1, slotP2).Contains(io.MousePos) && io.MouseDoubleClicked[0]) {
-                //animation->DoubleClickClip(i);
             }
 
             ImRect rects[3] = {
@@ -350,7 +348,7 @@ namespace ui {
             };
 
             const unsigned int quadColor[] = { 0xFFFFFFFF, 0xFFFFFFFF, slotColor };
-            if (movingClipEntry == -1) {
+            if (!MovingClip) {
                 for (int j = 2; j >= 0; j--) {
                     ImRect& rc = rects[j];
                     if (!rc.Contains(io.MousePos))
@@ -362,30 +360,46 @@ namespace ui {
                     ImRect& rc = rects[j];
                     if (!rc.Contains(io.MousePos))
                         continue;
-                    if (ImGui::IsMouseClicked(0) && !MovingScrollBar && !MovingCurrentFrame) {
-                        movingClipEntry = i;
-                        movingPos = cx;
-                        movingPart = j + 1;
-                        BeginEditClip(movingClipEntry);
-                        break;
+
+                    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+                        if ((io.KeyMods & ImGuiKeyModFlags_Ctrl) == 0) {
+                            // add selected clip
+                        }
+                        m_selectedClip = clip.get();
+
+                        // action logic
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                            pendingClipSelectionClear = false;
+                            MovingClip = true;
+                            movingPos = cx;
+                            movingPart = j + 1;
+                            break;
+                        }
                     }
                 }
             }
 
-            ImVec2 tsize = ImGui::CalcTextSize(clipName);
+            ImVec2 tsize = ImGui::CalcTextSize(clip->m_name.c_str());
             ImVec2 tpos(slotP1.x + (slotP2.x - slotP1.x - tsize.x) / 2, slotP1.y + (slotP2.y - slotP1.y - tsize.y) / 2);
-            draw_list->AddText(tpos, 0xFFFFFFFF, clipName);
+            draw_list->AddText(tpos, 0xFFFFFFFF, clip->m_name.c_str());
+        }
+
+        if (clipTrackRect.Contains(io.MousePos) && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+            clipFramePopup = static_cast<int>((io.MousePos.x - clipTrackMin.x) / framePixelWidth);
+            ImGui::OpenPopup("clip_popup");
+        }
+
+        if (pendingClipSelectionClear) {
+            m_selectedClip = nullptr;
         }
 
         // moving clip
-        if (movingClipEntry >= 0) {
+        if (MovingClip) {
             ImGui::CaptureMouseFromApp();
             int diffFrame = int((cx - movingPos) / framePixelWidth);
             if (std::abs(diffFrame) > 0) {
-                int *start, *end;
-                GetClip(movingClipEntry, &start, &end, NULL, NULL);
-                int& l = *start;
-                int& r = *end;
+                int& l = m_selectedClip->m_startFrame;
+                int& r = m_selectedClip->m_endFrame;
                 if (movingPart & 1)
                     l += diffFrame;
                 if (movingPart & 2)
@@ -402,7 +416,7 @@ namespace ui {
                 movingPos += int(diffFrame * framePixelWidth);
             }
             if (!io.MouseDown[0]) {
-                movingClipEntry = -1;
+                MovingClip = false;
                 EndEditClip();
             }
         }
@@ -472,7 +486,7 @@ namespace ui {
         ImVec2 tracksMin(contentMin.x + legendWidth - firstFrameUsed * framePixelWidth, childFramePos.y);
         ImVec2 tracksMax(childFramePos.x + childFrameSize.x, childFramePos.y + childFrameSize.y);
         ImRect tracksFrame(tracksMin, tracksMax);
-        bool pendingSelectionClear = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && tracksFrame.Contains(io.MousePos);
+        bool pendingKeyframeSelectionClear = ImGui::IsMouseClicked(ImGuiMouseButton_Left) && tracksFrame.Contains(io.MousePos);
 
         // track rows
         for (int i = 0; i < childCount; ++i) {
@@ -539,7 +553,7 @@ namespace ui {
 
                                     // action logic
                                     if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-                                        pendingSelectionClear = false;
+                                        pendingKeyframeSelectionClear = false;
                                         KeyframeGrabbed = true;
                                         movingPos = cx;
                                     } else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
@@ -578,7 +592,7 @@ namespace ui {
             }
         }
 
-        if (pendingSelectionClear && !ImGui::IsPopupOpen("keyframe_popup")) {
+        if (pendingKeyframeSelectionClear && !ImGui::IsPopupOpen("keyframe_popup")) {
             ClearSelectedKeyframes();
         }
 

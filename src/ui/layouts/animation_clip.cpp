@@ -8,6 +8,8 @@ namespace ui {
                                                               { AnimationClip::LoopType::Reset, "reset" },
                                                           })
 
+    AnimationClip::AnimationClip() {}
+
     AnimationClip::AnimationClip(nlohmann::json const& json)
         : m_name(json["name"])
         , m_startFrame(json["start_frame"])

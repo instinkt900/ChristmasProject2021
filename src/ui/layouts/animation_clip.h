@@ -2,6 +2,7 @@
 
 namespace ui {
     struct AnimationClip {
+        AnimationClip();
         AnimationClip(nlohmann::json const& json);
 
         void SetStartTime(float time) {
@@ -18,10 +19,10 @@ namespace ui {
         };
 
         std::string m_name;
-        int m_startFrame;
-        int m_endFrame;
-        float m_fps;
-        LoopType m_loopType;
+        int m_startFrame = 0;
+        int m_endFrame = 0;
+        float m_fps = 30;
+        LoopType m_loopType = LoopType::Stop;
 
         float m_startTime = 0;
         float m_endTime = 0;
