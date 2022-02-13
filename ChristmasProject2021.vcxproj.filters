@@ -183,6 +183,9 @@
     <ClCompile Include="src\ui\imgui_ext.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\editor\properties_editor.cpp">
+      <Filter>ui\editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">
@@ -477,6 +480,9 @@
     </ClInclude>
     <ClInclude Include="src\ui\imgui_ext.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\properties_editor.h">
+      <Filter>ui\editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

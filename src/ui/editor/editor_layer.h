@@ -7,6 +7,7 @@
 #include "bounds_widget.h"
 #include "events/event_mouse.h"
 #include "events/event_key.h"
+#include "properties_editor.h"
 
 namespace ui {
     class AnimationWidget;
@@ -34,7 +35,12 @@ namespace ui {
         void SetSelectedFrame(int frameNo);
         int GetSelectedFrame() const { return m_selectedFrame; }
 
+        std::shared_ptr<Node> GetSelection() const { return m_selection; }
+
         void Refresh();
+
+        void BeginEditBounds();
+        void EndEditBounds();
 
     private:
         enum class FileOpenMode {
@@ -58,6 +64,8 @@ namespace ui {
         std::vector<std::unique_ptr<IEditorAction>> m_editActions;
         int m_actionIndex = -1;
 
+        PropertiesEditor m_propertiesEditor;
+
         void UndoEditAction();
         void RedoEditAction();
         void ClearEditActions();
@@ -72,5 +80,13 @@ namespace ui {
         bool OnMouseDown(EventMouseDown const& event);
         bool OnMouseUp(EventMouseUp const& event);
         bool OnKey(EventKey const& event);
+
+        void SetSelection(std::shared_ptr<Node> selection);
+
+        struct EditBoundsContext {
+            std::shared_ptr<LayoutEntity> entity;
+            LayoutRect originalRect;
+        };
+        std::unique_ptr<EditBoundsContext> m_editBoundsContext;
     };
 };

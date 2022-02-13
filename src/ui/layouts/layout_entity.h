@@ -16,11 +16,12 @@ namespace ui {
         virtual LayoutEntityType GetType() const { return LayoutEntityType::Entity; }
 
         std::string GetId() const { return m_id; }
+        void SetId(std::string const& id) { m_id = id; }
 
         void SetParent(LayoutEntityGroup* parent) { m_parent = parent; }
         LayoutEntityGroup* GetParent() const { return m_parent; }
 
-        void SetBounds(LayoutRect const& bounds);
+        void SetBounds(LayoutRect const& bounds, int frame);
         LayoutRect GetBoundsAtTime(float time) const;
         LayoutRect GetBoundsAtFrame(int frame) const;
 

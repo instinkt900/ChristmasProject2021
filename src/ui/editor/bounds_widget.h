@@ -35,11 +35,5 @@ namespace ui {
         bool OnMouseMove(EventMouseMove const& event);
 
         void CheckSelectionValid();
-
-        struct EditContext {
-            std::shared_ptr<LayoutEntity> entity;
-            LayoutRect originalRect;
-        };
-        std::unique_ptr<EditContext> m_editContext;
     };
 }

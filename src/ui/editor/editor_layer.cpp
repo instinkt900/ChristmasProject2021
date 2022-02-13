@@ -10,11 +10,15 @@
 #include "ui/layouts/layout_entity_image.h"
 #include "ui/editor/actions/add_action.h"
 #include "ui/editor/actions/delete_action.h"
+#include "ui/editor/actions/composite_action.h"
+#include "ui/editor/actions/modify_keyframe_action.h"
+#include "ui/editor/actions/add_keyframe_action.h"
 
 namespace ui {
     EditorLayer::EditorLayer()
         : m_fileDialog(ImGuiFileBrowserFlags_EnterNewFilename)
-        , m_boundsWidget(*this) {
+        , m_boundsWidget(*this)
+        , m_propertiesEditor(*this) {
     }
 
     EditorLayer::~EditorLayer() {
@@ -130,6 +134,8 @@ namespace ui {
         if (m_animationWidget) {
             m_animationWidget->Draw();
         }
+
+        m_propertiesEditor.Draw();
     }
 
     void EditorLayer::DebugDraw() {
@@ -192,12 +198,16 @@ namespace ui {
     void EditorLayer::NewLayout() {
         m_rootLayout = std::make_shared<LayoutEntityGroup>(LayoutRect{});
         m_selectedFrame = 0;
+        m_editActions.clear();
+        m_selection = nullptr;
         Rebuild();
     }
 
     void EditorLayer::LoadLayout(char const* path) {
         m_rootLayout = ui::LoadLayout(path);
         m_selectedFrame = 0;
+        m_editActions.clear();
+        m_selection = nullptr;
         Rebuild();
     }
 
@@ -218,7 +228,7 @@ namespace ui {
         bounds.anchor.bottomRight = { 0.5f, 0.5f };
         bounds.offset.topLeft = { -50, -50 };
         bounds.offset.bottomRight = { 50, 50 };
-        newSubLayout->SetBounds(bounds);
+        newSubLayout->SetBounds(bounds, 0);
 
         auto instance = newSubLayout->Instantiate();
         instance->SetShowRect(true);
@@ -228,7 +238,6 @@ namespace ui {
         AddEditAction(std::move(addAction));
 
         m_root->RecalculateBounds();
-        //m_animationWidget->Update();
     }
 
     void EditorLayer::AddImage(char const* path) {
@@ -269,13 +278,11 @@ namespace ui {
     bool EditorLayer::OnMouseDown(EventMouseDown const& event) {
         for (auto&& child : m_root->GetChildren()) {
             if (child->IsInBounds(event.GetPosition()) && child->IsVisible()) {
-                m_selection = child;
-                m_boundsWidget.SetSelection(m_selection);
+                SetSelection(child);
                 return true;
             }
         }
-        m_selection = nullptr;
-        m_boundsWidget.SetSelection(nullptr);
+        SetSelection(nullptr);
         return false;
     }
 
@@ -291,21 +298,96 @@ namespace ui {
                     auto delAction = std::make_unique<DeleteAction>(m_selection, m_root);
                     delAction->Do();
                     AddEditAction(std::move(delAction));
-                    m_selection = nullptr;
-                    m_boundsWidget.SetSelection(nullptr);
-                    //m_animationWidget->Update();
+                    SetSelection(nullptr);
                 }
                 return true;
             case Key::Z:
                 UndoEditAction();
-                //m_animationWidget->Update();
                 return true;
             case Key::Y:
                 RedoEditAction();
-                //m_animationWidget->Update();
                 return true;
             }
         }
         return false;
+    }
+
+    void EditorLayer::SetSelection(std::shared_ptr<Node> selection) {
+        if (selection != m_selection) {
+            if (m_editBoundsContext) {
+                EndEditBounds();
+            }
+        }
+        m_selection = selection;
+        m_boundsWidget.SetSelection(m_selection);
+    }
+
+    void EditorLayer::BeginEditBounds() {
+        if (!m_editBoundsContext && m_selection) {
+            m_editBoundsContext = std::make_unique<EditBoundsContext>();
+            m_editBoundsContext->entity = m_selection->GetLayoutEntity();
+            m_editBoundsContext->originalRect = m_selection->GetLayoutRect();
+        } else {
+            assert(m_editBoundsContext->entity == m_selection->GetLayoutEntity());
+        }
+    }
+
+    void EditorLayer::EndEditBounds() {
+        if (!m_editBoundsContext) {
+            return;
+        }
+        auto entity = m_editBoundsContext->entity;
+        auto& tracks = entity->GetAnimationTracks();
+        int const frameNo = m_selectedFrame;
+        std::unique_ptr<CompositeAction> editAction = std::make_unique<CompositeAction>();
+
+        auto const SetTrackValue = [&](AnimationTrack::Target target, float value) {
+            auto track = tracks.at(target);
+            if (auto keyframePtr = track->GetKeyframe(frameNo)) {
+                // keyframe exists
+                float oldValue = keyframePtr->m_value;
+                keyframePtr->m_value = value;
+                editAction->GetActions().push_back(std::make_unique<ModifyKeyframeAction>(entity, target, frameNo, oldValue, value));
+            } else {
+                // no keyframe
+                auto& keyframe = track->GetOrCreateKeyframe(frameNo);
+                keyframe.m_value = value;
+                editAction->GetActions().push_back(std::make_unique<AddKeyframeAction>(entity, target, frameNo, value));
+            }
+        };
+
+        auto const& newRect = m_selection->GetLayoutRect();
+        auto const rectDelta = newRect - m_editBoundsContext->originalRect;
+
+        if (rectDelta.anchor.topLeft.x != 0) {
+            SetTrackValue(AnimationTrack::Target::LeftAnchor, newRect.anchor.topLeft.x);
+        }
+        if (rectDelta.anchor.topLeft.y != 0) {
+            SetTrackValue(AnimationTrack::Target::TopAnchor, newRect.anchor.topLeft.y);
+        }
+        if (rectDelta.anchor.bottomRight.x != 0) {
+            SetTrackValue(AnimationTrack::Target::RightAnchor, newRect.anchor.bottomRight.x);
+        }
+        if (rectDelta.anchor.bottomRight.y != 0) {
+            SetTrackValue(AnimationTrack::Target::BottomAnchor, newRect.anchor.bottomRight.y);
+        }
+        if (rectDelta.offset.topLeft.x != 0) {
+            SetTrackValue(AnimationTrack::Target::LeftOffset, newRect.offset.topLeft.x);
+        }
+        if (rectDelta.offset.topLeft.y != 0) {
+            SetTrackValue(AnimationTrack::Target::TopOffset, newRect.offset.topLeft.y);
+        }
+        if (rectDelta.offset.bottomRight.x != 0) {
+            SetTrackValue(AnimationTrack::Target::RightOffset, newRect.offset.bottomRight.x);
+        }
+        if (rectDelta.offset.bottomRight.y != 0) {
+            SetTrackValue(AnimationTrack::Target::BottomOffset, newRect.offset.bottomRight.y);
+        }
+
+        if (!editAction->GetActions().empty()) {
+            AddEditAction(std::move(editAction));
+        }
+
+        m_editBoundsContext.reset();
     }
 }

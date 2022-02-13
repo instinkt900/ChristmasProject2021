@@ -199,6 +199,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\ui\editor\im_animation_tracks.cpp" />
     <ClCompile Include="src\ui\editor\keyframe_widget.cpp" />
     <ClCompile Include="src\ui\editor\offset_bounds_handle.cpp" />
+    <ClCompile Include="src\ui\editor\properties_editor.cpp" />
     <ClCompile Include="src\ui\group.cpp" />
     <ClCompile Include="src\ui\imgui_ext.cpp" />
     <ClCompile Include="src\ui\layouts\animation_clip.cpp" />
@@ -283,6 +284,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ui\editor\keyframe_context.h" />
     <ClInclude Include="src\ui\editor\keyframe_widget.h" />
     <ClInclude Include="src\ui\editor\offset_bounds_handle.h" />
+    <ClInclude Include="src\ui\editor\properties_editor.h" />
     <ClInclude Include="src\ui\editor\utils.h" />
     <ClInclude Include="src\ui\group.h" />
     <ClInclude Include="src\ui\imgui_ext.h" />

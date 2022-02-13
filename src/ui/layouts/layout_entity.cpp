@@ -20,11 +20,11 @@ namespace ui {
         Deserialize(json);
     }
 
-    void LayoutEntity::SetBounds(LayoutRect const& bounds) {
+    void LayoutEntity::SetBounds(LayoutRect const& bounds, int frame) {
         auto SetValue = [&](AnimationTrack::Target target, float value) {
             auto track = m_tracks.at(target);
-            auto keyframe = track->GetKeyframe(0);
-            keyframe->m_value = value;
+            auto& keyframe = track->GetOrCreateKeyframe(frame);
+            keyframe.m_value = value;
         };
 
         SetValue(AnimationTrack::Target::LeftAnchor, bounds.anchor.topLeft.x);

@@ -6,9 +6,6 @@
 #include "ui/node.h"
 #include "ui/layouts/layout_entity.h"
 #include "ui/editor/editor_layer.h"
-#include "ui/editor/actions/composite_action.h"
-#include "ui/editor/actions/modify_keyframe_action.h"
-#include "ui/editor/actions/add_keyframe_action.h"
 
 namespace ui {
     BoundsWidget::BoundsWidget(EditorLayer& editorLayer)
@@ -63,70 +60,11 @@ namespace ui {
     }
 
     void BoundsWidget::BeginEdit() {
-        auto selection = m_selectedNode.lock();
-        assert(!m_editContext && selection);
-        auto entity = selection->GetLayoutEntity();
-        m_editContext = std::make_unique<EditContext>();
-        m_editContext->entity = entity;
-        m_editContext->originalRect = selection->GetLayoutRect();
+        m_editorLayer.BeginEditBounds();
     }
 
     void BoundsWidget::EndEdit() {
-        auto selection = m_selectedNode.lock();
-        assert(m_editContext && selection);
-        auto entity = selection->GetLayoutEntity();
-        auto& tracks = entity->GetAnimationTracks();
-        int const frameNo = m_editorLayer.GetSelectedFrame();
-        std::unique_ptr<CompositeAction> editAction = std::make_unique<CompositeAction>();
-
-        auto const SetTrackValue = [&](AnimationTrack::Target target, float value) {
-            auto track = tracks.at(target);
-            if (auto keyframePtr = track->GetKeyframe(frameNo)) {
-                // keyframe exists
-                float oldValue = keyframePtr->m_value;
-                keyframePtr->m_value = value;
-                editAction->GetActions().push_back(std::make_unique<ModifyKeyframeAction>(entity, target, frameNo, oldValue, value));
-            } else {
-                // no keyframe
-                auto& keyframe = track->GetOrCreateKeyframe(frameNo);
-                keyframe.m_value = value;
-                editAction->GetActions().push_back(std::make_unique<AddKeyframeAction>(entity, target, frameNo, value));
-            }
-        };
-        
-        auto const& newRect = selection->GetLayoutRect();
-        auto const rectDelta = newRect - m_editContext->originalRect;
-
-        if (rectDelta.anchor.topLeft.x != 0) {
-            SetTrackValue(AnimationTrack::Target::LeftAnchor, newRect.anchor.topLeft.x);
-        }
-        if (rectDelta.anchor.topLeft.y != 0) {
-            SetTrackValue(AnimationTrack::Target::TopAnchor, newRect.anchor.topLeft.y);
-        }
-        if (rectDelta.anchor.bottomRight.x != 0) {
-            SetTrackValue(AnimationTrack::Target::RightAnchor, newRect.anchor.bottomRight.x);
-        }
-        if (rectDelta.anchor.bottomRight.y != 0) {
-            SetTrackValue(AnimationTrack::Target::BottomAnchor, newRect.anchor.bottomRight.y);
-        }
-        if (rectDelta.offset.topLeft.x != 0) {
-            SetTrackValue(AnimationTrack::Target::LeftOffset, newRect.offset.topLeft.x);
-        }
-        if (rectDelta.offset.topLeft.y != 0) {
-            SetTrackValue(AnimationTrack::Target::TopOffset, newRect.offset.topLeft.y);
-        }
-        if (rectDelta.offset.bottomRight.x != 0) {
-            SetTrackValue(AnimationTrack::Target::RightOffset, newRect.offset.bottomRight.x);
-        }
-        if (rectDelta.offset.bottomRight.y != 0) {
-            SetTrackValue(AnimationTrack::Target::BottomOffset, newRect.offset.bottomRight.y);
-        }
-
-        if (!editAction->GetActions().empty()) {
-            m_editorLayer.AddEditAction(std::move(editAction));
-        }
-
-        m_editContext.reset();
+        m_editorLayer.EndEditBounds();
     }
 
     void BoundsWidget::Draw(SDL_Renderer& renderer) {
