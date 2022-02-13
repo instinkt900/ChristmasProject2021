@@ -185,7 +185,8 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\ui\animation_controller.cpp" />
     <ClCompile Include="src\ui\editor\actions\add_action.cpp" />
     <ClCompile Include="src\ui\editor\actions\add_keyframe_action.cpp" />
-    <ClCompile Include="src\ui\editor\actions\change_keyframe_action.cpp" />
+    <ClCompile Include="src\ui\editor\actions\modify_clip_action.cpp" />
+    <ClCompile Include="src\ui\editor\actions\modify_keyframe_action.cpp" />
     <ClCompile Include="src\ui\editor\actions\composite_action.cpp" />
     <ClCompile Include="src\ui\editor\actions\delete_action.cpp" />
     <ClCompile Include="src\ui\editor\actions\delete_keyframe_action.cpp" />
@@ -199,6 +200,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\ui\editor\keyframe_widget.cpp" />
     <ClCompile Include="src\ui\editor\offset_bounds_handle.cpp" />
     <ClCompile Include="src\ui\group.cpp" />
+    <ClCompile Include="src\ui\imgui_ext.cpp" />
     <ClCompile Include="src\ui\layouts\animation_clip.cpp" />
     <ClCompile Include="src\ui\layouts\animation_track.cpp" />
     <ClCompile Include="src\ui\layouts\layout.cpp" />
@@ -265,7 +267,8 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ui\animation_controller.h" />
     <ClInclude Include="src\ui\editor\actions\add_action.h" />
     <ClInclude Include="src\ui\editor\actions\add_keyframe_action.h" />
-    <ClInclude Include="src\ui\editor\actions\change_keyframe_action.h" />
+    <ClInclude Include="src\ui\editor\actions\modify_clip_action.h" />
+    <ClInclude Include="src\ui\editor\actions\modify_keyframe_action.h" />
     <ClInclude Include="src\ui\editor\actions\composite_action.h" />
     <ClInclude Include="src\ui\editor\actions\delete_action.h" />
     <ClInclude Include="src\ui\editor\actions\delete_keyframe_action.h" />
@@ -282,6 +285,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ui\editor\offset_bounds_handle.h" />
     <ClInclude Include="src\ui\editor\utils.h" />
     <ClInclude Include="src\ui\group.h" />
+    <ClInclude Include="src\ui\imgui_ext.h" />
     <ClInclude Include="src\ui\inspectors.h" />
     <ClInclude Include="src\ui\layouts\animation_clip.h" />
     <ClInclude Include="src\ui\layouts\animation_track.h" />

@@ -7,7 +7,7 @@
 #include "ui/layouts/layout_entity.h"
 #include "ui/editor/editor_layer.h"
 #include "ui/editor/actions/composite_action.h"
-#include "ui/editor/actions/change_keyframe_action.h"
+#include "ui/editor/actions/modify_keyframe_action.h"
 #include "ui/editor/actions/add_keyframe_action.h"
 
 namespace ui {
@@ -85,7 +85,7 @@ namespace ui {
                 // keyframe exists
                 float oldValue = keyframePtr->m_value;
                 keyframePtr->m_value = value;
-                editAction->GetActions().push_back(std::make_unique<ChangeKeyframeAction>(entity, target, frameNo, oldValue, value));
+                editAction->GetActions().push_back(std::make_unique<ModifyKeyframeAction>(entity, target, frameNo, oldValue, value));
             } else {
                 // no keyframe
                 auto& keyframe = track->GetOrCreateKeyframe(frameNo);

@@ -171,11 +171,17 @@
     <ClCompile Include="src\ui\editor\actions\delete_keyframe_action.cpp">
       <Filter>ui\editor\actions</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\change_keyframe_action.cpp">
+    <ClCompile Include="src\ui\editor\actions\modify_keyframe_action.cpp">
       <Filter>ui\editor\actions</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\editor\keyframe_widget.cpp">
       <Filter>ui\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\editor\actions\modify_clip_action.cpp">
+      <Filter>ui\editor\actions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\imgui_ext.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -451,7 +457,7 @@
     <ClInclude Include="src\ui\editor\actions\delete_keyframe_action.h">
       <Filter>ui\editor\actions</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\change_keyframe_action.h">
+    <ClInclude Include="src\ui\editor\actions\modify_keyframe_action.h">
       <Filter>ui\editor\actions</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\editor\keyframe_widget.h">
@@ -464,6 +470,12 @@
       <Filter>ui\editor</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\serialize_utils.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\editor\actions\modify_clip_action.h">
+      <Filter>ui\editor\actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\imgui_ext.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>

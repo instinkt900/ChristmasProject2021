@@ -6,10 +6,10 @@
 namespace ui {
     class LayoutEntity;
 
-    class ChangeKeyframeAction : public IEditorAction {
+    class ModifyKeyframeAction : public IEditorAction {
     public:
-        ChangeKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, float oldValue, float newValue);
-        virtual ~ChangeKeyframeAction();
+        ModifyKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, float oldValue, float newValue);
+        virtual ~ModifyKeyframeAction();
 
         void Do() override;
         void Undo() override;

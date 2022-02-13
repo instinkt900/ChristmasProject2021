@@ -10,6 +10,7 @@
 #include "editor_layer.h"
 #include "actions/delete_keyframe_action.h"
 #include "utils.h"
+#include "actions/modify_clip_action.h"
 
 namespace {
     using namespace ui;
@@ -57,30 +58,44 @@ namespace ui {
     }
 
     void AnimationWidget::DrawSelectedClipWindow() {
-        if (m_selectedClip) {
+        if (m_selectedClip && m_clipWindowShown) {
             if (ImGui::Begin("Selected Clip", &m_clipWindowShown)) {
-                static char nameBuffer[1024];
-                strncpy(nameBuffer, m_selectedClip->m_name.c_str(), 1024);
-                if (ImGui::InputText("Name", nameBuffer, 1024)) {
-                    m_selectedClip->m_name = nameBuffer;
-                }
-                if (ImGui::InputInt("Start Frame", &m_selectedClip->m_startFrame, 0)) {
-                    m_selectedClip->m_startFrame = std::max(0, m_selectedClip->m_startFrame);
-                }
-                if (ImGui::InputInt("End Frame", &m_selectedClip->m_endFrame, 0)) {
-                    m_selectedClip->m_endFrame = std::max(0, m_selectedClip->m_endFrame);
-                }
-                if (ImGui::InputFloat("FPS", &m_selectedClip->m_fps)) {
-                    m_selectedClip->m_fps = std::max(0.0f, m_selectedClip->m_fps);
-                }
+
+                imgui_ext::FocusGroupBegin(&m_clipInputFocusContext);
+
+                imgui_ext::FocusGroupInputText(
+                    "Name", m_selectedClip->m_name,
+                    [&](std::string const& newVal) { BeginEditClip(*m_selectedClip); m_selectedClip->m_name = newVal; },
+                    [&]() { EndEditClip(); });
+
+                imgui_ext::FocusGroupInputInt(
+                    "Start Frame", m_selectedClip->m_startFrame,
+                    [&](int newVal) { BeginEditClip(*m_selectedClip); m_selectedClip->m_startFrame = std::max(0, newVal); },
+                    [&]() { EndEditClip(); });
+
+                imgui_ext::FocusGroupInputInt(
+                    "End Frame", m_selectedClip->m_endFrame,
+                    [&](int newVal) { BeginEditClip(*m_selectedClip); m_selectedClip->m_endFrame = std::max(0, newVal); },
+                    [&]() { EndEditClip(); });
+
+                imgui_ext::FocusGroupInputFloat(
+                    "FPS", m_selectedClip->m_fps,
+                    [&](float newVal) { BeginEditClip(*m_selectedClip); m_selectedClip->m_fps = std::max(0.0f, newVal); },
+                    [&]() { EndEditClip(); });
+
+                imgui_ext::FocusGroupEnd();
+
                 std::string preview = std::string(magic_enum::enum_name(m_selectedClip->m_loopType));
                 if (ImGui::BeginCombo("Loop Type", preview.c_str())) {
                     for (int n = 0; n < magic_enum::enum_count<AnimationClip::LoopType>(); n++) {
                         auto const enumValue = magic_enum::enum_value<AnimationClip::LoopType>(n);
                         std::string enumName = std::string(magic_enum::enum_name(enumValue));
                         const bool is_selected = m_selectedClip->m_loopType == enumValue;
-                        if (ImGui::Selectable(enumName.c_str(), is_selected))
+                        if (ImGui::Selectable(enumName.c_str(), is_selected)) {
+                            BeginEditClip(*m_selectedClip);
                             m_selectedClip->m_loopType = enumValue;
+                            EndEditClip();
+                        }
 
                         // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                         if (is_selected)
@@ -225,6 +240,21 @@ namespace ui {
         m_editorLayer.Refresh();
     }
 
+    void AnimationWidget::BeginEditClip(AnimationClip& clip) {
+        if (m_targetClip != &clip) {
+            m_targetClip = &clip;
+            m_preModifyClipValues = clip;
+        }
+    }
+
+    void AnimationWidget::EndEditClip() {
+        if (m_targetClip && m_preModifyClipValues != *m_targetClip) {
+            auto action = std::make_unique<ModifyClipAction>(m_targetClip, m_preModifyClipValues);
+            m_editorLayer.AddEditAction(std::move(action));
+        }
+        m_targetClip = nullptr;
+    }
+
     bool AnimationWidget::DrawWidget() {
         m_childExpanded.resize(m_group->GetChildCount());
 
@@ -349,7 +379,9 @@ namespace ui {
                     ImGui::CloseCurrentPopup();
                 }
             } else {
-                if (ImGui::MenuItem("Delete")) {
+                if (ImGui::MenuItem("Edit")) {
+                    m_clipWindowShown = true;
+                } else if (ImGui::MenuItem("Delete")) {
                     auto it = std::find_if(std::begin(animationClips), std::end(animationClips), [this](auto& target) {
                         return target.get() == m_selectedClip;
                     });
@@ -412,6 +444,7 @@ namespace ui {
                             MovingClip = true;
                             movingPos = cx;
                             movingPart = j + 1;
+                            BeginEditClip(*clip);
                             break;
                         }
                     }

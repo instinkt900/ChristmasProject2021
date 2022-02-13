@@ -4,6 +4,7 @@
 #include "ui/layouts/animation_track.h"
 #include "keyframe_context.h"
 #include "keyframe_widget.h"
+#include "ui/layouts/animation_clip.h"
 
 namespace ui {
     class EditorLayer;
@@ -25,10 +26,14 @@ namespace ui {
         Group* m_group;
 
         bool DrawWidget();
-        void BeginEditClip(AnimationClip* clip) {}
-        void EndEditClip() {}
         char const* GetChildLabel(int index) const;
         char const* GetTrackLabel(AnimationTrack::Target target) const;
+
+        imgui_ext::FocusGroupContext m_clipInputFocusContext;
+        AnimationClip* m_targetClip = nullptr;
+        AnimationClip m_preModifyClipValues;
+        void BeginEditClip(AnimationClip& clip);
+        void EndEditClip();
 
         bool m_clipWindowShown = true;
         void DrawSelectedClipWindow();
