@@ -106,6 +106,9 @@ namespace ui {
             std::make_pair(AnimationTrack::Target::BottomOffset, initialRect.offset.bottomRight.y),
             std::make_pair(AnimationTrack::Target::RightOffset, initialRect.offset.bottomRight.x),
         };
+        if (std::end(m_tracks) == m_tracks.find(AnimationTrack::Target::Events)) {
+            m_tracks.insert(std::make_pair(AnimationTrack::Target::Events, std::make_shared<AnimationTrack>(AnimationTrack::Target::Events)));
+        }
         for (auto&& [target, value] : targetList) {
             if (std::end(m_tracks) == m_tracks.find(target)) {
                 m_tracks.insert(std::make_pair(target, std::make_shared<AnimationTrack>(target, value)));

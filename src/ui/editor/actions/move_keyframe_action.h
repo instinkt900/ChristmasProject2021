@@ -2,13 +2,12 @@
 
 #include "editor_action.h"
 #include "ui/layouts/animation_track.h"
+#include "ui/ui_fwd.h"
 
 namespace ui {
-    class LayoutEntity;
-
     class MoveKeyframeAction : public IEditorAction {
     public:
-        MoveKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int initialFrame, int finalFrame, std::optional<float> replacedValue);
+        MoveKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int initialFrame, int finalFrame, std::optional<KeyframeValue> replacedValue);
         virtual ~MoveKeyframeAction();
 
         void Do() override;
@@ -21,6 +20,6 @@ namespace ui {
         AnimationTrack::Target m_target;
         int m_initialFrame;
         int m_finalFrame;
-        std::optional<float> m_replacedValue;
+        std::optional<KeyframeValue> m_replacedValue;
     };
 }

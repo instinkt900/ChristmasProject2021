@@ -8,6 +8,10 @@ namespace ui {
         m_keyframes.push_back({ 0, initialValue });
     }
 
+    AnimationTrack::AnimationTrack(Target target)
+        : m_target(target) {
+    }
+
     AnimationTrack::AnimationTrack(nlohmann::json const& json) {
         *this = json;
 
@@ -32,7 +36,7 @@ namespace ui {
         }
 
         // didnt find the frame. keyframeIt will be one above the new one
-        auto newFrameIt = m_keyframes.insert(keyframeIt, { frameNo, 0.0 });
+        auto newFrameIt = m_keyframes.insert(keyframeIt, { frameNo });
         return *newFrameIt;
     }
 
@@ -50,53 +54,16 @@ namespace ui {
         }
     }
 
-    AnimationEvent* AnimationTrack::GetEvent(int frameNo) {
-        auto eventIt = ranges::find_if(m_events, [&](auto const& event) { return event.m_frame == frameNo; });
-        if (std::end(m_events) != eventIt && eventIt->m_frame == frameNo) {
-            // found an existing frame
-            return &(*eventIt);
-        }
-        return nullptr;
-    }
-
-    AnimationEvent& AnimationTrack::GetOrCreateEvent(int frameNo) {
-        // find the frame or the first iterator after where it would be
-        auto eventIt = ranges::find_if(m_events, [&](auto const& event) { return event.m_frame >= frameNo; });
-        if (std::end(m_events) != eventIt && eventIt->m_frame == frameNo) {
-            // found an existing frame
-            return *eventIt;
-        }
-
-        // didnt find the frame. keyframeIt will be one above the new one
-        auto newEventIt = m_events.insert(eventIt, { frameNo });
-        return *newEventIt;
-    }
-
-    void AnimationTrack::DeleteEvent(int frameNo) {
-        auto eventIt = ranges::find_if(m_events, [&](auto const& event) { return event.m_frame == frameNo; });
-        if (std::end(m_events) != eventIt) {
-            m_events.erase(eventIt);
-        }
-    }
-
-    void AnimationTrack::DeleteEvent(AnimationEvent* event) {
-        auto eventIt = ranges::find_if(m_events, [&](auto const& target) { return &target == event; });
-        if (std::end(m_events) != eventIt) {
-            m_events.erase(eventIt);
-        }
-    }
-
-    void AnimationTrack::ForEventsOverTime(float startTime, float endTime, std::function<void(AnimationTrack::Target, std::string const&)> const& callback) {
-        for (auto&& event : m_events) {
-            if (event.m_time > startTime && event.m_time <= endTime) {
-                callback(m_target, event.m_name);
+    void AnimationTrack::ForKeyframesOverTime(float startTime, float endTime, std::function<void(Keyframe const&)> const& callback) {
+        for (auto&& keyframe : m_keyframes) {
+            if (keyframe.m_time > startTime && keyframe.m_time <= endTime) {
+                callback(keyframe);
             }
         }
     }
 
     void AnimationTrack::UpdateTrackTimings(std::vector<std::unique_ptr<AnimationClip>> const& clips) {
         auto keyframeIt = std::begin(m_keyframes);
-        auto eventIt = std::begin(m_events);
         for (auto&& clip : clips) {
             // seek to the start of the clip
             while (keyframeIt != std::end(m_keyframes) && keyframeIt->m_frame < clip->m_startFrame) {
@@ -109,18 +76,6 @@ namespace ui {
                 float const timeDelta = frameDelta / clip->m_fps;
                 keyframeIt->m_time = clip->m_startTime + timeDelta;
                 ++keyframeIt;
-            }
-
-            // repeat for events
-            while (eventIt != std::end(m_events) && eventIt->m_frame < clip->m_startFrame) {
-                ++eventIt;
-            }
-
-            while (eventIt != std::end(m_events) && eventIt->m_frame <= clip->m_endFrame) {
-                int const frameDelta = eventIt->m_frame - clip->m_startFrame;
-                float const timeDelta = frameDelta / clip->m_fps;
-                eventIt->m_time = clip->m_startTime + timeDelta;
-                ++eventIt;
             }
         }
     }
@@ -145,11 +100,13 @@ namespace ui {
             float const deltaTime = time - firstKeyframeIt->m_time;
             float const totalTime = secondKeyframeIt->m_time - firstKeyframeIt->m_time;
             float const factor = totalTime == 0 ? 0 : deltaTime / totalTime;
-            value = lerp(firstKeyframeIt->m_value, secondKeyframeIt->m_value, factor);
+            float const startValue = firstKeyframeIt->GetFloatValue();
+            float const endValue = secondKeyframeIt->GetFloatValue();
+            value = lerp(startValue, endValue, factor);
         } else {
             // found one keyframe
             auto validKeyframeIt = firstKeyframeIt != endKeyframeIt ? firstKeyframeIt : secondKeyframeIt;
-            value = validKeyframeIt->m_value;
+            value = validKeyframeIt->GetFloatValue();
         }
 
         return value;
@@ -175,11 +132,13 @@ namespace ui {
             int const deltaFrames = frame - firstKeyframeIt->m_frame;
             int const totalFrames = secondKeyframeIt->m_frame - firstKeyframeIt->m_frame;
             float const factor = totalFrames == 0 ? 0 : deltaFrames / static_cast<float>(totalFrames);
-            value = lerp(firstKeyframeIt->m_value, secondKeyframeIt->m_value, factor);
+            float const startValue = firstKeyframeIt->GetFloatValue();
+            float const endValue = secondKeyframeIt->GetFloatValue();
+            value = lerp(startValue, endValue, factor);
         } else {
             // found one keyframe
             auto validKeyframeIt = firstKeyframeIt != endKeyframeIt ? firstKeyframeIt : secondKeyframeIt;
-            value = validKeyframeIt->m_value;
+            value = validKeyframeIt->GetFloatValue();
         }
 
         return value;

@@ -36,7 +36,7 @@ namespace ui {
                 OnFrameChanged(context, currentFrameNo);
             }
             CheckLostFocus(context);
-            ImGui::InputFloat("Value", &context.current->m_value);
+            imgui_ext::InputKeyframeValue("Value", &context.current->m_value);
             ImGui::Unindent();
         }
         ImGui::PopID();
@@ -81,7 +81,7 @@ namespace ui {
         if (context.current->m_frame != m_currentMoveContext->originalFrameNo) {
             auto track = context.entity->GetAnimationTracks().at(context.target);
             // check for an existing value
-            std::optional<float> replacedValue;
+            std::optional<KeyframeValue> replacedValue;
             if (m_currentMoveContext->existingFrame) {
                 replacedValue = m_currentMoveContext->existingFrame->m_value;
                 track->DeleteKeyframe(m_currentMoveContext->existingFrame);

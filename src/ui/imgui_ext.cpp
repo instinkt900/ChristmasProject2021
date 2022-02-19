@@ -122,4 +122,22 @@ namespace imgui_ext {
         g_focusContext.ExistingContext->currentFocusLabel = g_focusContext.NewFocusLabel;
         g_focusContext.LostFocusCallbacks.clear();
     }
+
+    bool InputString(char const* label, std::string* str) {
+        static char buffer[1024];
+        strncpy(buffer, str->c_str(), 1024);
+        if (ImGui::InputText(label, buffer, 1024)) {
+            *str = buffer;
+            return true;
+        }
+        return false;
+    }
+
+    bool InputKeyframeValue(char const* label, ui::KeyframeValue* value) {
+        if (value->index() == 0) {
+            return ImGui::InputFloat(label, &std::get<float>(*value));
+        } else {
+            return InputString(label, &std::get<std::string>(*value));
+        }
+    }
 }

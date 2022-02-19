@@ -172,7 +172,7 @@ namespace ui {
             if (context.frameNo != context.current->m_frame) {
                 int const targetFrame = context.current->m_frame;
                 context.current->m_frame = -1; // allow us to get any existing frame at the target
-                std::optional<float> replacedValue;
+                std::optional<KeyframeValue> replacedValue;
                 if (auto replacingKeyframe = track->GetKeyframe(targetFrame)) {
                     replacedValue = replacingKeyframe->m_value;
                     track->DeleteKeyframe(replacingKeyframe); // this will invalidate current
@@ -220,7 +220,7 @@ namespace ui {
             }
             auto track = context.entity->GetAnimationTracks().at(context.target);
             if (auto keyframe = track->GetKeyframe(context.frameNo)) {
-                float const oldValue = keyframe->m_value;
+                auto const oldValue = keyframe->m_value;
                 track->DeleteKeyframe(context.frameNo);
                 auto action = std::make_unique<DeleteKeyframeAction>(context.entity, context.target, context.frameNo, oldValue);
                 actions.push_back(std::move(action));

@@ -37,8 +37,8 @@ namespace ui {
         m_target = m_track.GetValueAtTime(time);
     }
 
-    void AnimationTrackController::ForEvents(float startTime, float endTime, std::function<void(AnimationTrack::Target, std::string const&)> const& eventCallback) {
-        m_track.ForEventsOverTime(startTime, endTime, eventCallback);
+    void AnimationTrackController::ForEvents(float startTime, float endTime, std::function<void(Keyframe const&)> const& eventCallback) {
+        m_track.ForKeyframesOverTime(startTime, endTime, eventCallback);
     }
 
     AnimationController::AnimationController(Node* node, std::map<AnimationTrack::Target, std::shared_ptr<AnimationTrack>> const& tracks)
@@ -111,9 +111,12 @@ namespace ui {
 
     void AnimationController::CheckEvents(float startTime, float endTime) {
         for (auto&& track : m_trackControllers) {
-            track->ForEvents(startTime, endTime, [&](AnimationTrack::Target target, std::string const& eventName) {
-                m_node->OnEvent(EventAnimation(m_node, target, eventName));
-            });
+            if (track->GetTarget() == AnimationTrack::Target::Events) {
+                track->ForEvents(startTime, endTime, [&](Keyframe const& keyframe) {
+                    m_node->OnEvent(EventAnimation(m_node, track->GetTarget(), keyframe.GetStringValue()));
+                });
+                break;
+            }
         }
     }
 }

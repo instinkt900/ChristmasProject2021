@@ -3,7 +3,7 @@
 #include "ui/layouts/layout_entity.h"
 
 namespace ui {
-    ModifyKeyframeAction::ModifyKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, float oldValue, float newValue)
+    ModifyKeyframeAction::ModifyKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, KeyframeValue oldValue, KeyframeValue newValue)
         : m_entity(entity)
         , m_target(target)
         , m_frameNo(frameNo)
@@ -27,10 +27,18 @@ namespace ui {
     }
 
     void ModifyKeyframeAction::OnImGui() {
-        if (ImGui::CollapsingHeader("AddKeyframeAction")) {
+        if (ImGui::CollapsingHeader("ModifyKeyframeAction")) {
             ImGui::LabelText("Frame", "%d", m_frameNo);
-            ImGui::LabelText("Old Value", "%f", m_oldValue);
-            ImGui::LabelText("New Value", "%f", m_newValue);
+            if (m_oldValue.index() == 0) {
+                ImGui::LabelText("Old Value", "%f", std::get<float>(m_oldValue));
+            } else {
+                ImGui::LabelText("Old Value", "%s", std::get<std::string>(m_oldValue).c_str());
+            }
+            if (m_newValue.index() == 0) {
+                ImGui::LabelText("New Value", "%f", std::get<float>(m_newValue));
+            } else {
+                ImGui::LabelText("New Value", "%s", std::get<std::string>(m_newValue).c_str());
+            }
         }
     }
 }

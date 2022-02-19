@@ -3,7 +3,7 @@
 #include "ui/layouts/layout_entity.h"
 
 namespace ui {
-    DeleteKeyframeAction::DeleteKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, float oldValue)
+    DeleteKeyframeAction::DeleteKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, KeyframeValue oldValue)
         : m_entity(entity)
         , m_target(target)
         , m_frameNo(frameNo)
@@ -27,7 +27,11 @@ namespace ui {
     void DeleteKeyframeAction::OnImGui() {
         if (ImGui::CollapsingHeader("DeleteKeyframeAction")) {
             ImGui::LabelText("Frame", "%d", m_frameNo);
-            ImGui::LabelText("Old Value", "%f", m_oldValue);
+            if (m_oldValue.index() == 0) {
+                ImGui::LabelText("Old Value", "%f", std::get<float>(m_oldValue));
+            } else {
+                ImGui::LabelText("Old Value", "%s", std::get<std::string>(m_oldValue).c_str());
+            }
         }
     }
 }

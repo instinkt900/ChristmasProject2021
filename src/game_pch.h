@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <cmath>
+#include <variant>
 
 #include <imgui.h>
 #include <backends/imgui_impl_sdl.h>

@@ -3,7 +3,7 @@
 #include "ui/layouts/layout_entity.h"
 
 namespace ui {
-    MoveKeyframeAction::MoveKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int initialFrame, int finalFrame, std::optional<float> replacedValue)
+    MoveKeyframeAction::MoveKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int initialFrame, int finalFrame, std::optional<KeyframeValue> replacedValue)
         : m_entity(entity)
         , m_target(target)
         , m_initialFrame(initialFrame)
@@ -44,7 +44,11 @@ namespace ui {
             ImGui::LabelText("Initial Frame", "%d", m_initialFrame);
             ImGui::LabelText("Final Frame", "%d", m_finalFrame);
             if (m_replacedValue.has_value()) {
-                ImGui::LabelText("Replaced Value", "%f", m_replacedValue.value());
+                if (m_replacedValue.value().index() == 0) {
+                    ImGui::LabelText("Replaced Value", "%f", std::get<float>(m_replacedValue.value()));
+                } else {
+                    ImGui::LabelText("Replaced Value", "%s", std::get<std::string>(m_replacedValue.value()).c_str());
+                }
             }
         }
     }

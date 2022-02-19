@@ -9,8 +9,9 @@ namespace ui {
     public:
         AnimationTrackController(float& target, AnimationTrack& track);
 
+        auto GetTarget() const { return m_track.GetTarget(); }
         void SetTime(float time);
-        void ForEvents(float startTime, float endTime, std::function<void(AnimationTrack::Target, std::string const&)> const& eventCallback);
+        void ForEvents(float startTime, float endTime, std::function<void(Keyframe const&)> const& eventCallback);
 
     private:
         float& m_target;

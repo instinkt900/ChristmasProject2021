@@ -1,14 +1,13 @@
 #pragma once
 
 #include "editor_action.h"
+#include "ui/ui_fwd.h"
 #include "ui/layouts/animation_track.h"
 
 namespace ui {
-    class LayoutEntity;
-
     class ModifyKeyframeAction : public IEditorAction {
     public:
-        ModifyKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, float oldValue, float newValue);
+        ModifyKeyframeAction(std::shared_ptr<LayoutEntity> entity, AnimationTrack::Target target, int frameNo, KeyframeValue oldValue, KeyframeValue newValue);
         virtual ~ModifyKeyframeAction();
 
         void Do() override;
@@ -20,7 +19,7 @@ namespace ui {
         std::shared_ptr<LayoutEntity> m_entity;
         AnimationTrack::Target m_target;
         int m_frameNo;
-        float m_oldValue;
-        float m_newValue;
+        KeyframeValue m_oldValue;
+        KeyframeValue m_newValue;
     };
 }

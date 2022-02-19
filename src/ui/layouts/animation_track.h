@@ -1,14 +1,41 @@
 #pragma once
 
+namespace nlohmann {
+    template <>
+    struct adl_serializer<std::variant<float, std::string>> {
+        static void from_json(json const& j, std::variant<float, std::string>& var) {
+            size_t const index = j["index"];
+            if (index == 0) {
+                var = static_cast<float>(j["value"]);
+            } else if (index == 1) {
+                var = static_cast<std::string>(j["value"]);
+            }
+        }
+
+        static void to_json(json& j, std::variant<float, std::string> const& var) {
+            j["index"] = var.index();
+            std::visit([&](auto&& value) {
+                j["value"] = value;
+            },
+                       var);
+        }
+    };
+}
+
 namespace ui {
     struct AnimationClip;
+
+    using KeyframeValue = std::variant<float, std::string>;
 
     class Keyframe {
     public:
         int m_frame;
-        float m_value;
+        std::variant<float, std::string> m_value;
 
         float m_time; // calculated based on clips
+
+        float GetFloatValue() const { return std::get<float>(m_value); }
+        std::string const& GetStringValue() const { return std::get<std::string>(m_value); }
 
         NLOHMANN_DEFINE_TYPE_INTRUSIVE(Keyframe, m_frame, m_value);
     };
@@ -27,6 +54,7 @@ namespace ui {
     public:
         enum class Target {
             Unknown,
+            Events,
             TopOffset,
             BottomOffset,
             LeftOffset,
@@ -38,6 +66,7 @@ namespace ui {
         };
 
         AnimationTrack() = default;
+        AnimationTrack(Target target);
         AnimationTrack(Target target, float initialValue);
         explicit AnimationTrack(nlohmann::json const& json);
 
@@ -48,27 +77,20 @@ namespace ui {
         void DeleteKeyframe(int frameNo);
         void DeleteKeyframe(Keyframe* frame);
 
-        AnimationEvent* GetEvent(int frameNo);
-        AnimationEvent& GetOrCreateEvent(int frameNo);
-        void DeleteEvent(int frameNo);
-        void DeleteEvent(AnimationEvent* event);
-
-        void ForEventsOverTime(float startTime, float endTime, std::function<void(AnimationTrack::Target, std::string const&)> const& callback);
+        void ForKeyframesOverTime(float startTime, float endTime, std::function<void(Keyframe const&)> const& callback);
 
         void UpdateTrackTimings(std::vector<std::unique_ptr<AnimationClip>> const& clips);
         float GetValueAtTime(float time) const;
         float GetValueAtFrame(int frame) const;
 
         auto& GetKeyframes() { return m_keyframes; }
-        auto& GetEvents() { return m_events; }
 
         void SortKeyframes();
 
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(AnimationTrack, m_target, m_keyframes, m_events);
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(AnimationTrack, m_target, m_keyframes);
 
     private:
         Target m_target;
         std::vector<Keyframe> m_keyframes;
-        std::vector<AnimationEvent> m_events;
     };
 }

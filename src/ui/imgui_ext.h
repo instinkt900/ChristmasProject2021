@@ -1,6 +1,7 @@
 #pragma once
 
 #include "layouts/layout_types.h"
+#include "ui_fwd.h"
 
 namespace imgui_ext {
     struct FocusGroupContext {
@@ -13,4 +14,7 @@ namespace imgui_ext {
     void FocusGroupInputFloat(char const* label, float value, std::function<void(float)> const& onChanged, std::function<void()> const& onLostFocus);
     void FocusGroupInputLayoutRect(char const* label, ui::LayoutRect value, std::function<void(ui::LayoutRect const&)> const& onChanged, std::function<void()> const& onLostFocus);
     void FocusGroupEnd();
+
+    bool InputString(char const* label, std::string* str);
+    bool InputKeyframeValue(char const* label, ui::KeyframeValue* value);
 }

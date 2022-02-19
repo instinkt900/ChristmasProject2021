@@ -339,7 +339,7 @@ namespace ui {
             auto track = tracks.at(target);
             if (auto keyframePtr = track->GetKeyframe(frameNo)) {
                 // keyframe exists
-                float oldValue = keyframePtr->m_value;
+                auto const oldValue = keyframePtr->m_value;
                 keyframePtr->m_value = value;
                 editAction->GetActions().push_back(std::make_unique<ModifyKeyframeAction>(entity, target, frameNo, oldValue, value));
             } else {
