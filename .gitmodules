@@ -22,3 +22,6 @@
 [submodule "external/magic_enum"]
 	path = external/magic_enum
 	url = https://github.com/Neargye/magic_enum.git
+[submodule "external/range-v3"]
+	path = external/range-v3
+	url = https://github.com/ericniebler/range-v3.git
