@@ -1,6 +1,5 @@
 #pragma once
 
-#include "im_animation_tracks.h"
 #include "ui/layouts/animation_track.h"
 #include "keyframe_context.h"
 #include "keyframe_widget.h"

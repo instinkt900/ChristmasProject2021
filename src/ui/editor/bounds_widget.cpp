@@ -52,11 +52,6 @@ namespace ui {
         for (auto&& handle : m_handles) {
             handle->SetTarget(selection.get());
         }
-
-        if (selection) {
-            BeginEdit();
-            m_holding = true;
-        }
     }
 
     void BoundsWidget::BeginEdit() {

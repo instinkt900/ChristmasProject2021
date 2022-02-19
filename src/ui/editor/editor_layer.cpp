@@ -4,7 +4,6 @@
 #include "ui/node.h"
 #include "ui/node_image.h"
 #include "events/event_dispatch.h"
-#include "im_animation_tracks.h"
 #include "animation_widget.h"
 #include "ui/layouts/animation_clip.h"
 #include "ui/layouts/layout_entity_image.h"
@@ -26,10 +25,10 @@ namespace ui {
 
     bool EditorLayer::OnEvent(Event const& event) {
         EventDispatch dispatch(event);
-        dispatch.Dispatch(&m_boundsWidget);
         dispatch.Dispatch(this, &EditorLayer::OnMouseDown);
         dispatch.Dispatch(this, &EditorLayer::OnMouseUp);
         dispatch.Dispatch(this, &EditorLayer::OnKey);
+        dispatch.Dispatch(&m_boundsWidget);
         return dispatch.GetHandled();
     }
 
@@ -125,10 +124,6 @@ namespace ui {
         if (m_root) {
             m_root->Draw(renderer);
             m_boundsWidget.Draw(renderer);
-            if (ImGui::Begin("Layout")) {
-                m_root->DebugDraw();
-            }
-            ImGui::End();
         }
 
         if (m_animationWidget) {
@@ -258,7 +253,6 @@ namespace ui {
         AddEditAction(std::move(addAction));
 
         m_root->RecalculateBounds();
-        //m_animationWidget->Update();
     }
 
     void EditorLayer::Rebuild() {
@@ -279,7 +273,7 @@ namespace ui {
         for (auto&& child : m_root->GetChildren()) {
             if (child->IsInBounds(event.GetPosition()) && child->IsVisible()) {
                 SetSelection(child);
-                return true;
+                return false;
             }
         }
         SetSelection(nullptr);

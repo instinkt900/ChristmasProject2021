@@ -144,9 +144,6 @@
     <ClCompile Include="external\ImGuizmo\ImSequencer.cpp">
       <Filter>external\ImGuizmo</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\editor\im_animation_tracks.cpp">
-      <Filter>ui\editor</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\animation_controller.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -426,9 +423,6 @@
     </ClInclude>
     <ClInclude Include="external\imgui\imstb_truetype.h">
       <Filter>external\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\im_animation_tracks.h">
-      <Filter>ui\editor</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\animation_controller.h">
       <Filter>ui</Filter>

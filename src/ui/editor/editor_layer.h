@@ -35,7 +35,9 @@ namespace ui {
         void SetSelectedFrame(int frameNo);
         int GetSelectedFrame() const { return m_selectedFrame; }
 
+        void SetSelection(std::shared_ptr<Node> selection);
         std::shared_ptr<Node> GetSelection() const { return m_selection; }
+        bool IsSelected(std::shared_ptr<Node> node) const { return m_selection == node; }
 
         void Refresh();
 
@@ -44,13 +46,14 @@ namespace ui {
 
     private:
         enum class FileOpenMode {
+            Unknown,
             Layout,
             SubLayout,
             Image,
             Save,
         };
         ImGui::FileBrowser m_fileDialog;
-        FileOpenMode m_fileOpenMode;
+        FileOpenMode m_fileOpenMode = FileOpenMode::Unknown;
         std::shared_ptr<LayoutEntityGroup> m_rootLayout;
         std::shared_ptr<Group> m_root;
         BoundsWidget m_boundsWidget;
@@ -80,8 +83,6 @@ namespace ui {
         bool OnMouseDown(EventMouseDown const& event);
         bool OnMouseUp(EventMouseUp const& event);
         bool OnKey(EventKey const& event);
-
-        void SetSelection(std::shared_ptr<Node> selection);
 
         struct EditBoundsContext {
             std::shared_ptr<LayoutEntity> entity;

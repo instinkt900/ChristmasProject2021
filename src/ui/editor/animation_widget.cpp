@@ -365,6 +365,53 @@ namespace ui {
         //header
         draw_list->AddRectFilled(canvas_pos, ImVec2(canvas_size.x + canvas_pos.x, canvas_pos.y + ItemHeight), 0xFF3D3837, 0);
 
+        //header frame number and lines
+        int modFrameCount = 10;
+        int frameStep = 1;
+        while ((modFrameCount * framePixelWidth) < 150) {
+            modFrameCount *= 2;
+            frameStep *= 2;
+        };
+        int halfModFrameCount = modFrameCount / 2;
+
+        auto drawLine = [&](int i, int regionHeight) {
+            bool baseIndex = ((i % modFrameCount) == 0) || (i == m_maxFrame || i == m_minFrame);
+            bool halfIndex = (i % halfModFrameCount) == 0;
+            int px = int(contentMin.x + legendWidth + (i - firstFrameUsed) * framePixelWidth);
+            int tiretStart = baseIndex ? 4 : (halfIndex ? 10 : 14);
+            int tiretEnd = baseIndex ? regionHeight : ItemHeight;
+
+            if (px <= (canvas_size.x + canvas_pos.x) && px >= (canvas_pos.x + legendWidth)) {
+                draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)tiretStart), ImVec2((float)px, canvas_pos.y + (float)tiretEnd - 1), 0xFF606060, 1);
+
+                draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)ItemHeight), ImVec2((float)px, canvas_pos.y + (float)regionHeight - 1), 0x30606060, 1);
+            }
+
+            if (baseIndex && px > (canvas_pos.x + legendWidth)) {
+                char tmps[512];
+                ImFormatString(tmps, IM_ARRAYSIZE(tmps), "%d", i);
+                draw_list->AddText(ImVec2((float)px + 3.f, canvas_pos.y), 0xFFBBBBBB, tmps);
+            }
+        };
+
+        auto drawLineContent = [&](int i) {
+            int px = int(contentMin.x + legendWidth + (i - firstFrameUsed) * framePixelWidth);
+            int tiretStart = int(contentMin.y);
+            int tiretEnd = int(contentMax.y);
+
+            if (px <= (canvas_size.x + canvas_pos.x) && px >= (canvas_pos.x + legendWidth)) {
+                draw_list->AddLine(ImVec2(float(px), float(tiretStart)), ImVec2(float(px), float(tiretEnd)), 0x30606060, 1);
+            }
+        };
+
+        for (int i = m_minFrame; i <= m_maxFrame; i += frameStep) {
+            drawLine(i, ItemHeight);
+        }
+        drawLine(m_minFrame, ItemHeight);
+        drawLine(m_maxFrame, ItemHeight);
+
+        draw_list->PushClipRect(childFramePos, childFramePos + childFrameSize);
+
         // clips
         auto& animationClips = std::static_pointer_cast<LayoutEntityGroup>(m_group->GetLayoutEntity())->GetAnimationClips();
 
@@ -419,7 +466,7 @@ namespace ui {
             };
 
             const unsigned int quadColor[] = { 0xFFFFFFFF, 0xFFFFFFFF, slotColor };
-            if (!MovingClip) {
+            if (!MovingClip && ImRect(childFramePos, childFramePos + childFrameSize).Contains(io.MousePos)) { // prevent moving when clip is scrolled out of view
                 for (int j = 2; j >= 0; j--) {
                     ImRect& rc = rects[j];
                     if (!rc.Contains(io.MousePos))
@@ -493,51 +540,6 @@ namespace ui {
             }
         }
 
-        //header frame number and lines
-        int modFrameCount = 10;
-        int frameStep = 1;
-        while ((modFrameCount * framePixelWidth) < 150) {
-            modFrameCount *= 2;
-            frameStep *= 2;
-        };
-        int halfModFrameCount = modFrameCount / 2;
-
-        auto drawLine = [&](int i, int regionHeight) {
-            bool baseIndex = ((i % modFrameCount) == 0) || (i == m_maxFrame || i == m_minFrame);
-            bool halfIndex = (i % halfModFrameCount) == 0;
-            int px = int(contentMin.x + legendWidth + (i - firstFrameUsed) * framePixelWidth);
-            int tiretStart = baseIndex ? 4 : (halfIndex ? 10 : 14);
-            int tiretEnd = baseIndex ? regionHeight : ItemHeight;
-
-            if (px <= (canvas_size.x + canvas_pos.x) && px >= (canvas_pos.x + legendWidth)) {
-                draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)tiretStart), ImVec2((float)px, canvas_pos.y + (float)tiretEnd - 1), 0xFF606060, 1);
-
-                draw_list->AddLine(ImVec2((float)px, canvas_pos.y + (float)ItemHeight), ImVec2((float)px, canvas_pos.y + (float)regionHeight - 1), 0x30606060, 1);
-            }
-
-            if (baseIndex && px > (canvas_pos.x + legendWidth)) {
-                char tmps[512];
-                ImFormatString(tmps, IM_ARRAYSIZE(tmps), "%d", i);
-                draw_list->AddText(ImVec2((float)px + 3.f, canvas_pos.y), 0xFFBBBBBB, tmps);
-            }
-        };
-
-        auto drawLineContent = [&](int i) {
-            int px = int(contentMin.x + legendWidth + (i - firstFrameUsed) * framePixelWidth);
-            int tiretStart = int(contentMin.y);
-            int tiretEnd = int(contentMax.y);
-
-            if (px <= (canvas_size.x + canvas_pos.x) && px >= (canvas_pos.x + legendWidth)) {
-                draw_list->AddLine(ImVec2(float(px), float(tiretStart)), ImVec2(float(px), float(tiretEnd)), 0x30606060, 1);
-            }
-        };
-
-        for (int i = m_minFrame; i <= m_maxFrame; i += frameStep) {
-            drawLine(i, ItemHeight);
-        }
-        drawLine(m_minFrame, ItemHeight);
-        drawLine(m_maxFrame, ItemHeight);
-
         float rowYPos = contentMin.y;
 
         // clip row..
@@ -562,25 +564,44 @@ namespace ui {
 
         // track rows
         for (int i = 0; i < childCount; ++i) {
-            auto childEntity = m_group->GetChildren()[i]->GetLayoutEntity();
-
-            ImVec2 tpos(contentMin.x + 3, rowYPos);
-            draw_list->AddText(tpos, 0xFFFFFFFF, GetChildLabel(i));
+            auto child = m_group->GetChildren()[i];
+            auto childEntity = child->GetLayoutEntity();
+            auto& childTracks = childEntity->GetAnimationTracks();
+            bool expanded = m_childExpanded[i];
+            bool selected = m_editorLayer.IsSelected(child);
 
             ImVec2 labelMin(contentMin.x, rowYPos);
             ImVec2 labelMax(contentMin.x + legendWidth, rowYPos + ItemHeight);
             ImRect labelRect(labelMin, labelMax);
-            if (labelRect.Contains(io.MousePos) && io.MouseClicked[0]) {
+
+            if (selected) {
+                ImVec2 selectionMin(labelMin.x, labelMin.y);
+                ImVec2 selectionMax(labelMax.x, labelMax.y + (expanded ? ItemHeight * childTracks.size() : 0));
+                draw_list->AddRectFilled(selectionMin, selectionMax, 0x55FF3333, 0);
+            }
+
+            ImVec2 arrowMin(labelMin.x, labelMin.y);
+            ImVec2 arrowMax(labelMin.x + 20, labelMax.y);
+            ImRect arrowRect(arrowMin, arrowMax);
+            if (arrowRect.Contains(io.MousePos) && io.MouseClicked[0]) {
                 m_childExpanded[i] = !m_childExpanded[i];
             }
+            ImGui::RenderArrow(ImVec2(arrowMin.x, arrowMin.y + 2), expanded ? ImGuiDir_Down : ImGuiDir_Right);
+
+            ImVec2 textMin(arrowMax.x, labelMin.y);
+            ImVec2 textMax(labelMax.x, labelMax.y);
+            ImRect textRect(textMin, textMax);
+            if (textRect.Contains(io.MousePos) && io.MouseClicked[0]) {
+                m_editorLayer.SetSelection(child);
+            }
+            ImVec2 textPos(textMin.x, textMin.y + 2);
+            draw_list->AddText(textPos, 0xFFFFFFFF, GetChildLabel(i));
 
             unsigned int col = (i & 1) ? 0xFF3A3636 : 0xFF413D3D;
             ImVec2 rowMin(contentMin.x + legendWidth, rowYPos);
             ImVec2 rowMax(canvas_size.x + canvas_pos.x, rowYPos + ItemHeight);
             draw_list->AddRectFilled(rowMin, rowMax, col, 0);
 
-            bool expanded = m_childExpanded[i];
-            auto& childTracks = childEntity->GetAnimationTracks();
             ImVec2 childTrackPos(contentMin.x + legendWidth - firstFrameUsed * framePixelWidth, rowYPos);
             unsigned int keyframeColor = 0xFFc4c4c4;
             unsigned int keyframeColorSelected = 0xFFFFa2a2;
@@ -589,7 +610,7 @@ namespace ui {
                 if (expanded) {
                     rowYPos += ItemHeight;
 
-                    ImVec2 tpos(contentMin.x + 23, rowYPos);
+                    ImVec2 tpos(contentMin.x + 30, rowYPos + 2);
                     draw_list->AddText(tpos, 0xFFFFFFFF, GetTrackLabel(target));
 
                     ImVec2 subRowMin(contentMin.x + legendWidth, rowYPos);
@@ -674,6 +695,8 @@ namespace ui {
         }
         drawLineContent(m_minFrame);
         drawLineContent(m_maxFrame);
+
+        draw_list->PopClipRect();
 
         // cursor
         if (m_currentFrame >= m_firstFrame && m_currentFrame <= m_maxFrame) {
