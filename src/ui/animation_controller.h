@@ -10,6 +10,7 @@ namespace ui {
         AnimationTrackController(float& target, AnimationTrack& track);
 
         void SetTime(float time);
+        void ForEvents(float startTime, float endTime, std::function<void(AnimationTrack::Target, std::string const&)> const& eventCallback);
 
     private:
         float& m_target;
@@ -20,9 +21,18 @@ namespace ui {
     public:
         AnimationController(Node* node, std::map<AnimationTrack::Target, std::shared_ptr<AnimationTrack>> const& tracks);
 
-        void SetTime(float time);
+        auto GetTime() const { return m_time; }
+        auto GetClip() const { return m_clip; }
+
+        void SetClip(AnimationClip* clip);
+        void Update(float delta);
 
     private:
+        Node* m_node = nullptr;
+        AnimationClip* m_clip = nullptr;
         std::vector<std::unique_ptr<AnimationTrackController>> m_trackControllers;
+        float m_time = 0.0f;
+
+        void CheckEvents(float startTime, float endTime);
     };
 }

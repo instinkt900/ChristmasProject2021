@@ -478,6 +478,9 @@
     <ClInclude Include="src\ui\editor\properties_editor.h">
       <Filter>ui\editor</Filter>
     </ClInclude>
+    <ClInclude Include="src\events\event_animation.h">
+      <Filter>events</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

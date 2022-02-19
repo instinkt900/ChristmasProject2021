@@ -32,29 +32,7 @@ namespace ui {
     }
 
     void Group::Update(uint32_t ticks) {
-        if (m_currentAnimationClip) {
-            m_animTime += ticks / 1000.0f;
-            if (m_animTime >= m_currentAnimationClip->m_endTime) {
-                switch (m_currentAnimationClip->m_loopType) {
-                case AnimationClip::LoopType::Stop:
-                    m_animTime = m_currentAnimationClip->m_endTime;
-                    m_currentAnimationClip = nullptr;
-                    break;
-                case AnimationClip::LoopType::Loop:
-                    m_animTime -= m_currentAnimationClip->GetDuration();
-                    break;
-                case AnimationClip::LoopType::Reset:
-                    m_animTime = m_currentAnimationClip->m_startTime;
-                    m_currentAnimationClip = nullptr;
-                    break;
-                }
-            }
-
-            for (auto&& child : m_children) {
-                child->SetAnimTime(m_animTime);
-            }
-        }
-
+        Node::Update(ticks);
         for (auto&& child : m_children) {
             child->Update(ticks);
         }
@@ -73,7 +51,7 @@ namespace ui {
     }
 
     void Group::RemoveChild(std::shared_ptr<Node> child) {
-        auto it = std::find(m_children.begin(), m_children.end(), child);
+        auto it = ranges::find(m_children, child);
         if (std::end(m_children) != it) {
             (*it)->SetParent(nullptr);
             m_children.erase(it);
@@ -84,25 +62,20 @@ namespace ui {
         if (m_layout) {
             auto layout = std::static_pointer_cast<LayoutEntityGroup>(m_layout);
             auto& animationClips = layout->GetAnimationClips();
-            auto it = std::find_if(std::begin(animationClips), std::end(animationClips), [&name](auto& clip) { return clip->m_name == name; });
+            auto it = ranges::find_if(animationClips, [&name](auto& clip) { return clip->m_name == name; });
             if (std::end(animationClips) != it) {
-                m_currentAnimationClip = it->get();
-                m_animTime = m_currentAnimationClip->m_startTime;
+                for (auto&& child : m_children) {
+                    child->SetAnimationClip(it->get());
+                }
                 return true;
             }
         }
         return false;
     }
 
-    void Group::SetAnimTime(float time) {
-        for (auto&& child : m_children) {
-            child->SetAnimTime(time);
-        }
-    }
-
     void Group::DebugDraw() {
         Node::DebugDraw();
-        ImGuiInspectMember("anim time", m_animTime);
+        //ImGuiInspectMember("anim time", m_animTime);
         if (ImGui::TreeNode("Children")) {
             for (int i = 0; i < m_children.size(); ++i) {
                 auto& child = m_children[i];

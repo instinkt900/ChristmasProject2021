@@ -10,6 +10,7 @@ enum EventType : int {
     EVENTTYPE_MOUSE_DOWN,
     EVENTTYPE_MOUSE_UP,
     EVENTTYPE_MOUSE_MOVE,
+    EVENTTYPE_ANIMATION,
 };
 
 class Event {

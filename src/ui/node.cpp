@@ -28,6 +28,7 @@ namespace ui {
     }
 
     void Node::Update(uint32_t ticks) {
+        m_animationController->Update(ticks / 1000.0f);
     }
 
     void Node::Draw(SDL_Renderer& renderer) {
@@ -77,8 +78,12 @@ namespace ui {
         return translated;
     }
 
-    void Node::SetAnimTime(float time) {
-        m_animationController->SetTime(time);
+    void Node::SetAnimationClip(AnimationClip* clip) {
+        m_animationController->SetClip(clip);
+    }
+
+    void Node::UpdateAnimTime(float delta) {
+        m_animationController->Update(delta);
         RecalculateBounds();
     }
 

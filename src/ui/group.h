@@ -26,13 +26,10 @@ namespace ui {
         auto const& GetChildren() const { return m_children; }
 
         bool SetAnimation(std::string const& name) override;
-        void SetAnimTime(float time) override;
 
         void DebugDraw() override;
 
     protected:
         std::vector<std::shared_ptr<Node>> m_children;
-        AnimationClip* m_currentAnimationClip = nullptr;
-        float m_animTime = 0;
     };
 }

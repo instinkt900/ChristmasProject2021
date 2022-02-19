@@ -7,6 +7,7 @@ namespace ui {
     class LayoutEntity;
     class Group;
     class AnimationController;
+    struct AnimationClip;
 
     class Node : public EventListener {
     public:
@@ -41,7 +42,8 @@ namespace ui {
         IntVec2 TranslatePosition(IntVec2 const& point) const;
 
         virtual bool SetAnimation(std::string const& name) { return false; }
-        virtual void SetAnimTime(float time);
+        void SetAnimationClip(AnimationClip* clip);
+        virtual void UpdateAnimTime(float delta);
 
         auto GetLayoutEntity() const { return m_layout; }
 
