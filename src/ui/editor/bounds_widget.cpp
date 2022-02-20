@@ -55,7 +55,7 @@ namespace ui {
 
     void BoundsWidget::Draw(SDL_Renderer& renderer) {
         auto const selection = m_editorLayer.GetSelection();
-        if (selection && selection->GetParent()) {
+        if (selection && selection->IsVisible() && selection->GetParent()) {
             for (auto&& handle : m_handles) {
                 handle->SetTarget(selection.get());
             }

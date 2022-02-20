@@ -109,12 +109,9 @@ namespace ui {
     }
 
     void AnimationWidget::Draw() {
-        if (ImGui::Begin("Animation")) {
-            m_currentFrame = m_editorLayer.GetSelectedFrame();
-            DrawWidget();
-            m_editorLayer.SetSelectedFrame(m_currentFrame);
-        }
-        ImGui::End();
+        m_currentFrame = m_editorLayer.GetSelectedFrame();
+        DrawWidget();
+        m_editorLayer.SetSelectedFrame(m_currentFrame);
 
         if (!m_selectedKeyframes.empty()) {
             m_keyframeWidget.Draw();

@@ -66,11 +66,10 @@ namespace ui {
 
         DrawMainMenu();
         DrawCanvasProperties();
+        DrawPropertiesPanel();
+        DrawAnimationPanel();
         DrawElementsPanel();
         DrawUndoStack();
-
-        m_animationWidget->Draw();
-        m_propertiesEditor->Draw();
 
         m_fileDialog.Display();
         if (m_fileDialog.HasSelected()) {
@@ -108,54 +107,86 @@ namespace ui {
                 }
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("View")) {
+                ImGui::Checkbox("Canvas Properties", &m_visibleCanvasProperties);
+                ImGui::Checkbox("Properties", &m_visiblePropertiesPanel);
+                ImGui::Checkbox("Animation", &m_visibleAnimationPanel);
+                ImGui::Checkbox("Elements", &m_visibleElementsPanel);
+                ImGui::Checkbox("Change Stack", &m_visibleUndoPanel);
+                ImGui::EndMenu();
+            }
             ImGui::EndMainMenuBar();
         }
     }
 
     void EditorLayer::DrawCanvasProperties() {
-        if (ImGui::Begin("Canvas Properties")) {
-            imgui_ext::InputIntVec2("Display Size", &m_displaySize);
-            ImGui::InputInt("Display Zoom", &m_displayZoom);
-            m_displayZoom = std::clamp(m_displayZoom, s_minZoom, s_maxZoom);
-            imgui_ext::InputFloatVec2("Display Offset", &m_canvasOffset);
+        if (m_visibleCanvasProperties) {
+            if (ImGui::Begin("Canvas Properties", &m_visibleCanvasProperties)) {
+                imgui_ext::InputIntVec2("Display Size", &m_displaySize);
+                ImGui::InputInt("Display Zoom", &m_displayZoom);
+                m_displayZoom = std::clamp(m_displayZoom, s_minZoom, s_maxZoom);
+                imgui_ext::InputFloatVec2("Display Offset", &m_canvasOffset);
+            }
+            ImGui::End();
         }
-        ImGui::End();
+    }
+
+    void EditorLayer::DrawPropertiesPanel() {
+        if (m_visiblePropertiesPanel) {
+            if (ImGui::Begin("Properties", &m_visiblePropertiesPanel)) {
+                m_propertiesEditor->Draw();
+            }
+            ImGui::End();
+        }
     }
 
     void EditorLayer::DrawElementsPanel() {
-        if (ImGui::Begin("Elements")) {
-            if (ImGui::Button("Image")) {
-                m_fileDialog.SetTitle("Open..");
-                m_fileDialog.SetTypeFilters({ ".jpg", ".jpeg", ".png", ".bmp" });
-                m_fileDialog.Open();
-                m_fileOpenMode = FileOpenMode::Image;
-            } else if (ImGui::Button("SubLayout")) {
-                m_fileDialog.SetTitle("Open..");
-                m_fileDialog.SetTypeFilters({ ".json" });
-                m_fileDialog.Open();
-                m_fileOpenMode = FileOpenMode::SubLayout;
+        if (m_visibleElementsPanel) {
+            if (ImGui::Begin("Elements", &m_visibleElementsPanel)) {
+                if (ImGui::Button("Image")) {
+                    m_fileDialog.SetTitle("Open..");
+                    m_fileDialog.SetTypeFilters({ ".jpg", ".jpeg", ".png", ".bmp" });
+                    m_fileDialog.Open();
+                    m_fileOpenMode = FileOpenMode::Image;
+                } else if (ImGui::Button("SubLayout")) {
+                    m_fileDialog.SetTitle("Open..");
+                    m_fileDialog.SetTypeFilters({ ".json" });
+                    m_fileDialog.Open();
+                    m_fileOpenMode = FileOpenMode::SubLayout;
+                }
             }
+            ImGui::End();
         }
-        ImGui::End();
+    }
+
+    void EditorLayer::DrawAnimationPanel() {
+        if (m_visibleAnimationPanel) {
+            if (ImGui::Begin("Animation", &m_visibleAnimationPanel)) {
+                m_animationWidget->Draw();
+            }
+            ImGui::End();
+        }
     }
 
     void EditorLayer::DrawUndoStack() {
-        if (ImGui::Begin("Undo Stack")) {
-            int i = 0;
-            for (auto&& edit : m_editActions) {
-                ImGui::PushID(edit.get());
-                if (i == m_actionIndex) {
-                    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+        if (m_visibleUndoPanel) {
+            if (ImGui::Begin("Undo Stack", &m_visibleUndoPanel)) {
+                int i = 0;
+                for (auto&& edit : m_editActions) {
+                    ImGui::PushID(edit.get());
+                    if (i == m_actionIndex) {
+                        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+                    }
+                    edit->OnImGui();
+                    if (i == m_actionIndex) {
+                        ImGui::PopStyleColor();
+                    }
+                    ImGui::PopID();
+                    ++i;
                 }
-                edit->OnImGui();
-                if (i == m_actionIndex) {
-                    ImGui::PopStyleColor();
-                }
-                ImGui::PopID();
-                ++i;
             }
+            ImGui::End();
         }
-        ImGui::End();
     }
 
     void EditorLayer::DrawCanvas(SDL_Renderer& renderer) {
@@ -306,13 +337,6 @@ namespace ui {
 
     void EditorLayer::Rebuild() {
         m_root = std::make_unique<Group>(m_rootLayout);
-        //IntRect displayRect;
-        //displayRect.topLeft = { (GetWidth() - m_displayWidth) / 2, (GetHeight() - m_displayHeight) / 2 };
-        //displayRect.bottomRight = { (GetWidth() + m_displayWidth) / 2, (GetHeight() + m_displayHeight) / 2 };
-        //m_root->SetScreenRect(displayRect);
-        //for (auto&& child : m_root->GetChildren()) {
-        //    child->SetShowRect(true);
-        //}
     }
 
     bool EditorLayer::OnKey(EventKey const& event) {

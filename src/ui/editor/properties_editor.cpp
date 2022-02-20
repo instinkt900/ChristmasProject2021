@@ -12,25 +12,22 @@ namespace ui {
     }
 
     void PropertiesEditor::Draw() {
-        if (ImGui::Begin("Properties")) {
-            if (auto selection = m_editorLayer.GetSelection()) {
-                auto entity = selection->GetLayoutEntity();
-                imgui_ext::FocusGroupBegin(&m_focusContext);
-                DrawEntityProperties();
-                switch (entity->GetType()) {
-                case LayoutEntityType::Entity:
-                    break;
-                case LayoutEntityType::Group:
-                    DrawGroupProperties();
-                    break;
-                case LayoutEntityType::Image:
-                    DrawImageProperties();
-                    break;
-                }
-                imgui_ext::FocusGroupEnd();
+        if (auto selection = m_editorLayer.GetSelection()) {
+            auto entity = selection->GetLayoutEntity();
+            imgui_ext::FocusGroupBegin(&m_focusContext);
+            DrawEntityProperties();
+            switch (entity->GetType()) {
+            case LayoutEntityType::Entity:
+                break;
+            case LayoutEntityType::Group:
+                DrawGroupProperties();
+                break;
+            case LayoutEntityType::Image:
+                DrawImageProperties();
+                break;
             }
+            imgui_ext::FocusGroupEnd();
         }
-        ImGui::End();
     }
 
     void PropertiesEditor::DrawEntityProperties() {
@@ -42,6 +39,18 @@ namespace ui {
             "ID", entity->GetId(),
             [&](std::string const& value) { entity->SetId(value); },
             [&]() {});
+
+        bool visible = selection->IsVisible();
+        ImGui::Checkbox("Visible", &visible);
+        if (visible != selection->IsVisible()) {
+            selection->SetVisible(visible);
+        }
+
+        bool showRect = selection->GetShowRect();
+        ImGui::Checkbox("Show Rect", &showRect);
+        if (showRect != selection->GetShowRect()) {
+            selection->SetShowRect(showRect);
+        }
 
         imgui_ext::FocusGroupInputLayoutRect(
             "Bounds", selection->GetLayoutRect(),

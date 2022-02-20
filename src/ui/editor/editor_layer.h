@@ -74,9 +74,17 @@ namespace ui {
         std::unique_ptr<AnimationWidget> m_animationWidget;
         std::unique_ptr<PropertiesEditor> m_propertiesEditor;
 
+        bool m_visibleCanvasProperties = true;
+        bool m_visiblePropertiesPanel = true;
+        bool m_visibleAnimationPanel = true;
+        bool m_visibleElementsPanel = true;
+        bool m_visibleUndoPanel = false;
+
         void DrawMainMenu();
         void DrawCanvasProperties();
+        void DrawPropertiesPanel();
         void DrawElementsPanel();
+        void DrawAnimationPanel();
         void DrawUndoStack();
         void DrawCanvas(SDL_Renderer& renderer);
 
