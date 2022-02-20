@@ -39,9 +39,8 @@ static ImVec2 operator+(const ImVec2& a, const ImVec2& b) {
 #endif
 
 namespace ui {
-    AnimationWidget::AnimationWidget(EditorLayer& editorLayer, Group* group)
+    AnimationWidget::AnimationWidget(EditorLayer& editorLayer)
         : m_editorLayer(editorLayer)
-        , m_group(group)
         , m_keyframeWidget(m_editorLayer, m_selectedKeyframes) {
     }
 
@@ -257,6 +256,7 @@ namespace ui {
     }
 
     bool AnimationWidget::DrawWidget() {
+        m_group = m_editorLayer.GetRoot();
         m_childExpanded.resize(m_group->GetChildCount());
 
         bool ret = false;

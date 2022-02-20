@@ -4,13 +4,13 @@
 #include "ui/layouts/layout_entity_group.h"
 #include "ui/group.h"
 #include "imfilebrowser.h"
-#include "bounds_widget.h"
 #include "events/event_mouse.h"
 #include "events/event_key.h"
-#include "properties_editor.h"
 
 namespace ui {
+    class BoundsWidget;
     class AnimationWidget;
+    class PropertiesEditor;
     class IEditorAction;
     class ChangeBoundsAction;
 
@@ -35,6 +35,7 @@ namespace ui {
         void SetSelectedFrame(int frameNo);
         int GetSelectedFrame() const { return m_selectedFrame; }
 
+        Group* GetRoot() const { return m_root.get(); }
         void SetSelection(std::shared_ptr<Node> selection);
         std::shared_ptr<Node> GetSelection() const { return m_selection; }
         bool IsSelected(std::shared_ptr<Node> node) const { return m_selection == node; }
@@ -56,9 +57,7 @@ namespace ui {
         FileOpenMode m_fileOpenMode = FileOpenMode::Unknown;
         std::shared_ptr<LayoutEntityGroup> m_rootLayout;
         std::shared_ptr<Group> m_root;
-        BoundsWidget m_boundsWidget;
         std::shared_ptr<Node> m_selection;
-        std::unique_ptr<AnimationWidget> m_animationWidget;
         int m_selectedFrame = 0;
 
         int m_displayWidth = 200;
@@ -67,7 +66,9 @@ namespace ui {
         std::vector<std::unique_ptr<IEditorAction>> m_editActions;
         int m_actionIndex = -1;
 
-        PropertiesEditor m_propertiesEditor;
+        std::unique_ptr<BoundsWidget> m_boundsWidget;
+        std::unique_ptr<AnimationWidget> m_animationWidget;
+        std::unique_ptr<PropertiesEditor> m_propertiesEditor;
 
         void UndoEditAction();
         void RedoEditAction();

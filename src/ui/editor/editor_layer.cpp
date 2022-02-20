@@ -12,12 +12,15 @@
 #include "ui/editor/actions/composite_action.h"
 #include "ui/editor/actions/modify_keyframe_action.h"
 #include "ui/editor/actions/add_keyframe_action.h"
+#include "bounds_widget.h"
+#include "properties_editor.h"
 
 namespace ui {
     EditorLayer::EditorLayer()
         : m_fileDialog(ImGuiFileBrowserFlags_EnterNewFilename)
-        , m_boundsWidget(*this)
-        , m_propertiesEditor(*this) {
+        , m_boundsWidget(std::make_unique<BoundsWidget>(*this))
+        , m_animationWidget(std::make_unique<AnimationWidget>(*this))
+        , m_propertiesEditor(std::make_unique<PropertiesEditor>(*this)) {
     }
 
     EditorLayer::~EditorLayer() {
@@ -25,10 +28,10 @@ namespace ui {
 
     bool EditorLayer::OnEvent(Event const& event) {
         EventDispatch dispatch(event);
+        dispatch.Dispatch(m_boundsWidget.get());
         dispatch.Dispatch(this, &EditorLayer::OnMouseDown);
         dispatch.Dispatch(this, &EditorLayer::OnMouseUp);
         dispatch.Dispatch(this, &EditorLayer::OnKey);
-        dispatch.Dispatch(&m_boundsWidget);
         return dispatch.GetHandled();
     }
 
@@ -123,14 +126,11 @@ namespace ui {
 
         if (m_root) {
             m_root->Draw(renderer);
-            m_boundsWidget.Draw(renderer);
         }
 
-        if (m_animationWidget) {
-            m_animationWidget->Draw();
-        }
-
-        m_propertiesEditor.Draw();
+        m_boundsWidget->Draw(renderer);
+        m_animationWidget->Draw();
+        m_propertiesEditor->Draw();
     }
 
     void EditorLayer::DebugDraw() {
@@ -265,18 +265,10 @@ namespace ui {
         for (auto&& child : m_root->GetChildren()) {
             child->SetShowRect(true);
         }
-
-        m_animationWidget = std::make_unique<AnimationWidget>(*this, m_root.get());
     }
 
     bool EditorLayer::OnMouseDown(EventMouseDown const& event) {
-        for (auto&& child : m_root->GetChildren()) {
-            if (child->IsInBounds(event.GetPosition()) && child->IsVisible()) {
-                SetSelection(child);
-                return false;
-            }
-        }
-        SetSelection(nullptr);
+
         return false;
     }
 
@@ -313,7 +305,6 @@ namespace ui {
             }
         }
         m_selection = selection;
-        m_boundsWidget.SetSelection(m_selection);
     }
 
     void EditorLayer::BeginEditBounds() {

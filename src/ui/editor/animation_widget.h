@@ -7,13 +7,11 @@
 
 namespace ui {
     class EditorLayer;
-    class Group;
     class CompositeAction;
-    class LayoutEntity;
 
     class AnimationWidget {
     public:
-        AnimationWidget(EditorLayer& editorLayer, Group* group);
+        AnimationWidget(EditorLayer& editorLayer);
 
         void Draw();
 
@@ -22,7 +20,7 @@ namespace ui {
 
     private:
         EditorLayer& m_editorLayer;
-        Group* m_group;
+        Group* m_group = nullptr;
 
         bool DrawWidget();
         char const* GetChildLabel(int index) const;

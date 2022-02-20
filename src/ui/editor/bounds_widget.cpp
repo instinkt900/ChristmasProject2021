@@ -45,15 +45,6 @@ namespace ui {
         return dispatch.GetHandled();
     }
 
-    void BoundsWidget::SetSelection(std::shared_ptr<Node> selection) {
-        m_holding = false;
-        m_selectedNode = selection;
-
-        for (auto&& handle : m_handles) {
-            handle->SetTarget(selection.get());
-        }
-    }
-
     void BoundsWidget::BeginEdit() {
         m_editorLayer.BeginEditBounds();
     }
@@ -63,10 +54,12 @@ namespace ui {
     }
 
     void BoundsWidget::Draw(SDL_Renderer& renderer) {
-        CheckSelectionValid();
-
-        auto selection = m_selectedNode.lock();
+        auto const selection = m_editorLayer.GetSelection();
         if (selection && selection->GetParent()) {
+            for (auto&& handle : m_handles) {
+                handle->SetTarget(selection.get());
+            }
+
             SDL_SetRenderDrawColor(&renderer, 0x00, 0x00, 0xFF, 0xFF);
             auto const& screenRect = selection->GetScreenRect();
             auto const width = screenRect.bottomRight.x - screenRect.topLeft.x;
@@ -80,25 +73,36 @@ namespace ui {
     }
 
     bool BoundsWidget::OnMouseDown(EventMouseDown const& event) {
-        CheckSelectionValid();
-
-        auto selection = m_selectedNode.lock();
-        if (!selection || event.GetButton() != MouseButton::Left) {
+        if (event.GetButton() != MouseButton::Left) {
             return false;
         }
 
-        if (IsInRect(event.GetPosition(), selection->GetScreenRect())) {
+        auto selection = m_editorLayer.GetSelection();
+
+        // if we clicked outside the bounds of the selection check for a new selection
+        if (!selection || !selection->IsVisible() || !selection->IsInBounds(event.GetPosition())) {
+            auto const oldSelection = selection;
+            selection = nullptr;
+
+            for (auto&& child : m_editorLayer.GetRoot()->GetChildren()) {
+                if (child->IsVisible() && child->IsInBounds(event.GetPosition())) {
+                    selection = child;
+                    break;
+                }
+            }
+
+            m_editorLayer.SetSelection(selection);
+        }
+
+        if (selection) {
             m_holding = true;
             BeginEdit();
             return true;
         }
-
         return false;
     }
 
     bool BoundsWidget::OnMouseUp(EventMouseUp const& event) {
-        CheckSelectionValid();
-
         if (event.GetButton() != MouseButton::Left) {
             return false;
         }
@@ -111,21 +115,15 @@ namespace ui {
 
     bool BoundsWidget::OnMouseMove(EventMouseMove const& event) {
         if (m_holding) {
-            auto selection = m_selectedNode.lock();
-            auto& bounds = selection->GetLayoutRect();
-            bounds.offset.topLeft.x += event.GetDelta().x;
-            bounds.offset.bottomRight.x += event.GetDelta().x;
-            bounds.offset.topLeft.y += event.GetDelta().y;
-            bounds.offset.bottomRight.y += event.GetDelta().y;
-            selection->RecalculateBounds();
+            if (auto const selection = m_editorLayer.GetSelection()) {
+                auto& bounds = selection->GetLayoutRect();
+                bounds.offset.topLeft.x += event.GetDelta().x;
+                bounds.offset.bottomRight.x += event.GetDelta().x;
+                bounds.offset.topLeft.y += event.GetDelta().y;
+                bounds.offset.bottomRight.y += event.GetDelta().y;
+                selection->RecalculateBounds();
+            }
         }
         return false;
-    }
-
-    void BoundsWidget::CheckSelectionValid() {
-        auto selection = m_selectedNode.lock();
-        if (!selection || !selection->GetParent() || !selection->IsVisible()) {
-            SetSelection(nullptr);
-        }
     }
 }
