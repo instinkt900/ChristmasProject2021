@@ -4,6 +4,7 @@
 #include "ui/ui_fwd.h"
 
 class Game;
+class EventAnimation;
 
 class MenuLayer : public Layer {
 public:
@@ -20,4 +21,6 @@ public:
 private:
     Game& m_game;
     std::unique_ptr<ui::Node> m_rootWidget;
+
+    bool OnAnimEvent(EventAnimation const& event);
 };

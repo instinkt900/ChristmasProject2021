@@ -19,6 +19,8 @@ namespace ui {
         virtual void Update(uint32_t ticks);
         virtual void Draw(SDL_Renderer& renderer);
 
+        virtual void SendEvent(Event const& event);
+
         void SetId(std::string const& id) { m_id = id; }
         std::string const& GetId() const { return m_id; }
 
@@ -45,6 +47,9 @@ namespace ui {
         void SetAnimationClip(AnimationClip* clip);
         virtual void UpdateAnimTime(float delta);
 
+        using EventHandler = std::function<bool(Node*, Event const&)>;
+        void SetEventHandler(EventHandler const& handler) { m_eventHandler = handler; }
+
         auto GetLayoutEntity() const { return m_layout; }
 
         virtual void DebugDraw();
@@ -63,5 +68,6 @@ namespace ui {
         IntRect m_screenRect;
 
         std::unique_ptr<AnimationController> m_animationController;
+        EventHandler m_eventHandler;
     };
 }

@@ -43,6 +43,15 @@ namespace ui {
         }
     }
 
+    void Node::SendEvent(Event const& event) {
+        if (m_eventHandler && m_eventHandler(this, event)) {
+            return;
+        }
+        if (m_parent) {
+            m_parent->SendEvent(event);
+        }
+    }
+
     void Node::SetScreenRect(IntRect const& rect) {
         m_overrideScreenRect = true;
         m_screenRect = rect;
