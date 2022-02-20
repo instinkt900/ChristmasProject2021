@@ -66,6 +66,7 @@ namespace ui {
         IntVec2 m_displaySize{ 200, 200 };
         FloatVec2 m_canvasOffset{ 0, 0 };
         bool m_canvasGrabbed = false;
+        int m_gridSpacing = 5;
 
         std::vector<std::unique_ptr<IEditorAction>> m_editActions;
         int m_actionIndex = -1;
