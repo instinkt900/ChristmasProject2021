@@ -19,6 +19,14 @@ namespace {
             return layoutRect.offset.topLeft.x;
         case AnimationTrack::Target::RightOffset:
             return layoutRect.offset.bottomRight.x;
+        case AnimationTrack::Target::TopAnchor:
+            return layoutRect.anchor.topLeft.y;
+        case AnimationTrack::Target::BottomAnchor:
+            return layoutRect.anchor.bottomRight.y;
+        case AnimationTrack::Target::LeftAnchor:
+            return layoutRect.anchor.topLeft.x;
+        case AnimationTrack::Target::RightAnchor:
+            return layoutRect.anchor.bottomRight.x;
         }
 
         // just a value dump for unknown targets

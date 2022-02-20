@@ -19,6 +19,16 @@ using IntRect = Rect<int>;
 using FloatRect = Rect<float>;
 
 template <typename T>
+inline bool operator==(Vec2<T> const& a, Vec2<T> const& b) {
+    return (a.x == b.x) && (a.y == b.y);
+}
+
+template <typename T>
+inline bool operator!=(Vec2<T> const& a, Vec2<T> const& b) {
+    return !(a == b);
+}
+
+template <typename T>
 inline Vec2<T>& operator+=(Vec2<T>& a, Vec2<T> const& b) {
     a.x += b.x;
     a.y += b.y;
@@ -30,6 +40,63 @@ inline Vec2<T>& operator-=(Vec2<T>& a, Vec2<T> const& b) {
     a.x -= b.x;
     a.y -= b.y;
     return a;
+}
+
+template <typename T, typename U>
+inline Vec2<T>& operator*=(Vec2<T>& a, U const& b) {
+    a.x = static_cast<T>(a.x * b);
+    a.y = static_cast<T>(a.y * b);
+    return a;
+}
+
+template <typename T, typename U>
+inline Vec2<T>& operator/=(Vec2<T>& a, U const& b) {
+    a.x = static_cast<T>(a.x / b);
+    a.y = static_cast<T>(a.y / b);
+    return a;
+}
+
+template <typename T, typename U>
+inline Vec2<T> operator+(Vec2<T> const& a, U const& b) {
+    Vec2<T> ret = a;
+    ret += b;
+    return ret;
+}
+
+template <typename T, typename U>
+inline Vec2<T> operator-(Vec2<T> const& a, U const& b) {
+    Vec2<T> ret = a;
+    ret -= b;
+    return ret;
+}
+
+template <typename T, typename U>
+inline Vec2<T> operator*(Vec2<T> const& a, U const& b) {
+    Vec2<T> ret = a;
+    ret *= b;
+    return ret;
+}
+
+template <typename T, typename U>
+inline Vec2<T> operator*(U const& a, Vec2<T> const& b) {
+    return b * a;
+}
+
+template <typename T, typename U>
+inline Vec2<T> operator/(Vec2<T> const& a, U const& b) {
+    Vec2<T> ret = a;
+    ret /= b;
+    return ret;
+}
+
+template <typename T>
+inline bool operator==(Rect<T> const& a, Rect<T> const& b) {
+    return (a.topLeft == b.topLeft) && (a.bottomRight == b.bottomRight);
+}
+
+template <typename T>
+inline bool operator!=(Rect<T> const& a, Rect<T> const& b) {
+    return !(a == b);
 }
 
 template <typename T>

@@ -74,6 +74,7 @@ void MenuLayer::OnAddedToStack(LayerStack* stack) {
     //widgetRect.topLeft = { 0, 0 };
     //widgetRect.bottomRight = { GetWidth(), GetHeight() };
     //m_rootWidget->SetScreenRect(widgetRect);
+    m_rootWidget->SetShowRect(true);
     m_rootWidget->SetScreenRect({ 0, 0, GetWidth(), GetHeight() });
     m_rootWidget->SetEventHandler([&](ui::Node* fromNode, Event const& event) {
         return OnEvent(event);

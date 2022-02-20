@@ -60,8 +60,12 @@ namespace ui {
         std::shared_ptr<Node> m_selection;
         int m_selectedFrame = 0;
 
-        int m_displayWidth = 200;
-        int m_displayHeight = 200;
+        int m_displayZoom = 100;
+        static int constexpr s_maxZoom = 800;
+        static int constexpr s_minZoom = 30;
+        IntVec2 m_displaySize{ 200, 200 };
+        FloatVec2 m_canvasOffset{ 0, 0 };
+        bool m_canvasGrabbed = false;
 
         std::vector<std::unique_ptr<IEditorAction>> m_editActions;
         int m_actionIndex = -1;
@@ -69,6 +73,12 @@ namespace ui {
         std::unique_ptr<BoundsWidget> m_boundsWidget;
         std::unique_ptr<AnimationWidget> m_animationWidget;
         std::unique_ptr<PropertiesEditor> m_propertiesEditor;
+
+        void DrawMainMenu();
+        void DrawCanvasProperties();
+        void DrawElementsPanel();
+        void DrawUndoStack();
+        void DrawCanvas(SDL_Renderer& renderer);
 
         void UndoEditAction();
         void RedoEditAction();
@@ -81,9 +91,13 @@ namespace ui {
         void AddImage(char const* path);
         void Rebuild();
 
+        bool OnKey(EventKey const& event);
         bool OnMouseDown(EventMouseDown const& event);
         bool OnMouseUp(EventMouseUp const& event);
-        bool OnKey(EventKey const& event);
+        bool OnMouseMove(EventMouseMove const& event);
+        bool OnMouseWheel(EventMouseWheel const& event);
+
+        std::unique_ptr<Event> AlterMouseEvents(Event const& inEvent);
 
         struct EditBoundsContext {
             std::shared_ptr<LayoutEntity> entity;

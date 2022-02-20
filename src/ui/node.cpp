@@ -54,8 +54,10 @@ namespace ui {
 
     void Node::SetScreenRect(IntRect const& rect) {
         m_overrideScreenRect = true;
-        m_screenRect = rect;
-        UpdateChildBounds();
+        if (m_screenRect != rect) {
+            m_screenRect = rect;
+            UpdateChildBounds();
+        }
     }
 
     void Node::RefreshBounds(int frameNo) {

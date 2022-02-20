@@ -146,10 +146,14 @@ public:
         , m_key(key) {}
     virtual ~EventKey() {}
 
-    static int GetStaticType() { return EVENTTYPE_KEY; }
+    static constexpr int GetStaticType() { return EVENTTYPE_KEY; }
 
     KeyAction GetAction() const { return m_action; }
     Key GetKey() const { return m_key; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventKey>(m_action, m_key);
+    }
 
 private:
     KeyAction m_action;

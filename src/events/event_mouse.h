@@ -30,10 +30,14 @@ public:
         , m_position(position) {}
     virtual ~EventMouseDown() {}
 
-    static int GetStaticType() { return EVENTTYPE_MOUSE_DOWN; }
+    static constexpr int GetStaticType() { return EVENTTYPE_MOUSE_DOWN; }
 
     MouseButton GetButton() const { return m_button; }
     IntVec2 const& GetPosition() const { return m_position; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventMouseDown>(m_button, m_position);
+    }
 
 public:
     MouseButton m_button;
@@ -48,10 +52,14 @@ public:
         , m_position(position) {}
     virtual ~EventMouseUp() {}
 
-    static int GetStaticType() { return EVENTTYPE_MOUSE_UP; }
+    static constexpr int GetStaticType() { return EVENTTYPE_MOUSE_UP; }
 
     MouseButton GetButton() const { return m_button; }
     IntVec2 const& GetPosition() const { return m_position; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventMouseUp>(m_button, m_position);
+    }
 
 public:
     MouseButton m_button;
@@ -60,18 +68,41 @@ public:
 
 class EventMouseMove : public Event {
 public:
-    EventMouseMove(IntVec2 const& position, IntVec2 const& delta)
+    EventMouseMove(IntVec2 const& position, FloatVec2 const& delta)
         : Event(GetStaticType())
         , m_position(position)
         , m_delta(delta) {}
     virtual ~EventMouseMove() {}
 
-    static int GetStaticType() { return EVENTTYPE_MOUSE_MOVE; }
+    static constexpr int GetStaticType() { return EVENTTYPE_MOUSE_MOVE; }
 
     IntVec2 const& GetPosition() const { return m_position; }
-    IntVec2 const& GetDelta() const { return m_delta; }
+    FloatVec2 const& GetDelta() const { return m_delta; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventMouseMove>(m_position, m_delta);
+    }
 
 public:
     IntVec2 m_position;
+    FloatVec2 m_delta;
+};
+
+class EventMouseWheel : public Event {
+public:
+    EventMouseWheel(IntVec2 const& delta)
+        : Event(GetStaticType())
+        , m_delta(delta) {}
+    virtual ~EventMouseWheel() {}
+
+    static constexpr int GetStaticType() { return EVENTTYPE_MOUSE_WHEEL; }
+
+    IntVec2 const& GetDelta() const { return m_delta; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventMouseWheel>(m_delta);
+    }
+
+public:
     IntVec2 m_delta;
 };

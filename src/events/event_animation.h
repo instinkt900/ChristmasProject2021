@@ -13,11 +13,15 @@ public:
         , m_name(name) {}
     virtual ~EventAnimation() {}
 
-    static int GetStaticType() { return EVENTTYPE_ANIMATION; }
+    static constexpr int GetStaticType() { return EVENTTYPE_ANIMATION; }
 
     auto GetNode() const { return m_node; }
     auto GetTarget() const { return m_target; }
     auto const& GetName() const { return m_name; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventAnimation>(m_node, m_target, m_name);
+    }
 
 private:
     ui::Node* m_node = nullptr;

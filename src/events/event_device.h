@@ -8,7 +8,11 @@ public:
         : Event(GetStaticType()) {}
     virtual ~EventRenderDeviceReset() {}
 
-    static int GetStaticType() { return EVENTTYPE_RENDERDEVICERESET; }
+    static constexpr int GetStaticType() { return EVENTTYPE_RENDERDEVICERESET; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventRenderDeviceReset>();
+    }
 };
 
 class EventRenderTargetReset : public Event {
@@ -17,5 +21,9 @@ public:
         : Event(GetStaticType()) {}
     virtual ~EventRenderTargetReset() {}
 
-    static int GetStaticType() { return EVENTTYPE_RENDERTARGETRESET; }
+    static constexpr int GetStaticType() { return EVENTTYPE_RENDERTARGETRESET; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventRenderTargetReset>();
+    }
 };

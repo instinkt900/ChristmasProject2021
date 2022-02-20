@@ -26,12 +26,33 @@ namespace ui {
     EditorLayer::~EditorLayer() {
     }
 
+    std::unique_ptr<Event> EditorLayer::AlterMouseEvents(Event const& inEvent) {
+        float const scaleFactor = 100.0f / m_displayZoom;
+        if (auto const mouseDownEvent = event_cast<EventMouseDown>(inEvent)) {
+            auto const position = mouseDownEvent->GetPosition() * scaleFactor;
+            return std::make_unique<EventMouseDown>(mouseDownEvent->GetButton(), position);
+        }
+        if (auto const mouseUpEvent = event_cast<EventMouseUp>(inEvent)) {
+            auto const position = mouseUpEvent->GetPosition() * scaleFactor;
+            return std::make_unique<EventMouseUp>(mouseUpEvent->GetButton(), position);
+        }
+        if (auto const mouseMoveEvent = event_cast<EventMouseMove>(inEvent)) {
+            auto const position = mouseMoveEvent->GetPosition() * scaleFactor;
+            auto const delta = mouseMoveEvent->GetDelta() * scaleFactor;
+            return std::make_unique<EventMouseMove>(position, delta);
+        }
+        return inEvent.Clone();
+    }
+
     bool EditorLayer::OnEvent(Event const& event) {
-        EventDispatch dispatch(event);
+        auto const alteredEvent = AlterMouseEvents(event);
+        EventDispatch dispatch(*alteredEvent);
         dispatch.Dispatch(m_boundsWidget.get());
+        dispatch.Dispatch(this, &EditorLayer::OnKey);
         dispatch.Dispatch(this, &EditorLayer::OnMouseDown);
         dispatch.Dispatch(this, &EditorLayer::OnMouseUp);
-        dispatch.Dispatch(this, &EditorLayer::OnKey);
+        dispatch.Dispatch(this, &EditorLayer::OnMouseMove);
+        dispatch.Dispatch(this, &EditorLayer::OnMouseWheel);
         return dispatch.GetHandled();
     }
 
@@ -41,9 +62,35 @@ namespace ui {
     void EditorLayer::Draw(SDL_Renderer& renderer) {
         ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 
-        SDL_SetRenderDrawColor(&renderer, 0xAA, 0xAA, 0xAA, 0xFF);
-        SDL_RenderClear(&renderer);
+        DrawCanvas(renderer);
 
+        DrawMainMenu();
+        DrawCanvasProperties();
+        DrawElementsPanel();
+        DrawUndoStack();
+
+        m_animationWidget->Draw();
+        m_propertiesEditor->Draw();
+
+        m_fileDialog.Display();
+        if (m_fileDialog.HasSelected()) {
+            if (m_fileOpenMode == FileOpenMode::Layout) {
+                LoadLayout(m_fileDialog.GetSelected().string().c_str());
+                m_fileDialog.ClearSelected();
+            } else if (m_fileOpenMode == FileOpenMode::SubLayout) {
+                AddSubLayout(m_fileDialog.GetSelected().string().c_str());
+                m_fileDialog.ClearSelected();
+            } else if (m_fileOpenMode == FileOpenMode::Image) {
+                AddImage(m_fileDialog.GetSelected().string().c_str());
+                m_fileDialog.ClearSelected();
+            } else if (m_fileOpenMode == FileOpenMode::Save) {
+                SaveLayout(m_fileDialog.GetSelected().string().c_str());
+                m_fileDialog.ClearSelected();
+            }
+        }
+    }
+
+    void EditorLayer::DrawMainMenu() {
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 if (ImGui::MenuItem("New", "Ctrl+N")) {
@@ -63,18 +110,20 @@ namespace ui {
             }
             ImGui::EndMainMenuBar();
         }
+    }
 
+    void EditorLayer::DrawCanvasProperties() {
+        if (ImGui::Begin("Canvas Properties")) {
+            imgui_ext::InputIntVec2("Display Size", &m_displaySize);
+            ImGui::InputInt("Display Zoom", &m_displayZoom);
+            m_displayZoom = std::clamp(m_displayZoom, s_minZoom, s_maxZoom);
+            imgui_ext::InputFloatVec2("Display Offset", &m_canvasOffset);
+        }
+        ImGui::End();
+    }
+
+    void EditorLayer::DrawElementsPanel() {
         if (ImGui::Begin("Elements")) {
-            bool displayChanged = false;
-            displayChanged |= ImGui::InputInt("Display Width", &m_displayWidth);
-            displayChanged |= ImGui::InputInt("Display Height", &m_displayHeight);
-            if (displayChanged) {
-                IntRect displayRect;
-                displayRect.topLeft = { (GetWidth() - m_displayWidth) / 2, (GetHeight() - m_displayHeight) / 2 };
-                displayRect.bottomRight = { (GetWidth() + m_displayWidth) / 2, (GetHeight() + m_displayHeight) / 2 };
-                m_root->SetScreenRect(displayRect);
-            }
-
             if (ImGui::Button("Image")) {
                 m_fileDialog.SetTitle("Open..");
                 m_fileDialog.SetTypeFilters({ ".jpg", ".jpeg", ".png", ".bmp" });
@@ -88,8 +137,10 @@ namespace ui {
             }
         }
         ImGui::End();
+    }
 
-        if (ImGui::Begin("Change Stack")) {
+    void EditorLayer::DrawUndoStack() {
+        if (ImGui::Begin("Undo Stack")) {
             int i = 0;
             for (auto&& edit : m_editActions) {
                 ImGui::PushID(edit.get());
@@ -105,32 +156,32 @@ namespace ui {
             }
         }
         ImGui::End();
+    }
 
-        m_fileDialog.Display();
+    void EditorLayer::DrawCanvas(SDL_Renderer& renderer) {
+        SDL_SetRenderDrawColor(&renderer, 0xAA, 0xAA, 0xAA, 0xFF);
+        SDL_RenderClear(&renderer);
 
-        if (m_fileDialog.HasSelected()) {
-            if (m_fileOpenMode == FileOpenMode::Layout) {
-                LoadLayout(m_fileDialog.GetSelected().string().c_str());
-                m_fileDialog.ClearSelected();
-            } else if (m_fileOpenMode == FileOpenMode::SubLayout) {
-                AddSubLayout(m_fileDialog.GetSelected().string().c_str());
-                m_fileDialog.ClearSelected();
-            } else if (m_fileOpenMode == FileOpenMode::Image) {
-                AddImage(m_fileDialog.GetSelected().string().c_str());
-                m_fileDialog.ClearSelected();
-            } else if (m_fileOpenMode == FileOpenMode::Save) {
-                SaveLayout(m_fileDialog.GetSelected().string().c_str());
-                m_fileDialog.ClearSelected();
-            }
-        }
-
+        float const scaleFactor = 100.0f / m_displayZoom;
+        int oldRenderWidth, oldRenderHeight;
+        SDL_RenderGetLogicalSize(&renderer, &oldRenderWidth, &oldRenderHeight);
+        int const newRenderWidth = static_cast<int>(oldRenderWidth * scaleFactor);
+        int const newRenderHeight = static_cast<int>(oldRenderHeight * scaleFactor);
+        int const newRenderOffsetX = static_cast<int>(m_canvasOffset.x * scaleFactor);
+        int const newRenderOffsetY = static_cast<int>(m_canvasOffset.y * scaleFactor);
+        SDL_RenderSetLogicalSize(&renderer, newRenderWidth, newRenderHeight);
+        SDL_Rect guideRect{ newRenderOffsetX + (newRenderWidth - m_displaySize.x) / 2, newRenderOffsetY + (newRenderHeight - m_displaySize.y) / 2, m_displaySize.x, m_displaySize.y };
+        SDL_SetRenderDrawColor(&renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_RenderFillRect(&renderer, &guideRect);
         if (m_root) {
+            IntRect displayRect;
+            displayRect.topLeft = { guideRect.x, guideRect.y };
+            displayRect.bottomRight = { guideRect.x + guideRect.w, guideRect.y + guideRect.h };
+            m_root->SetScreenRect(displayRect);
             m_root->Draw(renderer);
         }
-
         m_boundsWidget->Draw(renderer);
-        m_animationWidget->Draw();
-        m_propertiesEditor->Draw();
+        SDL_RenderSetLogicalSize(&renderer, oldRenderWidth, oldRenderHeight);
     }
 
     void EditorLayer::DebugDraw() {
@@ -226,7 +277,6 @@ namespace ui {
         newSubLayout->SetBounds(bounds, 0);
 
         auto instance = newSubLayout->Instantiate();
-        instance->SetShowRect(true);
 
         auto addAction = std::make_unique<AddAction>(std::move(instance), m_root);
         addAction->Do();
@@ -246,7 +296,6 @@ namespace ui {
         newImageLayout->m_texturePath = path;
 
         auto instance = newImageLayout->Instantiate();
-        instance->SetShowRect(true);
 
         auto addAction = std::make_unique<AddAction>(std::move(instance), m_root);
         addAction->Do();
@@ -257,23 +306,13 @@ namespace ui {
 
     void EditorLayer::Rebuild() {
         m_root = std::make_unique<Group>(m_rootLayout);
-        IntRect displayRect;
-        displayRect.topLeft = { (GetWidth() - m_displayWidth) / 2, (GetHeight() - m_displayHeight) / 2 };
-        displayRect.bottomRight = { (GetWidth() + m_displayWidth) / 2, (GetHeight() + m_displayHeight) / 2 };
-        m_root->SetScreenRect(displayRect);
-        m_root->SetShowRect(true);
-        for (auto&& child : m_root->GetChildren()) {
-            child->SetShowRect(true);
-        }
-    }
-
-    bool EditorLayer::OnMouseDown(EventMouseDown const& event) {
-
-        return false;
-    }
-
-    bool EditorLayer::OnMouseUp(EventMouseUp const& event) {
-        return false;
+        //IntRect displayRect;
+        //displayRect.topLeft = { (GetWidth() - m_displayWidth) / 2, (GetHeight() - m_displayHeight) / 2 };
+        //displayRect.bottomRight = { (GetWidth() + m_displayWidth) / 2, (GetHeight() + m_displayHeight) / 2 };
+        //m_root->SetScreenRect(displayRect);
+        //for (auto&& child : m_root->GetChildren()) {
+        //    child->SetShowRect(true);
+        //}
     }
 
     bool EditorLayer::OnKey(EventKey const& event) {
@@ -295,6 +334,36 @@ namespace ui {
                 return true;
             }
         }
+        return false;
+    }
+
+    bool EditorLayer::OnMouseDown(EventMouseDown const& event) {
+        if (event.GetButton() == MouseButton::Middle) {
+            m_canvasGrabbed = true;
+            return true;
+        }
+        return false;
+    }
+
+    bool EditorLayer::OnMouseUp(EventMouseUp const& event) {
+        if (event.GetButton() == MouseButton::Middle) {
+            m_canvasGrabbed = false;
+        }
+        return false;
+    }
+
+    bool EditorLayer::OnMouseMove(EventMouseMove const& event) {
+        if (m_canvasGrabbed) {
+            // undo the mouse scaling so if we're zoomed in moving isnt slow
+            float const scaleFactor = 100.0f / m_displayZoom;
+            m_canvasOffset += event.GetDelta() / scaleFactor;
+        }
+        return false;
+    }
+
+    bool EditorLayer::OnMouseWheel(EventMouseWheel const& event) {
+        float const scaleFactor = 100.0f / m_displayZoom;
+        m_displayZoom += static_cast<int>(event.GetDelta().y * 6 / scaleFactor);
         return false;
     }
 
