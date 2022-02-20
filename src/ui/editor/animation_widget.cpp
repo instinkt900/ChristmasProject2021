@@ -5,12 +5,13 @@
 #include "ui/layouts/animation_clip.h"
 #include "ui/layouts/animation_track.h"
 #include "imgui_internal.h"
-#include "actions/move_keyframe_action.h"
-#include "actions/composite_action.h"
 #include "editor_layer.h"
-#include "actions/delete_keyframe_action.h"
 #include "utils.h"
+#include "actions/composite_action.h"
 #include "actions/modify_clip_action.h"
+#include "actions/move_keyframe_action.h"
+#include "actions/add_keyframe_action.h"
+#include "actions/delete_keyframe_action.h"
 
 namespace {
     using namespace ui;
@@ -549,12 +550,61 @@ namespace ui {
             rowYPos += ItemHeight;
         }
 
+        static int keyframePopupChildIdx = -1;
+        static AnimationTrack::Target keyframePopupTarget = AnimationTrack::Target::Unknown;
+        static int keyframePopupFrame = -1;
         if (ImGui::BeginPopup("keyframe_popup")) {
-            if (ImGui::MenuItem("Delete")) {
+            auto child = m_group->GetChildren()[keyframePopupChildIdx];
+            auto childEntity = child->GetLayoutEntity();
+            auto& childTracks = childEntity->GetAnimationTracks();
+            std::shared_ptr<AnimationTrack> track;
+            Keyframe* existing = nullptr;
+            if (keyframePopupTarget != AnimationTrack::Target::Unknown) {
+                track = childTracks.at(keyframePopupTarget);
+                existing = track->GetKeyframe(keyframePopupFrame);
+            }
+
+            if (!existing && ImGui::MenuItem("Add")) {
+                if (keyframePopupTarget != AnimationTrack::Target::Unknown) {
+                    // we clicked on a specific track
+                    std::unique_ptr<IEditorAction> action;
+                    if (keyframePopupTarget != AnimationTrack::Target::Events) {
+                        // non event keyframes continuous value
+                        auto const currentValue = track->GetValueAtFrame(keyframePopupFrame);
+                        action = std::make_unique<AddKeyframeAction>(childEntity, keyframePopupTarget, keyframePopupFrame, currentValue);
+                    } else {
+                        // event actions are independant
+                        action = std::make_unique<AddKeyframeAction>(childEntity, keyframePopupTarget, keyframePopupFrame, "");
+                    }
+                    action->Do();
+                    m_editorLayer.AddEditAction(std::move(action));
+                } else {
+                    // clicked on the main track. create keyframes on all float tracks
+                    std::unique_ptr<CompositeAction> compositeAction = std::make_unique<CompositeAction>();
+                    for (auto&& target : AnimationTrack::ContinuousTargets) {
+                        track = childTracks.at(target);
+                        if (nullptr == track->GetKeyframe(keyframePopupFrame)) {
+                            // only add a new frame if one doesnt exist
+                            auto const currentValue = track->GetValueAtFrame(keyframePopupFrame);
+                            auto action = std::make_unique<AddKeyframeAction>(childEntity, target, keyframePopupFrame, currentValue);
+                            action->Do();
+                            compositeAction->GetActions().push_back(std::move(action));
+                        }
+                    }
+                    m_editorLayer.AddEditAction(std::move(compositeAction));
+                }
+            }
+            if (!m_selectedKeyframes.empty() && ImGui::MenuItem("Delete")) {
                 DeleteSelectedKeyframes();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
+        }
+
+        if (!ImGui::IsPopupOpen("keyframe_popup")) {
+            keyframePopupChildIdx = -1;
+            keyframePopupTarget = AnimationTrack::Target::Unknown;
+            keyframePopupFrame = -1;
         }
 
         ImVec2 tracksMin(contentMin.x + legendWidth - firstFrameUsed * framePixelWidth, childFramePos.y);
@@ -617,6 +667,14 @@ namespace ui {
                     ImVec2 subRowMax(canvas_size.x + canvas_pos.x, rowYPos + ItemHeight);
                     unsigned int col = subColorSelector ? 0xFF292525 : 0xFF302C2C;
                     draw_list->AddRectFilled(subRowMin, subRowMax, col, 0);
+
+                    ImRect subRowRect(subRowMin, subRowMax);
+                    if (subRowRect.Contains(io.MousePos) && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+                        keyframePopupChildIdx = i;
+                        keyframePopupTarget = target;
+                        keyframePopupFrame = static_cast<int>((io.MousePos.x - subRowMin.x) / framePixelWidth);
+                        ImGui::OpenPopup("keyframe_popup");
+                    }
                 }
 
                 for (auto&& keyframe : track->GetKeyframes()) {
@@ -649,15 +707,22 @@ namespace ui {
                                         pendingKeyframeSelectionClear = false;
                                         KeyframeGrabbed = true;
                                         movingPos = cx;
-                                    } else if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-                                        ImGui::OpenPopup("keyframe_popup");
                                     }
                                 }
                             }
                         }
                     }
                 }
+
                 subColorSelector = !subColorSelector;
+            }
+
+            ImRect rowRect(rowMin, rowMax);
+            if (!ImGui::IsPopupOpen("keyframe_popup") && rowRect.Contains(io.MousePos) && ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+                keyframePopupChildIdx = i;
+                keyframePopupTarget = AnimationTrack::Target::Unknown;
+                keyframePopupFrame = static_cast<int>((io.MousePos.x - rowMin.x) / framePixelWidth);
+                ImGui::OpenPopup("keyframe_popup");
             }
 
             rowYPos += ItemHeight;

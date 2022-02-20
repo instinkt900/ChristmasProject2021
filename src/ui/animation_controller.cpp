@@ -91,11 +91,15 @@ namespace ui {
                     m_clip = nullptr;
                     break;
                 }
+            } else {
+                eventChecks[0].Set(oldTime, m_time);
             }
 
             // update each tracks time
             for (auto&& track : m_trackControllers) {
-                track->SetTime(m_time);
+                if (track->GetTarget() != AnimationTrack::Target::Events) {
+                    track->SetTime(m_time);
+                }
             }
 
             // check for events over spans

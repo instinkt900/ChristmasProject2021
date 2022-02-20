@@ -65,6 +65,17 @@ namespace ui {
             RightAnchor
         };
 
+        static constexpr std::array<Target, 8> ContinuousTargets{
+            Target::TopOffset,
+            Target::BottomOffset,
+            Target::LeftOffset,
+            Target::RightOffset,
+            Target::TopAnchor,
+            Target::BottomAnchor,
+            Target::LeftAnchor,
+            Target::RightAnchor,
+        };
+
         AnimationTrack() = default;
         AnimationTrack(Target target);
         AnimationTrack(Target target, float initialValue);
