@@ -1,93 +1,25 @@
 #pragma once
 
-template <typename T>
-struct Vec2 {
-    T x{ 0 };
-    T y{ 0 };
-};
+#include "vec2.h"
 
 template <typename T>
 struct Rect {
     Vec2<T> topLeft;
     Vec2<T> bottomRight;
-};
 
-using IntVec2 = Vec2<int>;
-using FloatVec2 = Vec2<float>;
+    template <typename U = T, std::enable_if_t<std::is_same_v<U, int>, bool> = true>
+    explicit operator SDL_Rect() const {
+        return SDL_Rect{ topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y };
+    }
+
+    template <typename U = T, std::enable_if_t<std::is_same_v<U, float>, bool> = true>
+    explicit operator SDL_FRect() const {
+        return SDL_FRect{ topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y };
+    }
+};
 
 using IntRect = Rect<int>;
 using FloatRect = Rect<float>;
-
-template <typename T>
-inline bool operator==(Vec2<T> const& a, Vec2<T> const& b) {
-    return (a.x == b.x) && (a.y == b.y);
-}
-
-template <typename T>
-inline bool operator!=(Vec2<T> const& a, Vec2<T> const& b) {
-    return !(a == b);
-}
-
-template <typename T>
-inline Vec2<T>& operator+=(Vec2<T>& a, Vec2<T> const& b) {
-    a.x += b.x;
-    a.y += b.y;
-    return a;
-}
-
-template <typename T>
-inline Vec2<T>& operator-=(Vec2<T>& a, Vec2<T> const& b) {
-    a.x -= b.x;
-    a.y -= b.y;
-    return a;
-}
-
-template <typename T, typename U>
-inline Vec2<T>& operator*=(Vec2<T>& a, U const& b) {
-    a.x = static_cast<T>(a.x * b);
-    a.y = static_cast<T>(a.y * b);
-    return a;
-}
-
-template <typename T, typename U>
-inline Vec2<T>& operator/=(Vec2<T>& a, U const& b) {
-    a.x = static_cast<T>(a.x / b);
-    a.y = static_cast<T>(a.y / b);
-    return a;
-}
-
-template <typename T, typename U>
-inline Vec2<T> operator+(Vec2<T> const& a, U const& b) {
-    Vec2<T> ret = a;
-    ret += b;
-    return ret;
-}
-
-template <typename T, typename U>
-inline Vec2<T> operator-(Vec2<T> const& a, U const& b) {
-    Vec2<T> ret = a;
-    ret -= b;
-    return ret;
-}
-
-template <typename T, typename U>
-inline Vec2<T> operator*(Vec2<T> const& a, U const& b) {
-    Vec2<T> ret = a;
-    ret *= b;
-    return ret;
-}
-
-template <typename T, typename U>
-inline Vec2<T> operator*(U const& a, Vec2<T> const& b) {
-    return b * a;
-}
-
-template <typename T, typename U>
-inline Vec2<T> operator/(Vec2<T> const& a, U const& b) {
-    Vec2<T> ret = a;
-    ret /= b;
-    return ret;
-}
 
 template <typename T>
 inline bool operator==(Rect<T> const& a, Rect<T> const& b) {
@@ -114,17 +46,6 @@ inline Rect<T>& operator-=(Rect<T>& a, Rect<T> const& b) {
 }
 
 template <typename T>
-inline void to_json(nlohmann::json& j, Vec2<T> const& vec) {
-    j = nlohmann::json{ { "x", vec.x }, { "y", vec.y } };
-}
-
-template <typename T>
-inline void from_json(nlohmann::json const& j, Vec2<T>& vec) {
-    j.at("x").get_to(vec.x);
-    j.at("y").get_to(vec.y);
-}
-
-template <typename T>
 inline void to_json(nlohmann::json& j, Rect<T> const& rect) {
     j = nlohmann::json{ { "topLeft", rect.topLeft }, { "bottomRight", rect.bottomRight } };
 }
@@ -144,8 +65,8 @@ inline bool IsInRect(Vec2<T> const& point, Rect<U> const& rect) {
     return true;
 }
 
-template <typename T>
-inline T lerp(T const& a, T const& b, float factor) {
+template <typename T, typename U>
+inline T lerp(T const& a, T const& b, U const& factor) {
     return a + (b - a) * factor;
 }
 

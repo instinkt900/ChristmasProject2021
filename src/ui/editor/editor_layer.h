@@ -45,6 +45,8 @@ namespace ui {
         void BeginEditBounds();
         void EndEditBounds();
 
+        auto GetScaleFactor() const { return 100.0f / m_displayZoom; }
+
     private:
         enum class FileOpenMode {
             Unknown,

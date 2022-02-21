@@ -38,7 +38,7 @@ namespace ui {
 
         Node* m_target = nullptr;
         BoundsHandleAnchor m_anchor;
-        IntVec2 m_position;
+        FloatVec2 m_position;
         bool m_holding = false;
 
         virtual bool IsInBounds(IntVec2 const& pos) const = 0;

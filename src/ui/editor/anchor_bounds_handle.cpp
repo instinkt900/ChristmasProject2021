@@ -3,6 +3,8 @@
 #include "ui/node.h"
 #include "ui/group.h"
 #include "ui/layouts/layout_entity.h"
+#include "bounds_widget.h"
+#include "editor_layer.h"
 
 namespace ui {
     AnchorBoundsHandle::AnchorBoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor)
@@ -18,60 +20,45 @@ namespace ui {
         }
 
         auto const& parentScreenRect = m_target->GetParent()->GetScreenRect();
-        auto const canvasWidth = parentScreenRect.bottomRight.x - parentScreenRect.topLeft.x;
-        auto const canvasHeight = parentScreenRect.bottomRight.y - parentScreenRect.topLeft.y;
-
         auto const& layoutRect = m_target->GetLayoutRect();
 
-        // clang-format off
-        float const xAnchor = m_anchor.Left ? 0.0f : m_anchor.Right ? 1.0f : 0.5f;
-        float const yAnchor = m_anchor.Top ? 0.0f : m_anchor.Bottom ? 1.0f : 0.5f;
-        // clang-format on
-
-        auto const x = lerp(layoutRect.anchor.topLeft.x, layoutRect.anchor.bottomRight.x, xAnchor);
-        auto const y = lerp(layoutRect.anchor.topLeft.y, layoutRect.anchor.bottomRight.y, yAnchor);
-
-        m_position.x = static_cast<int>(parentScreenRect.topLeft.x + canvasWidth * x);
-        m_position.y = static_cast<int>(parentScreenRect.topLeft.y + canvasHeight * y);
+        FloatVec2 const canvasDim{ static_cast<float>(parentScreenRect.bottomRight.x - parentScreenRect.topLeft.x), static_cast<float>(parentScreenRect.bottomRight.y - parentScreenRect.topLeft.y) };
+        FloatVec2 const anchor{ m_anchor.Left ? 0.0f : (m_anchor.Right ? 1.0f : 0.5f), m_anchor.Top ? 0.0f : (m_anchor.Bottom ? 1.0f : 0.5f) };
+        FloatVec2 const adjust = lerp(layoutRect.anchor.topLeft, layoutRect.anchor.bottomRight, anchor);
+        m_position = static_cast<FloatVec2>(parentScreenRect.topLeft) + canvasDim * adjust;
 
         int const halfSize = m_size / 2;
 
-        int x1 = 0;
-        int x2 = 0;
-        int y1 = 0;
-        int y2 = 0;
-        int const offset = halfSize + 3;
+        float x1 = 0;
+        float x2 = 0;
+        float y1 = 0;
+        float y2 = 0;
+        float const offset = halfSize + 3.0f;
+
+        auto const scaleFactor = m_widget.GetEditorLayer().GetScaleFactor();
+        auto const scaledPosition = m_position / scaleFactor;
 
         if (!m_anchor.Top || !m_anchor.Bottom) {
-            x1 = m_position.x - offset;
-            x2 = m_position.x + offset;
-            y1 = m_position.y - offset + static_cast<int>(offset * 2 * yAnchor);
-            SDL_RenderDrawLine(&renderer, x1, y1, x2, y1);
+            x1 = scaledPosition.x - offset;
+            x2 = scaledPosition.x + offset;
+            y1 = scaledPosition.y - offset + static_cast<int>(offset * 2 * anchor.y);
+            SDL_RenderDrawLineF(&renderer, x1, y1, x2, y1);
         }
 
         if (!m_anchor.Left || !m_anchor.Right) {
-            y1 = m_position.y - offset;
-            y2 = m_position.y + offset;
-            x1 = m_position.x - offset + static_cast<int>(offset * 2 * xAnchor);
-            SDL_RenderDrawLine(&renderer, x1, y1, x1, y2);
-        }
-
-        if (m_holding) {
-            y1 = m_position.y - offset;
-            y2 = m_position.y + offset;
-            x1 = m_position.x - offset + static_cast<int>(offset * 2 * xAnchor);
-            SDL_RenderDrawLine(&renderer, m_position.x - 3, m_position.y, m_position.x + 3, m_position.y);
-            SDL_RenderDrawLine(&renderer, m_position.x, m_position.y - 3, m_position.x, m_position.y + 3);
+            y1 = scaledPosition.y - offset;
+            y2 = scaledPosition.y + offset;
+            x1 = scaledPosition.x - offset + static_cast<int>(offset * 2 * anchor.x);
+            SDL_RenderDrawLineF(&renderer, x1, y1, x1, y2);
         }
     }
 
     bool AnchorBoundsHandle::IsInBounds(IntVec2 const& pos) const {
-        // clang-format off
-        float const xAnchor = m_anchor.Left ? 0.0f : m_anchor.Right ? 1.0f : 0.5f;
-        float const yAnchor = m_anchor.Top ? 0.0f : m_anchor.Bottom ? 1.0f : 0.5f;
-        // clang-format on
+        auto const scaleFactor = m_widget.GetEditorLayer().GetScaleFactor();
 
-        int const halfSize = m_size / 2;
+        FloatVec2 const anchor{ m_anchor.Left ? 0.0f : (m_anchor.Right ? 1.0f : 0.5f), m_anchor.Top ? 0.0f : (m_anchor.Bottom ? 1.0f : 0.5f) };
+
+        int const halfSize = static_cast<int>(m_size / 2 * scaleFactor);
 
         int x1 = 0;
         int x2 = 0;
@@ -81,11 +68,13 @@ namespace ui {
 
         bool inside = false;
 
+        IntVec2 position = static_cast<IntVec2>(m_position);
+
         if (!m_anchor.Top || !m_anchor.Bottom) {
             IntRect r1;
-            r1.topLeft.x = m_position.x - offset;
+            r1.topLeft.x = position.x - offset;
             r1.bottomRight.x = r1.topLeft.x + offset * 2;
-            r1.topLeft.y = m_position.y - offset + static_cast<int>(offset * 2 * yAnchor) - 3;
+            r1.topLeft.y = position.y - offset + static_cast<int>(offset * 2 * anchor.y) - 3;
             r1.bottomRight.y = r1.topLeft.y + 6;
             if (IsInRect(pos, r1)) {
                 return true;
@@ -94,9 +83,9 @@ namespace ui {
 
         if (!m_anchor.Left || !m_anchor.Right) {
             IntRect r1;
-            r1.topLeft.y = m_position.y - offset;
+            r1.topLeft.y = position.y - offset;
             r1.bottomRight.y = r1.topLeft.y + offset * 2;
-            r1.topLeft.x = m_position.x - offset + static_cast<int>(offset * 2 * xAnchor) - 3;
+            r1.topLeft.x = position.x - offset + static_cast<int>(offset * 2 * anchor.x) - 3;
             r1.bottomRight.x = r1.topLeft.x + 6;
             if (IsInRect(pos, r1)) {
                 return true;

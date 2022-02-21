@@ -301,6 +301,7 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\ui\serialize_utils.h" />
     <ClInclude Include="src\ui\ui_fwd.h" />
     <ClInclude Include="src\utils.h" />
+    <ClInclude Include="src\vec2.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

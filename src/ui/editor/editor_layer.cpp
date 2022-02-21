@@ -247,8 +247,9 @@ namespace ui {
             m_root->SetScreenRect(displayRect);
             m_root->Draw(renderer);
         }
-        m_boundsWidget->Draw(renderer); // TODO we want this non scaled
         SDL_RenderSetLogicalSize(&renderer, oldRenderWidth, oldRenderHeight);
+
+        m_boundsWidget->Draw(renderer); // TODO we want this non scaled
     }
 
     void EditorLayer::DebugDraw() {

@@ -11,7 +11,7 @@ namespace ui {
         void Draw(SDL_Renderer& renderer) override;
 
     private:
-        int m_size = 10;
+        float m_size = 10.0f;
 
         bool IsInBounds(IntVec2 const& pos) const override;
         bool OnMouseMove(EventMouseMove const& event) override;

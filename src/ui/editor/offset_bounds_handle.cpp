@@ -2,6 +2,8 @@
 #include "offset_bounds_handle.h"
 #include "ui/node.h"
 #include "ui/layouts/layout_entity.h"
+#include "bounds_widget.h"
+#include "editor_layer.h"
 
 namespace ui {
     OffsetBoundsHandle::OffsetBoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor)
@@ -16,30 +18,29 @@ namespace ui {
             return;
         }
 
+        auto const scaleFactor = m_widget.GetEditorLayer().GetScaleFactor();
+
         auto const& bounds = m_target->GetScreenRect();
-        auto const width = bounds.bottomRight.x - bounds.topLeft.x;
-        auto const height = bounds.bottomRight.y - bounds.topLeft.y;
 
-        // clang-format off
-        float const xAnchor = m_anchor.Left ? 0.0f : m_anchor.Right ? 1.0f : 0.5f;
-        float const yAnchor = m_anchor.Top ? 0.0f : m_anchor.Bottom ? 1.0f : 0.5f;
-        // clang-format on
+        FloatVec2 const dim = static_cast<FloatVec2>(bounds.bottomRight - bounds.topLeft);
+        FloatVec2 const anchor = { m_anchor.Left ? 0.0f : (m_anchor.Right ? 1.0f : 0.5f), m_anchor.Top ? 0.0f : (m_anchor.Bottom ? 1.0f : 0.5f) };
+        m_position = static_cast<FloatVec2>(bounds.topLeft) + dim * anchor;
 
-        m_position.x = static_cast<int>(bounds.topLeft.x + width * xAnchor);
-        m_position.y = static_cast<int>(bounds.topLeft.y + height * yAnchor);
+        FloatVec2 const handleSize = FloatVec2{ m_size, m_size };
+        FloatVec2 const halfHandleSize = handleSize / 2.0f;
 
-        int const halfSize = m_size / 2;
-        SDL_Rect const r{ m_position.x - halfSize, m_position.y - halfSize, m_size, m_size };
-        SDL_RenderFillRect(&renderer, &r);
+        FloatVec2 const offset = (m_position / scaleFactor) - halfHandleSize;
+
+        SDL_FRect const r{ offset.x, offset.y, handleSize.x, handleSize.y };
+        SDL_RenderFillRectF(&renderer, &r);
     }
 
     bool OffsetBoundsHandle::IsInBounds(IntVec2 const& pos) const {
-        int const halfSize = m_size / 2;
+        auto const scaleFactor = m_widget.GetEditorLayer().GetScaleFactor();
+        int const halfSize = static_cast<int>(m_size / 2 * scaleFactor);
         IntRect r;
-        r.topLeft.x = m_position.x - halfSize;
-        r.topLeft.y = m_position.y - halfSize;
-        r.bottomRight.x = m_position.x + halfSize;
-        r.bottomRight.y = m_position.y + halfSize;
+        r.topLeft = static_cast<IntVec2>(m_position - halfSize);
+        r.bottomRight = static_cast<IntVec2>(m_position + halfSize);
         return IsInRect(pos, r);
     }
 
@@ -54,8 +55,6 @@ namespace ui {
             bounds.offset.bottomRight.x += event.GetDelta().x * m_anchor.Right;
             bounds.offset.topLeft.y += event.GetDelta().y * m_anchor.Top;
             bounds.offset.bottomRight.y += event.GetDelta().y * m_anchor.Bottom;
-            //m_target->GetLayoutEntity()->SetBounds(bounds);
-            //m_target->RefreshBounds();
             m_target->RecalculateBounds();
         }
         return false;

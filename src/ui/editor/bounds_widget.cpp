@@ -62,9 +62,10 @@ namespace ui {
 
             SDL_SetRenderDrawColor(&renderer, 0x00, 0x00, 0xFF, 0xFF);
             auto const& screenRect = selection->GetScreenRect();
-            auto const width = screenRect.bottomRight.x - screenRect.topLeft.x;
-            auto const height = screenRect.bottomRight.y - screenRect.topLeft.y;
-            SDL_Rect const rect{ screenRect.topLeft.x, screenRect.topLeft.y, width, height };
+            auto const scaleFactor = m_editorLayer.GetScaleFactor();
+            auto const pos = screenRect.topLeft / scaleFactor;
+            auto const size = (screenRect.bottomRight - screenRect.topLeft) / scaleFactor;
+            SDL_Rect const rect{ static_cast<int>(pos.x), static_cast<int>(pos.y), static_cast<int>(size.x), static_cast<int>(size.y) };
             SDL_RenderDrawRect(&renderer, &rect);
             for (auto& handle : m_handles) {
                 handle->Draw(renderer);

@@ -22,6 +22,8 @@ namespace ui {
         bool OnEvent(Event const& event) override;
         void Draw(SDL_Renderer& renderer);
 
+        EditorLayer& GetEditorLayer() { return m_editorLayer; }
+
     private:
         EditorLayer& m_editorLayer;
 
