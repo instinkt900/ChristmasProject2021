@@ -67,13 +67,11 @@ namespace ui {
 
     void Node::RecalculateBounds() {
         if (nullptr != m_parent && !m_overrideScreenRect) {
-            auto const& parentBounds = m_parent->GetScreenRect();
-            auto const parentWidth = parentBounds.bottomRight.x - parentBounds.topLeft.x;
-            auto const parentHeight = parentBounds.bottomRight.y - parentBounds.topLeft.y;
-            m_screenRect.topLeft.x = parentBounds.topLeft.x + static_cast<int>(m_layoutRect.offset.topLeft.x + parentWidth * m_layoutRect.anchor.topLeft.x);
-            m_screenRect.topLeft.y = parentBounds.topLeft.y + static_cast<int>(m_layoutRect.offset.topLeft.y + parentHeight * m_layoutRect.anchor.topLeft.y);
-            m_screenRect.bottomRight.x = parentBounds.topLeft.x + static_cast<int>(m_layoutRect.offset.bottomRight.x + parentWidth * m_layoutRect.anchor.bottomRight.x);
-            m_screenRect.bottomRight.y = parentBounds.topLeft.y + static_cast<int>(m_layoutRect.offset.bottomRight.y + parentHeight * m_layoutRect.anchor.bottomRight.y);
+            IntRect const& parentBounds = m_parent->GetScreenRect();
+            FloatVec2 const parentOffset = static_cast<FloatVec2>(parentBounds.topLeft);
+            FloatVec2 const parentDimensions = static_cast<FloatVec2>(parentBounds.bottomRight - parentBounds.topLeft);
+            m_screenRect.topLeft = static_cast<IntVec2>(parentOffset + m_layoutRect.offset.topLeft + parentDimensions * m_layoutRect.anchor.topLeft);
+            m_screenRect.bottomRight = static_cast<IntVec2>(parentOffset + m_layoutRect.offset.bottomRight + parentDimensions * m_layoutRect.anchor.bottomRight);
         }
         UpdateChildBounds();
     }

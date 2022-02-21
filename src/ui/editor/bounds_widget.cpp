@@ -97,10 +97,24 @@ namespace ui {
 
         if (selection) {
             m_holding = true;
+            auto const& canvasTopLeft = m_editorLayer.GetCanvasTopLeft();
+            m_grabPosition = SnapToGrid(event.GetPosition() - canvasTopLeft);
             BeginEdit();
             return true;
         }
         return false;
+    }
+
+    IntVec2 BoundsWidget::SnapToGrid(IntVec2 const& original) {
+        if (m_editorLayer.SnapToGrid()) {
+            int const spacing = m_editorLayer.GetGridSpacing();
+            float const s = static_cast<float>(spacing);
+            int const x = static_cast<int>(std::round(original.x / s) * s);
+            int const y = static_cast<int>(std::round(original.y / s) * s);
+            return { x, y };
+        } else {
+            return original;
+        }
     }
 
     bool BoundsWidget::OnMouseUp(EventMouseUp const& event) {
@@ -117,11 +131,16 @@ namespace ui {
     bool BoundsWidget::OnMouseMove(EventMouseMove const& event) {
         if (m_holding) {
             if (auto const selection = m_editorLayer.GetSelection()) {
+                auto const& canvasTopLeft = m_editorLayer.GetCanvasTopLeft();
+                auto const windowMousePos = event.GetPosition();
+                auto const canvasRelative = SnapToGrid(windowMousePos - canvasTopLeft);
+                auto const delta = canvasRelative - m_grabPosition;
+                m_grabPosition = canvasRelative;
+
                 auto& bounds = selection->GetLayoutRect();
-                bounds.offset.topLeft.x += event.GetDelta().x;
-                bounds.offset.bottomRight.x += event.GetDelta().x;
-                bounds.offset.topLeft.y += event.GetDelta().y;
-                bounds.offset.bottomRight.y += event.GetDelta().y;
+                bounds.offset.topLeft += static_cast<FloatVec2>(delta);
+                bounds.offset.bottomRight += static_cast<FloatVec2>(delta);
+
                 selection->RecalculateBounds();
             }
         }

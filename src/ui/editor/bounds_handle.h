@@ -45,6 +45,7 @@ namespace ui {
 
         bool OnMouseDown(EventMouseDown const& event);
         bool OnMouseUp(EventMouseUp const& event);
-        virtual bool OnMouseMove(EventMouseMove const& event) = 0;
+        bool OnMouseMove(EventMouseMove const& event);
+        virtual void UpdatePosition(IntVec2 const& position) = 0;
     };
 }

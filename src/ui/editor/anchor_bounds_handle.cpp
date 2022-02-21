@@ -95,28 +95,25 @@ namespace ui {
         return false;
     }
 
-    bool AnchorBoundsHandle::OnMouseMove(EventMouseMove const& event) {
-        if (nullptr == m_target) {
-            return false;
-        }
+    void AnchorBoundsHandle::UpdatePosition(IntVec2 const& position) {
+        auto const parent = m_target->GetParent();
+        auto const& parentRect = parent->GetScreenRect();
 
-        if (m_holding) {
-            auto const& parentScreenRect = m_target->GetParent()->GetScreenRect();
-            auto const canvasWidth = parentScreenRect.bottomRight.x - parentScreenRect.topLeft.x;
-            auto const canvasHeight = parentScreenRect.bottomRight.y - parentScreenRect.topLeft.y;
+        FloatVec2 const parentOffset = static_cast<FloatVec2>(parentRect.topLeft);
+        FloatVec2 const parentDimensions = static_cast<FloatVec2>(parentRect.bottomRight - parentRect.topLeft);
 
-            auto const xFact = event.GetDelta().x / static_cast<float>(canvasWidth);
-            auto const yFact = event.GetDelta().y / static_cast<float>(canvasHeight);
+        auto& bounds = m_target->GetLayoutRect();
 
-            auto& bounds = m_target->GetLayoutRect();
-            bounds.anchor.topLeft.x += xFact * m_anchor.Left;
-            bounds.anchor.bottomRight.x += xFact * m_anchor.Right;
-            bounds.anchor.topLeft.y += yFact * m_anchor.Top;
-            bounds.anchor.bottomRight.y += yFact * m_anchor.Bottom;
-            //m_target->GetLayoutEntity()->SetBounds(bounds);
-            //m_target->RefreshBounds();
-            m_target->RecalculateBounds();
-        }
-        return false;
+        FloatVec2 const mousePosition = static_cast<FloatVec2>(position);
+        FloatVec2 const newAnchorPos = mousePosition - parentOffset;
+        FloatVec2 const newAnchor = newAnchorPos / parentDimensions;
+
+        FloatVec2 const topLeftAnchorDelta = newAnchor - bounds.anchor.topLeft;
+        FloatVec2 const bottomRightOffsetDelta = newAnchor - bounds.anchor.bottomRight;
+
+        bounds.anchor.topLeft += topLeftAnchorDelta * FloatVec2{ static_cast<float>(m_anchor.Left), static_cast<float>(m_anchor.Top) };
+        bounds.anchor.bottomRight += bottomRightOffsetDelta * FloatVec2{ static_cast<float>(m_anchor.Right), static_cast<float>(m_anchor.Bottom) };
+
+        m_target->RecalculateBounds();
     }
 }

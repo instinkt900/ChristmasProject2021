@@ -2,6 +2,7 @@
 #include "bounds_handle.h"
 #include "events/event_dispatch.h"
 #include "bounds_widget.h"
+#include "editor_layer.h"
 
 namespace ui {
     BoundsHandle::BoundsHandle(BoundsWidget& widget, BoundsHandleAnchor const& anchor)
@@ -57,6 +58,22 @@ namespace ui {
 
         m_holding = false;
 
+        return false;
+    }
+
+    bool BoundsHandle::OnMouseMove(EventMouseMove const& event) {
+        if (nullptr == m_target) {
+            return false;
+        }
+
+        if (m_holding) {
+            auto& editorLayer = m_widget.GetEditorLayer();
+            auto const& canvasTopLeft = editorLayer.GetCanvasTopLeft();
+            auto const windowMousePos = event.GetPosition();
+            auto const canvasRelative = m_widget.SnapToGrid(windowMousePos - canvasTopLeft);
+            auto const newPosition = canvasTopLeft + canvasRelative;
+            UpdatePosition(newPosition);
+        }
         return false;
     }
 }

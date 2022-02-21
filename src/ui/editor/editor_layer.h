@@ -46,6 +46,9 @@ namespace ui {
         void EndEditBounds();
 
         auto GetScaleFactor() const { return 100.0f / m_displayZoom; }
+        bool SnapToGrid() const { return m_gridSpacing > 0; }
+        auto const& GetCanvasTopLeft() const { return m_canvasTopLeft; }
+        auto GetGridSpacing() const { return m_gridSpacing;}
 
     private:
         enum class FileOpenMode {
@@ -69,6 +72,7 @@ namespace ui {
         FloatVec2 m_canvasOffset{ 0, 0 };
         bool m_canvasGrabbed = false;
         int m_gridSpacing = 5;
+        IntVec2 m_canvasTopLeft;
 
         std::vector<std::unique_ptr<IEditorAction>> m_editActions;
         int m_actionIndex = -1;

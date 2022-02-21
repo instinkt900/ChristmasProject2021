@@ -127,6 +127,7 @@ namespace ui {
                 m_displayZoom = std::clamp(m_displayZoom, s_minZoom, s_maxZoom);
                 imgui_ext::InputFloatVec2("Display Offset", &m_canvasOffset);
                 ImGui::InputInt("Grid Spacing", &m_gridSpacing);
+                m_gridSpacing = std::clamp(m_gridSpacing, 0, m_displaySize.x / 2);
             }
             ImGui::End();
         }
@@ -213,21 +214,23 @@ namespace ui {
         SDL_RenderFillRectF(&renderer, &canvasRect);
 
         // grid lines
-        int const vertGridCount = (m_displaySize.x - 1) / m_gridSpacing;
-        int const horizGridCount = (m_displaySize.y - 1) / m_gridSpacing;
-        int index = 0;
-        float gridX = m_gridSpacing / scaleFactor;
-        SDL_SetRenderDrawColor(&renderer, 0xDD, 0xDD, 0xDD, 0xFF);
-        for (int i = 0; i < vertGridCount; ++i) {
-            int const x = static_cast<int>(gridX);
-            SDL_RenderDrawLineF(&renderer, canvasRect.x + x, canvasRect.y, canvasRect.x + x, canvasRect.y + canvasRect.h - 1);
-            gridX += m_gridSpacing / scaleFactor;
-        }
-        float gridY = m_gridSpacing / scaleFactor;
-        for (int i = 0; i < horizGridCount; ++i) {
-            int const y = static_cast<int>(gridY);
-            SDL_RenderDrawLineF(&renderer, canvasRect.x, canvasRect.y + y, canvasRect.x + canvasRect.w - 1, canvasRect.y + y);
-            gridY += m_gridSpacing / scaleFactor;
+        if (m_gridSpacing > 0) {
+            int const vertGridCount = (m_displaySize.x - 1) / m_gridSpacing;
+            int const horizGridCount = (m_displaySize.y - 1) / m_gridSpacing;
+            int index = 0;
+            float gridX = m_gridSpacing / scaleFactor;
+            SDL_SetRenderDrawColor(&renderer, 0xDD, 0xDD, 0xDD, 0xFF);
+            for (int i = 0; i < vertGridCount; ++i) {
+                int const x = static_cast<int>(gridX);
+                SDL_RenderDrawLineF(&renderer, canvasRect.x + x, canvasRect.y, canvasRect.x + x, canvasRect.y + canvasRect.h - 1);
+                gridX += m_gridSpacing / scaleFactor;
+            }
+            float gridY = m_gridSpacing / scaleFactor;
+            for (int i = 0; i < horizGridCount; ++i) {
+                int const y = static_cast<int>(gridY);
+                SDL_RenderDrawLineF(&renderer, canvasRect.x, canvasRect.y + y, canvasRect.x + canvasRect.w - 1, canvasRect.y + y);
+                gridY += m_gridSpacing / scaleFactor;
+            }
         }
 
         // setup scaling and draw the layout
@@ -239,6 +242,7 @@ namespace ui {
         int const newRenderOffsetY = static_cast<int>(m_canvasOffset.y * scaleFactor);
         SDL_RenderSetLogicalSize(&renderer, newRenderWidth, newRenderHeight);
         SDL_Rect guideRect{ newRenderOffsetX + (newRenderWidth - m_displaySize.x) / 2, newRenderOffsetY + (newRenderHeight - m_displaySize.y) / 2, m_displaySize.x, m_displaySize.y };
+        m_canvasTopLeft = { guideRect.x, guideRect.y };
 
         if (m_root) {
             IntRect displayRect;

@@ -14,6 +14,6 @@ namespace ui {
         float m_size = 10.0f;
 
         bool IsInBounds(IntVec2 const& pos) const override;
-        bool OnMouseMove(EventMouseMove const& event) override;
+        void UpdatePosition(IntVec2 const& position) override;
     };
 }
