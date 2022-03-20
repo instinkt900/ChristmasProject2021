@@ -27,8 +27,6 @@
 #include "smart_sdl.h"
 #include "utils.h"
 #include "events/event.h"
-#include "ui/serialize_utils.h"
-#include "ui/imgui_ext.h"
 
 #include "range/v3/algorithm/find.hpp"
 #include "range/v3/algorithm/find_if.hpp"

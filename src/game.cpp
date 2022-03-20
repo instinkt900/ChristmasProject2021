@@ -6,7 +6,6 @@
 #include "events/event_key.h"
 #include "events/event_quit.h"
 #include "events/event_mouse.h"
-#include "ui/editor/editor_layer.h"
 
 // TODO needed a few places but we dont want to pass this around
 // not strictly needed as we can remove its use by being smarter
@@ -161,9 +160,6 @@ void Game::OnEvent(Event const& event) {
                 break;
             case Key::G:
                 SetEditorMode(!m_editorMode);
-                break;
-            case Key::F1:
-                m_layerStack->PushLayer(std::make_unique<ui::EditorLayer>());
                 break;
             }
         }

@@ -87,48 +87,6 @@
     <ClCompile Include="src\events\event_key.cpp">
       <Filter>events</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\node.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\group.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\node_image.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\layouts\layout_entity.cpp">
-      <Filter>ui\layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\layouts\animation_clip.cpp">
-      <Filter>ui\layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\layouts\animation_track.cpp">
-      <Filter>ui\layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\layouts\layout_entity_group.cpp">
-      <Filter>ui\layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\layouts\layout_entity_image.cpp">
-      <Filter>ui\layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\layouts\layout.cpp">
-      <Filter>ui\layouts</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\editor_layer.cpp">
-      <Filter>ui\editor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\bounds_widget.cpp">
-      <Filter>ui\editor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\bounds_handle.cpp">
-      <Filter>ui\editor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\offset_bounds_handle.cpp">
-      <Filter>ui\editor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\anchor_bounds_handle.cpp">
-      <Filter>ui\editor</Filter>
-    </ClCompile>
     <ClCompile Include="external\ImGuizmo\GraphEditor.cpp">
       <Filter>external\ImGuizmo</Filter>
     </ClCompile>
@@ -143,45 +101,6 @@
     </ClCompile>
     <ClCompile Include="external\ImGuizmo\ImSequencer.cpp">
       <Filter>external\ImGuizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\animation_controller.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\animation_widget.cpp">
-      <Filter>ui\editor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\add_action.cpp">
-      <Filter>ui\editor\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\delete_action.cpp">
-      <Filter>ui\editor\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\move_keyframe_action.cpp">
-      <Filter>ui\editor\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\composite_action.cpp">
-      <Filter>ui\editor\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\add_keyframe_action.cpp">
-      <Filter>ui\editor\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\delete_keyframe_action.cpp">
-      <Filter>ui\editor\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\modify_keyframe_action.cpp">
-      <Filter>ui\editor\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\keyframe_widget.cpp">
-      <Filter>ui\editor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\actions\modify_clip_action.cpp">
-      <Filter>ui\editor\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\imgui_ext.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\editor\properties_editor.cpp">
-      <Filter>ui\editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -200,20 +119,11 @@
     <Filter Include="ecs\components">
       <UniqueIdentifier>{b1c6c4ea-68ea-4d23-a414-5aea59fccb53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ui">
-      <UniqueIdentifier>{6d52be80-05f6-483a-b32f-115687c05ed8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="events">
       <UniqueIdentifier>{59fbb686-131e-4ff6-91cf-3b490114322e}</UniqueIdentifier>
     </Filter>
     <Filter Include="debug">
       <UniqueIdentifier>{9d75a4f3-92ef-4455-bfe6-80e139dd0657}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ui\layouts">
-      <UniqueIdentifier>{597c1300-a227-4e4c-8232-6afb3d805807}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ui\editor">
-      <UniqueIdentifier>{192ea2df-c5ec-4bf7-b764-d29940ac7314}</UniqueIdentifier>
     </Filter>
     <Filter Include="external">
       <UniqueIdentifier>{10ed9e54-9c81-4209-bbb3-1202f33ed6e8}</UniqueIdentifier>
@@ -226,9 +136,6 @@
     </Filter>
     <Filter Include="external\ImGuizmo">
       <UniqueIdentifier>{0c2bd573-2b52-43ad-8952-e1babfe304c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ui\editor\actions">
-      <UniqueIdentifier>{a837e879-acc0-4767-9fca-88e762595eb3}</UniqueIdentifier>
     </Filter>
     <Filter Include="external\magic_enum">
       <UniqueIdentifier>{3a9e9050-a2b4-4b37-95a6-2361055b4180}</UniqueIdentifier>
@@ -325,68 +232,14 @@
     <ClInclude Include="src\events\event_listener.h">
       <Filter>events</Filter>
     </ClInclude>
-    <ClInclude Include="src\events\widget_events.h">
-      <Filter>events</Filter>
-    </ClInclude>
     <ClInclude Include="src\events\event_mouse.h">
       <Filter>events</Filter>
     </ClInclude>
     <ClInclude Include="src\debug\inspectors.h">
       <Filter>debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\node.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\group.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\inspectors.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\node_image.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layouts\layout_entity.h">
-      <Filter>ui\layouts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layouts\layout_types.h">
-      <Filter>ui\layouts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layouts\animation_clip.h">
-      <Filter>ui\layouts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layouts\animation_track.h">
-      <Filter>ui\layouts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layouts\layout_entity_group.h">
-      <Filter>ui\layouts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layouts\layout_entity_image.h">
-      <Filter>ui\layouts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\layouts\layout.h">
-      <Filter>ui\layouts</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\ui_fwd.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\editor_layer.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
     <ClInclude Include="external\imgui-filebrowser\imfilebrowser.h">
       <Filter>external\imgui-filebrowser</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\bounds_widget.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\bounds_handle.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\offset_bounds_handle.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\anchor_bounds_handle.h">
-      <Filter>ui\editor</Filter>
     </ClInclude>
     <ClInclude Include="external\ImGuizmo\GraphEditor.h">
       <Filter>external\ImGuizmo</Filter>
@@ -424,62 +277,8 @@
     <ClInclude Include="external\imgui\imstb_truetype.h">
       <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\animation_controller.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\animation_widget.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\editor_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\add_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\delete_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
     <ClInclude Include="external\magic_enum\include\magic_enum.hpp">
       <Filter>external\magic_enum</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\move_keyframe_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\composite_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\add_keyframe_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\delete_keyframe_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\modify_keyframe_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\keyframe_widget.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\keyframe_context.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\utils.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\serialize_utils.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\actions\modify_clip_action.h">
-      <Filter>ui\editor\actions</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\imgui_ext.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\editor\properties_editor.h">
-      <Filter>ui\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\events\event_animation.h">
-      <Filter>events</Filter>
     </ClInclude>
     <ClInclude Include="src\vec2.h" />
   </ItemGroup>
