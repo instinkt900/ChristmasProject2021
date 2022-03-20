@@ -3,13 +3,15 @@
 #include "game.h"
 #include "layers/game_layer.h"
 #include "events/event_dispatch.h"
+#include "moth_ui/node.h"
+#include "moth_ui/layout/layout.h"
+#include "moth_ui/layout/layout_entity_group.h"
 
 MenuLayer::MenuLayer(Game& game)
     : m_game(game) {
 
-    //auto entity = ui::LoadLayout("basic.json");
-    //m_rootWidget = entity->Instantiate();
-    
+    auto entity = moth_ui::LoadLayout("basic.json");
+    m_rootWidget = entity->Instantiate();
 
     //auto imageWidget = std::make_shared<WidgetImage>();
     //imageWidget->SetImage(CreateTextureRef(game.GetRenderer(), "ship003.png"));
@@ -41,17 +43,17 @@ MenuLayer::~MenuLayer() {
 
 bool MenuLayer::OnEvent(Event const& event) {
     EventDispatch dispatch(event);
-    //dispatch.Dispatch(m_rootWidget.get());
+    dispatch.Dispatch(m_rootWidget.get());
     //dispatch.Dispatch(this, &MenuLayer::OnAnimEvent);
     return dispatch.GetHandled();
 }
 
 void MenuLayer::Update(uint32_t ticks) {
-    //m_rootWidget->Update(ticks);
+    m_rootWidget->Update(ticks);
 }
 
 void MenuLayer::Draw(SDL_Renderer& renderer) {
-    //m_rootWidget->Draw(renderer);
+    m_rootWidget->Draw();
 }
 
 void MenuLayer::DebugDraw() {
@@ -66,16 +68,16 @@ void MenuLayer::DebugDraw() {
 void MenuLayer::OnAddedToStack(LayerStack* stack) {
     Layer::OnAddedToStack(stack);
 
-    //WidgetRect widgetRect;
-    //widgetRect.topLeft = { 0, 0 };
-    //widgetRect.bottomRight = { GetWidth(), GetHeight() };
-    //m_rootWidget->SetScreenRect(widgetRect);
+    moth_ui::IntRect widgetRect;
+    widgetRect.topLeft = { 0, 0 };
+    widgetRect.bottomRight = { GetWidth(), GetHeight() };
+    m_rootWidget->SetScreenRect(widgetRect);
     //m_rootWidget->SetShowRect(true);
     //m_rootWidget->SetScreenRect({ 0, 0, GetWidth(), GetHeight() });
     //m_rootWidget->SetEventHandler([&](ui::Node* fromNode, Event const& event) {
     //    return OnEvent(event);
     //});
-    //m_rootWidget->SetAnimation("Simple");
+    m_rootWidget->SetAnimation("Simple");
 }
 
 //bool MenuLayer::OnAnimEvent(EventAnimation const& event) {

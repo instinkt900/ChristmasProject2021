@@ -1,6 +1,7 @@
 #pragma once
 
 #include "layer.h"
+#include "moth_ui/ui_fwd.h"
 
 class Game;
 
@@ -18,7 +19,7 @@ public:
 
 private:
     Game& m_game;
-    //std::unique_ptr<ui::Node> m_rootWidget;
+    std::unique_ptr<moth_ui::Node> m_rootWidget;
 
     //bool OnAnimEvent(EventAnimation const& event);
 };

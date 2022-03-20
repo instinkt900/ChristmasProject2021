@@ -6,6 +6,9 @@
 #include "events/event_key.h"
 #include "events/event_quit.h"
 #include "events/event_mouse.h"
+#include "image_factory.h"
+#include "ui_renderer.h"
+#include "moth_ui/context.h"
 
 // TODO needed a few places but we dont want to pass this around
 // not strictly needed as we can remove its use by being smarter
@@ -129,6 +132,10 @@ bool Game::Initialise() {
     if (0 > Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048)) {
         return false;
     }
+
+    auto imageFactory = std::make_unique<ImageFactory>(*m_renderer);
+    auto uiRenderer = std::make_unique<UIRenderer>(*m_renderer);
+    moth_ui::Context::Init(std::move(imageFactory), std::move(uiRenderer));
 
     m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight, m_windowWidth, m_windowHeight);
 

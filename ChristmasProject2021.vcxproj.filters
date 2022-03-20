@@ -102,6 +102,10 @@
     <ClCompile Include="external\ImGuizmo\ImSequencer.cpp">
       <Filter>external\ImGuizmo</Filter>
     </ClCompile>
+    <ClCompile Include="src\image_factory.cpp" />
+    <ClCompile Include="src\image.cpp" />
+    <ClCompile Include="src\ui_renderer.cpp" />
+    <ClCompile Include="src\ui_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">
@@ -281,6 +285,10 @@
       <Filter>external\magic_enum</Filter>
     </ClInclude>
     <ClInclude Include="src\vec2.h" />
+    <ClInclude Include="src\image_factory.h" />
+    <ClInclude Include="src\image.h" />
+    <ClInclude Include="src\ui_renderer.h" />
+    <ClInclude Include="src\ui_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

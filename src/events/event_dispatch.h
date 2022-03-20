@@ -2,6 +2,9 @@
 
 #include "event.h"
 #include "event_listener.h"
+#include "moth_ui/events/event.h"
+#include "moth_ui/event_listener.h"
+#include "ui_utils.h"
 
 class EventDispatch {
 public:
@@ -14,6 +17,15 @@ public:
         if (m_handled)
             return;
         if (listener && listener->OnEvent(m_event)) {
+            m_handled = true;
+        }
+    }
+
+    void Dispatch(moth_ui::EventListener* listener) {
+        if (m_handled)
+            return;
+        auto const uiEvent = ToUIEvent(m_event);
+        if (listener && uiEvent && listener->OnEvent(*uiEvent)) {
             m_handled = true;
         }
     }

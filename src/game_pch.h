@@ -7,6 +7,7 @@
 #include <vector>
 #include <cmath>
 #include <variant>
+#include <stack>
 
 #include <imgui.h>
 #include <backends/imgui_impl_sdl.h>
@@ -27,7 +28,3 @@
 #include "smart_sdl.h"
 #include "utils.h"
 #include "events/event.h"
-
-#include "range/v3/algorithm/find.hpp"
-#include "range/v3/algorithm/find_if.hpp"
-#include "range/v3/algorithm/sort.hpp"
