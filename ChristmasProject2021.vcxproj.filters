@@ -81,12 +81,6 @@
     <ClCompile Include="src\layers\background_layer.cpp">
       <Filter>layers</Filter>
     </ClCompile>
-    <ClCompile Include="src\events\event.cpp">
-      <Filter>events</Filter>
-    </ClCompile>
-    <ClCompile Include="src\events\event_key.cpp">
-      <Filter>events</Filter>
-    </ClCompile>
     <ClCompile Include="external\ImGuizmo\GraphEditor.cpp">
       <Filter>external\ImGuizmo</Filter>
     </ClCompile>
@@ -105,7 +99,19 @@
     <ClCompile Include="src\image_factory.cpp" />
     <ClCompile Include="src\image.cpp" />
     <ClCompile Include="src\ui_renderer.cpp" />
-    <ClCompile Include="src\ui_utils.cpp" />
+    <ClCompile Include="src\font.cpp" />
+    <ClCompile Include="src\event_factory.cpp" />
+    <ClCompile Include="src\font_factory.cpp" />
+    <ClCompile Include="src\ui\ui_button.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\ui_main_menu.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui_node_factory.cpp" />
+    <ClCompile Include="src\layers\game_over_layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ecs">
@@ -143,6 +149,9 @@
     </Filter>
     <Filter Include="external\magic_enum">
       <UniqueIdentifier>{3a9e9050-a2b4-4b37-95a6-2361055b4180}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{65a4d90b-1a2d-4f59-a360-887e6f720e4c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -218,27 +227,6 @@
     <ClInclude Include="src\events\event.h">
       <Filter>events</Filter>
     </ClInclude>
-    <ClInclude Include="src\events\event_window_size.h">
-      <Filter>events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\events\event_quit.h">
-      <Filter>events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\events\event_key.h">
-      <Filter>events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\events\event_device.h">
-      <Filter>events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\events\event_dispatch.h">
-      <Filter>events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\events\event_listener.h">
-      <Filter>events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\events\event_mouse.h">
-      <Filter>events</Filter>
-    </ClInclude>
     <ClInclude Include="src\debug\inspectors.h">
       <Filter>debug</Filter>
     </ClInclude>
@@ -288,7 +276,22 @@
     <ClInclude Include="src\image_factory.h" />
     <ClInclude Include="src\image.h" />
     <ClInclude Include="src\ui_renderer.h" />
-    <ClInclude Include="src\ui_utils.h" />
+    <ClInclude Include="src\font.h" />
+    <ClInclude Include="src\event_factory.h" />
+    <ClInclude Include="src\font_factory.h" />
+    <ClInclude Include="src\ui\ui_button.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\ui_main_menu.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui_node_factory.h" />
+    <ClInclude Include="src\ui\ui_common.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\game_over_layer.h">
+      <Filter>layers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />

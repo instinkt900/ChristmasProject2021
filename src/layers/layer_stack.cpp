@@ -34,10 +34,40 @@ void LayerStack::RemoveLayer(Layer* layer) {
     }
 }
 
-bool LayerStack::OnEvent(Event const& event) {
+bool LayerStack::OnEvent(moth_ui::Event const& event) {
+    float const scaleX = m_renderWidth / static_cast<float>(m_windowWidth);
+    float const scaleY = m_renderHeight / static_cast<float>(m_windowHeight);
+    std::shared_ptr<moth_ui::Event> translatedEvent;
+    if (auto mouseEvent = moth_ui::event_cast<moth_ui::EventMouseDown>(event)) {
+        moth_ui::IntVec2 translatedPosition = mouseEvent->GetPosition();
+        translatedPosition.x = static_cast<int>(translatedPosition.x * scaleX);
+        translatedPosition.y = static_cast<int>(translatedPosition.y * scaleY);
+        translatedEvent = std::make_shared<moth_ui::EventMouseDown>(mouseEvent->GetButton(), translatedPosition);
+    } else if (auto mouseEvent = moth_ui::event_cast<moth_ui::EventMouseUp>(event)) {
+        moth_ui::IntVec2 translatedPosition = mouseEvent->GetPosition();
+        translatedPosition.x = static_cast<int>(translatedPosition.x * scaleX);
+        translatedPosition.y = static_cast<int>(translatedPosition.y * scaleY);
+        translatedEvent = std::make_shared<moth_ui::EventMouseUp>(mouseEvent->GetButton(), translatedPosition);
+    } else if (auto mouseEvent = moth_ui::event_cast<moth_ui::EventMouseMove>(event)) {
+        moth_ui::IntVec2 translatedPosition = mouseEvent->GetPosition();
+        moth_ui::FloatVec2 translatedDelta = mouseEvent->GetDelta();
+        translatedPosition.x = static_cast<int>(translatedPosition.x * scaleX);
+        translatedPosition.y = static_cast<int>(translatedPosition.y * scaleY);
+        translatedDelta.x *= scaleX;
+        translatedDelta.y *= scaleY;
+        translatedEvent = std::make_shared<moth_ui::EventMouseMove>(translatedPosition, translatedDelta);
+    }
+
     for (auto it = m_layers.rbegin(); it != m_layers.rend(); ++it) {
-        if ((*it)->OnEvent(event)) {
-            return true;
+        auto& layer = *it;
+        if (layer->UseRenderSize() && translatedEvent) {
+            if ((*it)->OnEvent(*translatedEvent)) {
+                return true;
+            }
+        } else {
+            if ((*it)->OnEvent(event)) {
+                return true;
+            }
         }
     }
     return false;

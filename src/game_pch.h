@@ -27,4 +27,12 @@
 
 #include "smart_sdl.h"
 #include "utils.h"
+
+#include "moth_ui/events/event.h"
+#include "moth_ui/events/event_key.h"
+#include "moth_ui/events/event_mouse.h"
+#include "moth_ui/events/event_animation.h"
+#include "moth_ui/event_listener.h"
+#include "moth_ui/event_dispatch.h"
+
 #include "events/event.h"

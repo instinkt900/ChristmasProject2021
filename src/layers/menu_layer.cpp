@@ -2,64 +2,63 @@
 #include "menu_layer.h"
 #include "game.h"
 #include "layers/game_layer.h"
-#include "events/event_dispatch.h"
 #include "moth_ui/node.h"
 #include "moth_ui/layout/layout.h"
 #include "moth_ui/layout/layout_entity_group.h"
+#include "moth_ui/group.h"
+#include "moth_ui/node_factory.h"
+#include "moth_ui/context.h"
+#include "ui/ui_button.h"
+#include "loading_layer.h"
 
 MenuLayer::MenuLayer(Game& game)
     : m_game(game) {
+    m_root = moth_ui::Context::GetCurrentContext()->GetNodeFactory().Create("layouts/menu_screen.mothui", 0, 0);
 
-    auto entity = moth_ui::LoadLayout("basic.json");
-    m_rootWidget = entity->Instantiate();
-
-    //auto imageWidget = std::make_shared<WidgetImage>();
-    //imageWidget->SetImage(CreateTextureRef(game.GetRenderer(), "ship003.png"));
-
-    //auto buttonWidget = std::make_shared<WidgetButton>();
-    //auto& buttonBounds = buttonWidget->GetLayoutBounds();
-    //buttonBounds.topLeft.anchor.x = 0.5f;
-    //buttonBounds.topLeft.offset.x = -50;
-    //buttonBounds.topLeft.anchor.y = 0.5f;
-    //buttonBounds.topLeft.offset.y = -50;
-    //buttonBounds.bottomRight.anchor.x = 0.5f;
-    //buttonBounds.bottomRight.offset.x = 50;
-    //buttonBounds.bottomRight.anchor.y = 0.5f;
-    //buttonBounds.bottomRight.offset.y = 50;
-    //buttonWidget->SetOnClickedCallback([this]() {
-    //    auto layerStack = m_layerStack;
-    //    auto& game = m_game;
-    //    layerStack->PopLayer();
-    //    layerStack->PopLayer();
-    //    layerStack->PushLayer(std::make_unique<GameLayer>(game));
-    //});
-
-    //buttonWidget->AddChild(imageWidget);
-    //m_rootWidget->AddChild(buttonWidget);
+    if (auto startButton = m_root->FindChild<UIButton>("btn_play")) {
+        startButton->SetClickAction([&]() {
+            auto layerStack = m_layerStack;
+            auto loadingLayer = std::make_unique<LoadingLayer>(m_game);
+            layerStack->PopLayer(); // removes 'this'
+            layerStack->PushLayer(std::move(loadingLayer));
+        });
+    }
+    if (auto scoresButton = m_root->FindChild<UIButton>("btn_scores")) {
+    }
+    if (auto startButton = m_root->FindChild<UIButton>("btn_exit")) {
+        startButton->SetClickAction([&]() {
+            m_game.Stop();
+        });
+    }
 }
 
 MenuLayer::~MenuLayer() {
 }
 
-bool MenuLayer::OnEvent(Event const& event) {
-    EventDispatch dispatch(event);
-    dispatch.Dispatch(m_rootWidget.get());
-    //dispatch.Dispatch(this, &MenuLayer::OnAnimEvent);
+bool MenuLayer::OnEvent(moth_ui::Event const& event) {
+    if (m_root && m_root->SendEvent(event, moth_ui::Node::EventDirection::Down)) {
+        return true;
+    }
+    moth_ui::EventDispatch dispatch(event);
+    dispatch.Dispatch(this, &MenuLayer::OnAnimEvent);
     return dispatch.GetHandled();
 }
 
 void MenuLayer::Update(uint32_t ticks) {
-    m_rootWidget->Update(ticks);
+    if (m_root) {
+        m_root->Update(ticks);
+    }
 }
 
 void MenuLayer::Draw(SDL_Renderer& renderer) {
-    m_rootWidget->Draw();
+    if (m_root) {
+        m_root->Draw();
+    }
 }
 
 void MenuLayer::DebugDraw() {
     if (ImGui::CollapsingHeader("MenuLayer")) {
         if (ImGui::TreeNode("root")) {
-            //m_rootWidget->DebugDraw();
             ImGui::TreePop();
         }
     }
@@ -71,15 +70,13 @@ void MenuLayer::OnAddedToStack(LayerStack* stack) {
     moth_ui::IntRect widgetRect;
     widgetRect.topLeft = { 0, 0 };
     widgetRect.bottomRight = { GetWidth(), GetHeight() };
-    m_rootWidget->SetScreenRect(widgetRect);
-    //m_rootWidget->SetShowRect(true);
-    //m_rootWidget->SetScreenRect({ 0, 0, GetWidth(), GetHeight() });
-    //m_rootWidget->SetEventHandler([&](ui::Node* fromNode, Event const& event) {
-    //    return OnEvent(event);
-    //});
-    m_rootWidget->SetAnimation("Simple");
+    m_root->SetScreenRect(widgetRect);
 }
 
-//bool MenuLayer::OnAnimEvent(EventAnimation const& event) {
-//    return true;
-//}
+void MenuLayer::OnRemovedFromStack() {
+    m_root.reset();
+}
+
+bool MenuLayer::OnAnimEvent(moth_ui::EventAnimation const& event) {
+    return true;
+}

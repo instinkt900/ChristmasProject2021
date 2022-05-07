@@ -10,7 +10,6 @@
 #include "ecs/systems/animation_system.h"
 #include "ecs/systems/cleanup_system.h"
 #include "ecs/components/components.h"
-#include "events/event_key.h"
 
 StateGame::StateGame(StateMachine* stateMachine, GameLayer& gameLayer)
     : State(stateMachine)
@@ -25,41 +24,41 @@ void StateGame::OnEnter() {
     Mix_PlayChannel(-1, m_gameLayer.GetAudioFactory().GetStartSFX().get(), 0);
 }
 
-bool StateGame::OnEvent(Event const& event) {
-    if (auto keyEvent = event_cast<EventKey>(event)) {
-        if (keyEvent->GetAction() == KeyAction::Down) {
+bool StateGame::OnEvent(moth_ui::Event const& event) {
+    if (auto keyEvent = moth_ui::event_cast<moth_ui::EventKey>(event)) {
+        if (keyEvent->GetAction() == moth_ui::KeyAction::Down) {
             switch (keyEvent->GetKey()) {
-            case Key::W:
+            case moth_ui::Key::W:
                 m_controlState[ControlKey::Up] = true;
                 return true;
-            case Key::S:
+            case moth_ui::Key::S:
                 m_controlState[ControlKey::Down] = true;
                 return true;
-            case Key::A:
+            case moth_ui::Key::A:
                 m_controlState[ControlKey::Left] = true;
                 return true;
-            case Key::D:
+            case moth_ui::Key::D:
                 m_controlState[ControlKey::Right] = true;
                 return true;
-            case Key::Space:
+            case moth_ui::Key::Space:
                 m_controlState[ControlKey::Fire] = true;
                 return true;
             }
-        } else if (keyEvent->GetAction() == KeyAction::Up) {
+        } else if (keyEvent->GetAction() == moth_ui::KeyAction::Up) {
             switch (keyEvent->GetKey()) {
-            case Key::W:
+            case moth_ui::Key::W:
                 m_controlState[ControlKey::Up] = false;
                 return true;
-            case Key::S:
+            case moth_ui::Key::S:
                 m_controlState[ControlKey::Down] = false;
                 return true;
-            case Key::A:
+            case moth_ui::Key::A:
                 m_controlState[ControlKey::Left] = false;
                 return true;
-            case Key::D:
+            case moth_ui::Key::D:
                 m_controlState[ControlKey::Right] = false;
                 return true;
-            case Key::Space:
+            case moth_ui::Key::Space:
                 m_controlState[ControlKey::Fire] = false;
                 return true;
             }

@@ -9,8 +9,6 @@
 #include "states/state_game.h"
 #include "states/state_post_game.h"
 #include "debug/inspectors.h"
-#include "events/event_device.h"
-#include "events/event_dispatch.h"
 
 GameLayer::GameLayer(Game& game)
     : m_game(game)
@@ -33,8 +31,8 @@ GameLayer::GameLayer(Game& game)
 GameLayer::~GameLayer() {
 }
 
-bool GameLayer::OnEvent(Event const& event) {
-    EventDispatch dispatch(event);
+bool GameLayer::OnEvent(moth_ui::Event const& event) {
+    moth_ui::EventDispatch dispatch(event);
     dispatch.Dispatch<EventRenderDeviceReset>([this](auto event) { FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), SDL_RENDER_DEVICE_RESET); return true; });
     dispatch.Dispatch<EventRenderTargetReset>([this](auto event) { FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), SDL_RENDER_TARGETS_RESET); return true; });
     dispatch.Dispatch(&m_stateMachine);

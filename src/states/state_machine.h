@@ -1,10 +1,8 @@
 #pragma once
 
-#include "events/event_listener.h"
-
 class State;
 
-class StateMachine : public EventListener {
+class StateMachine : public moth_ui::EventListener {
 public:
     StateMachine();
     ~StateMachine();
@@ -29,7 +27,7 @@ public:
         return m_currentStateId == stateId;
     }
 
-    bool OnEvent(Event const& event);
+    bool OnEvent(moth_ui::Event const& event);
     void Update(uint32_t ticks, entt::registry& registry);
     void Draw(SDL_Renderer& renderer);
 

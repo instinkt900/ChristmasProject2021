@@ -6,8 +6,8 @@ ImageFactory::ImageFactory(SDL_Renderer& renderer)
     : m_renderer(renderer) {
 }
 
-std::unique_ptr<moth_ui::IImage> ImageFactory::GetImage(char const* path) {
-    auto texture = CreateTextureRef(&m_renderer, path);
+std::unique_ptr<moth_ui::IImage> ImageFactory::GetImage(std::filesystem::path const& path) {
+    auto texture = CreateTextureRef(&m_renderer, path.string().c_str());
 
     moth_ui::IntVec2 textureDimensions{};
     SDL_QueryTexture(texture.get(), NULL, NULL, &textureDimensions.x, &textureDimensions.y);

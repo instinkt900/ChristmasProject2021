@@ -3,6 +3,10 @@
 #include "layers/layer_stack.h"
 #include "audio_factory.h"
 
+#include "moth_ui/iimage_factory.h"
+#include "moth_ui/ifont_factory.h"
+#include "moth_ui/irenderer.h"
+
 class Game {
 public:
     Game(int renderWidth, int renderHeight, std::string const& configPath = "config.json");
@@ -20,7 +24,7 @@ public:
 
 protected:
     bool Initialise();
-    void OnEvent(Event const& event);
+    void OnEvent(moth_ui::Event const& event);
     void Update();
     void Draw();
     void Shutdown();
@@ -47,6 +51,10 @@ private:
     AudioFactory m_audioFactory;
     TextureRef m_gameSurface;
     IntVec2 m_gameWindowPos;
+
+    std::unique_ptr<moth_ui::IImageFactory> m_imageFactory;
+    std::unique_ptr<moth_ui::IFontFactory> m_fontFactory;
+    std::unique_ptr<moth_ui::IRenderer> m_uiRenderer;
 
     std::unique_ptr<LayerStack> m_layerStack;
 };

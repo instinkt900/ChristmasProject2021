@@ -23,7 +23,7 @@ LoadingLayer::LoadingLayer(Game& game)
 LoadingLayer::~LoadingLayer() {
 }
 
-bool LoadingLayer::OnEvent(Event const& event) {
+bool LoadingLayer::OnEvent(moth_ui::Event const& event) {
     return false;
 }
 

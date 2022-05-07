@@ -11,9 +11,11 @@ public:
     SplashLayer(Game& game);
     virtual ~SplashLayer();
 
-    bool OnEvent(Event const& event) override;
+    bool OnEvent(moth_ui::Event const& event) override;
     void Update(uint32_t ticks) override;
     void Draw(SDL_Renderer& renderer) override;
+
+    void OnAddedToStack(LayerStack* stack) override;
 
 private:
     Game& m_game;
@@ -26,5 +28,7 @@ private:
     IntVec2 m_titleTextDim;
     IntVec2 m_promptTextDim;
 
-    bool OnKeyEvent(EventKey const& event);
+    std::unique_ptr<moth_ui::Node> m_root;
+
+    bool OnKeyEvent(moth_ui::EventKey const& event);
 };

@@ -8,7 +8,7 @@ StateMachine::StateMachine() {
 StateMachine::~StateMachine() {
 }
 
-bool StateMachine::OnEvent(Event const& event) {
+bool StateMachine::OnEvent(moth_ui::Event const& event) {
     if (m_currentState) {
         return m_currentState->OnEvent(event);
     }

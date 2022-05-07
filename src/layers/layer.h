@@ -1,15 +1,13 @@
 #pragma once
 
-#include "events/event_listener.h"
-
 class LayerStack;
 
-class Layer : public EventListener {
+class Layer : public moth_ui::EventListener {
 public:
     Layer();
     virtual ~Layer();
 
-    bool OnEvent(Event const& event) override;
+    bool OnEvent(moth_ui::Event const& event) override;
 
     virtual void Update(uint32_t ticks);
     virtual void Draw(SDL_Renderer& renderer);
@@ -22,6 +20,8 @@ public:
     int GetHeight() const;
 
     virtual bool UseRenderSize() const { return true; }
+
+    LayerStack* GetLayerStack() const { return m_layerStack; }
 
 protected:
     LayerStack* m_layerStack = nullptr;

@@ -5,71 +5,51 @@
 #include "audio_factory.h"
 #include "game.h"
 #include "menu_layer.h"
-#include "events/event_key.h"
-#include "events/event_dispatch.h"
+#include "moth_ui/layout/layout.h"
+#include "moth_ui/group.h"
 
 SplashLayer::SplashLayer(Game& game)
     : m_game(game) {
-    auto renderer = game.GetRenderer();
 
-    FontRef font = CreateFontRef("pilotcommand.ttf", 60);
-    SDL_Color textColor{ 255, 255, 255, 255 };
-    SDL_Color dropColor{ 0, 0, 0, 255 };
-    SurfaceRef titleText = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "Pew Pew 2021", textColor));
-    m_titleText = CreateTextureRef(renderer, titleText);
-    m_titleTextDim = { titleText->w, titleText->h };
-
-    titleText = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "Pew Pew 2021", dropColor));
-    m_titleTextDrop = CreateTextureRef(renderer, titleText);
-
-    font = CreateFontRef("pilotcommand.ttf", 20);
-    SurfaceRef promptText = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "Press space to start", textColor));
-    m_promptText = CreateTextureRef(renderer, promptText);
-    m_promptTextDim = { promptText->w, promptText->h };
-
-    promptText = CreateSurfaceRef(TTF_RenderText_Solid(font.get(), "Press space to start", dropColor));
-    m_promptTextDrop = CreateTextureRef(renderer, promptText);
+    std::shared_ptr<moth_ui::Layout> layout;
+    if (moth_ui::Layout::LoadResult::Success == moth_ui::Layout::Load("layouts/title.mothui", &layout)) {
+        m_root = layout->Instantiate();
+    }
 }
 
 SplashLayer::~SplashLayer() {
 }
 
-bool SplashLayer::OnEvent(Event const& event) {
-    EventDispatch dispatch(event);
+bool SplashLayer::OnEvent(moth_ui::Event const& event) {
+    if (m_root->SendEvent(event, moth_ui::Node::EventDirection::Down)) {
+        return true;
+    }
+    moth_ui::EventDispatch dispatch(event);
     dispatch.Dispatch(this, &SplashLayer::OnKeyEvent);
     return dispatch.GetHandled();
 }
 
 void SplashLayer::Update(uint32_t ticks) {
+    m_root->Update(ticks);
 }
 
 void SplashLayer::Draw(SDL_Renderer& renderer) {
-    int const text1Width = m_titleTextDim.x;
-    int const text1Height = m_titleTextDim.y;
-    int const text1X = (GetWidth() - text1Width) / 2;
-    int const text1Y = (GetHeight() - text1Height) / 2;
-
-    int const text2Width = m_promptTextDim.x;
-    int const text2Height = m_promptTextDim.y;
-    int const text2X = (GetWidth() - text2Width) / 2;
-    int const text2Y = text1Y + text1Height;
-
-    SDL_Rect destRect1Drop{ text1X + 2, text1Y + 2, text1Width, text1Height };
-    SDL_RenderCopy(&renderer, m_titleTextDrop.get(), nullptr, &destRect1Drop);
-
-    SDL_Rect destRect1{ text1X, text1Y, text1Width, text1Height };
-    SDL_RenderCopy(&renderer, m_titleText.get(), nullptr, &destRect1);
-
-    SDL_Rect destRect2Drop{ text2X + 2, text2Y + 2, text2Width, text2Height };
-    SDL_RenderCopy(&renderer, m_promptTextDrop.get(), nullptr, &destRect2Drop);
-
-    SDL_Rect destRect2{ text2X, text2Y, text2Width, text2Height };
-    SDL_RenderCopy(&renderer, m_promptText.get(), nullptr, &destRect2);
+    m_root->Draw();
 }
 
-bool SplashLayer::OnKeyEvent(EventKey const& event) {
-    if (event.GetAction() == KeyAction::Up) {
-        if (event.GetKey() == Key::Space) {
+void SplashLayer::OnAddedToStack(LayerStack* stack) {
+    Layer::OnAddedToStack(stack);
+
+    moth_ui::IntRect widgetRect;
+    widgetRect.topLeft = { 0, 0 };
+    widgetRect.bottomRight = { GetWidth(), GetHeight() };
+    m_root->SetScreenRect(widgetRect);
+    m_root->SetAnimation("intro");
+}
+
+bool SplashLayer::OnKeyEvent(moth_ui::EventKey const& event) {
+    if (event.GetAction() == moth_ui::KeyAction::Up) {
+        if (event.GetKey() == moth_ui::Key::Space) {
             // we will delete 'this' here so we need to keep everything local
             auto layerStack = m_layerStack;
             //auto loadingLayer = std::make_unique<LoadingLayer>(m_game);

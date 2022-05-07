@@ -2,13 +2,12 @@
 #include "game.h"
 #include "layers/splash_layer.h"
 #include "layers/background_layer.h"
-#include "events/event_window_size.h"
-#include "events/event_key.h"
-#include "events/event_quit.h"
-#include "events/event_mouse.h"
 #include "image_factory.h"
 #include "ui_renderer.h"
 #include "moth_ui/context.h"
+#include "event_factory.h"
+#include "font_factory.h"
+#include "ui_node_factory.h"
 
 // TODO needed a few places but we dont want to pass this around
 // not strictly needed as we can remove its use by being smarter
@@ -47,7 +46,7 @@ int Game::Run() {
             if (ImGui::GetIO().WantCaptureMouse && (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL)) {
                 continue;
             }
-            if (auto const translatedEvent = Event::FromSDL(event)) {
+            if (auto const translatedEvent = EventFactory::FromSDL(event)) {
                 OnEvent(*translatedEvent);
             }
         }
@@ -133,9 +132,12 @@ bool Game::Initialise() {
         return false;
     }
 
-    auto imageFactory = std::make_unique<ImageFactory>(*m_renderer);
-    auto uiRenderer = std::make_unique<UIRenderer>(*m_renderer);
-    moth_ui::Context::Init(std::move(imageFactory), std::move(uiRenderer));
+    m_imageFactory = std::make_unique<ImageFactory>(*m_renderer);
+    m_fontFactory = std::make_unique<FontFactory>(*m_renderer);
+    m_uiRenderer = std::make_unique<UIRenderer>(*m_renderer);
+    auto& nodeFactory = UINodeFactory::Get();
+    auto uiContext = std::make_shared<moth_ui::Context>(m_imageFactory.get(), m_fontFactory.get(), m_uiRenderer.get(), &nodeFactory);
+    moth_ui::Context::SetCurrentContext(uiContext);
 
     m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight, m_windowWidth, m_windowHeight);
 
@@ -148,8 +150,8 @@ bool Game::Initialise() {
     return true;
 }
 
-void Game::OnEvent(Event const& event) {
-    if (auto windowEvent = event_cast<EventWindowSize>(event)) {
+void Game::OnEvent(moth_ui::Event const& event) {
+    if (auto windowEvent = moth_ui::event_cast<EventWindowSize>(event)) {
         if (m_editorMode) {
             m_editorWindowWidth = windowEvent->GetWidth();
             m_editorWindowHeight = windowEvent->GetHeight();
@@ -157,15 +159,15 @@ void Game::OnEvent(Event const& event) {
             m_windowWidth = windowEvent->GetWidth();
             m_windowHeight = windowEvent->GetHeight();
         }
-    } else if (auto quitEvent = event_cast<EventQuit>(event)) {
+    } else if (auto quitEvent = moth_ui::event_cast<EventRequestQuit>(event)) {
         m_running = false;
-    } else if (auto keyEvent = event_cast<EventKey>(event)) {
-        if (keyEvent->GetAction() == KeyAction::Up) {
+    } else if (auto keyEvent = moth_ui::event_cast<moth_ui::EventKey>(event)) {
+        if (keyEvent->GetAction() == moth_ui::KeyAction::Up) {
             switch (keyEvent->GetKey()) {
-            case Key::Escape:
-                m_running = false;
+            case moth_ui::Key::Escape:
+                //m_running = false;
                 break;
-            case Key::G:
+            case moth_ui::Key::G:
                 SetEditorMode(!m_editorMode);
                 break;
             }
@@ -173,17 +175,17 @@ void Game::OnEvent(Event const& event) {
     }
 
     if (m_editorMode) {
-        std::shared_ptr<Event> translatedEvent;
-        if (auto mouseEvent = event_cast<EventMouseDown>(event)) {
-            IntVec2 translatedPosition = mouseEvent->GetPosition();
+        std::shared_ptr<moth_ui::Event> translatedEvent;
+        if (auto mouseEvent = moth_ui::event_cast<moth_ui::EventMouseDown>(event)) {
+            moth_ui::IntVec2 translatedPosition = mouseEvent->GetPosition();
             translatedPosition.x -= m_gameWindowPos.x;
             translatedPosition.y -= m_gameWindowPos.y;
-            translatedEvent = std::make_shared<EventMouseDown>(mouseEvent->GetButton(), translatedPosition);
-        } else if (auto mouseEvent = event_cast<EventMouseUp>(event)) {
-            IntVec2 translatedPosition = mouseEvent->GetPosition();
+            translatedEvent = std::make_shared<moth_ui::EventMouseDown>(mouseEvent->GetButton(), translatedPosition);
+        } else if (auto mouseEvent = moth_ui::event_cast<moth_ui::EventMouseUp>(event)) {
+            moth_ui::IntVec2 translatedPosition = mouseEvent->GetPosition();
             translatedPosition.x -= m_gameWindowPos.x;
             translatedPosition.y -= m_gameWindowPos.y;
-            translatedEvent = std::make_shared<EventMouseUp>(mouseEvent->GetButton(), translatedPosition);
+            translatedEvent = std::make_shared<moth_ui::EventMouseUp>(mouseEvent->GetButton(), translatedPosition);
         }
         if (translatedEvent) {
             m_layerStack->OnEvent(*translatedEvent);

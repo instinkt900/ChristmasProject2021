@@ -25,6 +25,3 @@
 [submodule "external/range-v3"]
 	path = external/range-v3
 	url = https://github.com/ericniebler/range-v3.git
-[submodule "external/moth_ui"]
-	path = external/moth_ui
-	url = https://github.com/instinkt900/moth_ui.git

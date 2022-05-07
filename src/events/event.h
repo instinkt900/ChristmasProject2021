@@ -1,38 +1,85 @@
 #pragma once
 
+#include "moth_ui/events/event.h"
+
 enum EventType : int {
-    EVENTTYPE_RENDERDEVICERESET,
+    EVENTTYPE_RENDERDEVICERESET = moth_ui::EventType::EVENTTYPE_USER,
     EVENTTYPE_RENDERTARGETRESET,
     EVENTTYPE_WINDOWSIZE,
+    EVENTTYPE_REQUEST_QUIT,
     EVENTTYPE_QUIT,
-    EVENTTYPE_KEY,
-    EVENTTYPE_WIDGET_RESIZE,
-    EVENTTYPE_MOUSE_DOWN,
-    EVENTTYPE_MOUSE_UP,
-    EVENTTYPE_MOUSE_MOVE,
-    EVENTTYPE_MOUSE_WHEEL,
-    EVENTTYPE_ANIMATION,
 };
 
-class Event {
+class EventRenderDeviceReset : public moth_ui::Event {
 public:
-    Event(int type)
-        : m_type(type) {}
-    virtual ~Event() {}
+    EventRenderDeviceReset()
+        : moth_ui::Event(GetStaticType()) {}
+    virtual ~EventRenderDeviceReset() = default;
 
-    int GetType() const { return m_type; }
-    virtual std::unique_ptr<Event> Clone() const = 0;
+    static constexpr int GetStaticType() { return EVENTTYPE_RENDERDEVICERESET; }
 
-    static std::unique_ptr<Event> FromSDL(SDL_Event const& event);
-
-protected:
-    int m_type;
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventRenderDeviceReset>();
+    }
 };
 
-template<typename T>
-T const* event_cast(Event const& event) {
-    if (event.GetType() == T::GetStaticType()) {
-        return static_cast<T const*>(&event);
+class EventRenderTargetReset : public moth_ui::Event {
+public:
+    EventRenderTargetReset()
+        : moth_ui::Event(GetStaticType()) {}
+    virtual ~EventRenderTargetReset() = default;
+
+    static constexpr int GetStaticType() { return EVENTTYPE_RENDERTARGETRESET; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventRenderTargetReset>();
     }
-    return nullptr;
-}
+};
+
+class EventWindowSize : public moth_ui::Event {
+public:
+    EventWindowSize(int width, int height)
+        : moth_ui::Event(GetStaticType())
+        , m_width(width)
+        , m_height(height) {}
+    virtual ~EventWindowSize() = default;
+
+    static constexpr int GetStaticType() { return EVENTTYPE_WINDOWSIZE; }
+
+    int GetWidth() const { return m_width; }
+    int GetHeight() const { return m_height; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventWindowSize>(m_width, m_height);
+    }
+
+private:
+    int m_width = 0;
+    int m_height = 0;
+};
+
+class EventRequestQuit : public moth_ui::Event {
+public:
+    EventRequestQuit()
+        : moth_ui::Event(GetStaticType()) {}
+    virtual ~EventRequestQuit() = default;
+
+    static constexpr int GetStaticType() { return EVENTTYPE_REQUEST_QUIT; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventRequestQuit>();
+    }
+};
+
+class EventQuit : public moth_ui::Event {
+public:
+    EventQuit()
+        : moth_ui::Event(GetStaticType()) {}
+    virtual ~EventQuit() = default;
+
+    static constexpr int GetStaticType() { return EVENTTYPE_QUIT; }
+
+    std::unique_ptr<Event> Clone() const override {
+        return std::make_unique<EventQuit>();
+    }
+};

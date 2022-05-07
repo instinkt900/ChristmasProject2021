@@ -67,13 +67,14 @@ public:
     GameLayer(Game& game);
     virtual ~GameLayer();
 
-    bool OnEvent(Event const& event) override;
+    bool OnEvent(moth_ui::Event const& event) override;
     void Update(uint32_t ticks) override;
     void Draw(SDL_Renderer& renderer) override;
 
     void OnAddedToStack(LayerStack* layerStack) override;
     void OnRemovedFromStack() override;
 
+    Game& GetGame() const { return m_game; }
     SDL_Renderer* GetRenderer() const { return m_game.GetRenderer(); }
     AudioFactory& GetAudioFactory() const { return m_game.GetAudioFactory(); }
 
