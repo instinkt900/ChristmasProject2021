@@ -7,11 +7,15 @@
 #include "ecs/systems/sprite_system.h"
 #include "states/state_pre_game.h"
 #include "states/state_game.h"
+#include "states/state_pause.h"
 #include "states/state_post_game.h"
 #include "debug/inspectors.h"
+#include "moth_ui/group.h"
+#include "moth_ui/node_text.h"
 
 GameLayer::GameLayer(Game& game)
-    : m_game(game)
+    : UILayer("layouts/hud.mothui")
+    , m_game(game)
     , m_random(0) {
     auto renderer = m_game.GetRenderer();
     m_backgroundTexture = CreateTextureRef(renderer, "background.jpg");
@@ -21,25 +25,35 @@ GameLayer::GameLayer(Game& game)
 
     m_stateMachine.AddState<StatePreGame>(*this);
     m_stateMachine.AddState<StateGame>(*this);
+    m_stateMachine.AddState<StatePause>(*this);
     m_stateMachine.AddState<StatePostGame>(*this);
 
-    m_scoreFont = CreateCachedFontRef(renderer, m_worldParameters.m_gameFontPath.c_str(), 20, FC_MakeColor(255, 255, 255, 255), TTF_STYLE_NORMAL);
+    if (m_root) {
+        m_scoreNode = m_root->FindChild<moth_ui::NodeText>("txt_score");
+        m_highScoreNode = m_root->FindChild<moth_ui::NodeText>("txt_highscore");
+        m_countNode = m_root->FindChild<moth_ui::NodeText>("txt_count");
+        if (m_countNode) {
+            m_countNode->SetVisible(false);
+        }
+    }
 
     LoadScore();
 }
 
-GameLayer::~GameLayer() {
-}
-
 bool GameLayer::OnEvent(moth_ui::Event const& event) {
-    moth_ui::EventDispatch dispatch(event);
-    dispatch.Dispatch<EventRenderDeviceReset>([this](auto event) { FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), SDL_RENDER_DEVICE_RESET); return true; });
-    dispatch.Dispatch<EventRenderTargetReset>([this](auto event) { FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), SDL_RENDER_TARGETS_RESET); return true; });
-    dispatch.Dispatch(&m_stateMachine);
-    return dispatch.GetHandled();
+    if (!UILayer::OnEvent(event)) {
+        moth_ui::EventDispatch dispatch(event);
+        //dispatch.Dispatch<EventRenderDeviceReset>([this](auto event) { FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), SDL_RENDER_DEVICE_RESET); return true; });
+        //dispatch.Dispatch<EventRenderTargetReset>([this](auto event) { FC_ResetFontFromRendererReset(m_scoreFont.get(), m_game.GetRenderer(), SDL_RENDER_TARGETS_RESET); return true; });
+        dispatch.Dispatch(&m_stateMachine);
+        dispatch.Dispatch(this, &GameLayer::OnKey);
+        return dispatch.GetHandled();
+    }
+    return true;
 }
 
 void GameLayer::Update(uint32_t ticks) {
+    UILayer::Update(ticks);
     m_stateMachine.Update(ticks, m_registry);
 }
 
@@ -60,8 +74,10 @@ void GameLayer::Draw(SDL_Renderer& renderer) {
 
     m_stateMachine.Draw(renderer);
 
-    FC_Draw(m_scoreFont.get(), &renderer, 3, 0, "Score: %d", m_worldState.m_score);
-    FC_Draw(m_scoreFont.get(), &renderer, 3, GetHeight() - 22.0f, "High Score: %d", m_worldState.m_highScore);
+    m_scoreNode->SetText(fmt::format("{}", m_worldState.m_score));
+    m_highScoreNode->SetText(fmt::format("{}", m_worldState.m_highScore));
+
+    UILayer::Draw(renderer);
 
     if (m_game.IsEditorMode()) {
         DrawDebugUI();
@@ -69,14 +85,14 @@ void GameLayer::Draw(SDL_Renderer& renderer) {
 }
 
 void GameLayer::OnAddedToStack(LayerStack* layerStack) {
-    Layer::OnAddedToStack(layerStack);
+    UILayer::OnAddedToStack(layerStack);
     m_stateMachine.StateTransition<StatePreGame>();
     auto& audioFactory = m_game.GetAudioFactory();
     Mix_PlayMusic(audioFactory.GetMusic().get(), -1);
 }
 
 void GameLayer::OnRemovedFromStack() {
-    Layer::OnRemovedFromStack();
+    UILayer::OnRemovedFromStack();
     Mix_PauseMusic();
 }
 
@@ -216,4 +232,16 @@ void GameLayer::DrawDebugUI() {
         });
     }
     ImGui::End();
+}
+
+bool GameLayer::OnKey(moth_ui::EventKey const& event) {
+    if (event.GetAction() == moth_ui::KeyAction::Down) {
+        if (event.GetKey() == moth_ui::Key::Escape) {
+            if (m_stateMachine.IsInState<StateGame>()) {
+                m_stateMachine.StateTransition<StatePause>();
+            }
+            return true;
+        }
+    }
+    return false;
 }

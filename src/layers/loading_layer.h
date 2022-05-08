@@ -1,27 +1,21 @@
 #pragma once
 
-#include "layer.h"
+#include "ui_layer.h"
 
 class AudioFactory;
 class Game;
 
-class LoadingLayer : public Layer {
+class LoadingLayer : public UILayer {
 public:
     LoadingLayer(Game& game);
-    virtual ~LoadingLayer();
+    virtual ~LoadingLayer() = default;
 
-    bool OnEvent(moth_ui::Event const& event) override;
     void Update(uint32_t ticks) override;
-    void Draw(SDL_Renderer& renderer) override;
 
     void OnAddedToStack(LayerStack* layerStack) override;
 
 private:
     Game& m_game;
-
-    TextureRef m_loadingText;
-    TextureRef m_loadingTextDrop;
-    IntVec2 m_loadingTextDim;
 
     bool m_loadingFinished = false;
 };

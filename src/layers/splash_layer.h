@@ -1,34 +1,20 @@
 #pragma once
 
-#include "layer.h"
+#include "ui_layer.h"
 
-class AudioFactory;
 class Game;
-class EventKey;
 
-class SplashLayer : public Layer {
+class SplashLayer : public UILayer {
 public:
     SplashLayer(Game& game);
-    virtual ~SplashLayer();
+    virtual ~SplashLayer() = default;
 
     bool OnEvent(moth_ui::Event const& event) override;
-    void Update(uint32_t ticks) override;
-    void Draw(SDL_Renderer& renderer) override;
 
     void OnAddedToStack(LayerStack* stack) override;
 
 private:
     Game& m_game;
-
-    TextureRef m_titleText;
-    TextureRef m_titleTextDrop;
-    TextureRef m_promptText;
-    TextureRef m_promptTextDrop;
-
-    IntVec2 m_titleTextDim;
-    IntVec2 m_promptTextDim;
-
-    std::unique_ptr<moth_ui::Node> m_root;
 
     bool OnKeyEvent(moth_ui::EventKey const& event);
 };

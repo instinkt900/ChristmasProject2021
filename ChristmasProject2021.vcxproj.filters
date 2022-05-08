@@ -78,9 +78,6 @@
     <ClCompile Include="src\layers\menu_layer.cpp">
       <Filter>layers</Filter>
     </ClCompile>
-    <ClCompile Include="src\layers\background_layer.cpp">
-      <Filter>layers</Filter>
-    </ClCompile>
     <ClCompile Include="external\ImGuizmo\GraphEditor.cpp">
       <Filter>external\ImGuizmo</Filter>
     </ClCompile>
@@ -105,12 +102,18 @@
     <ClCompile Include="src\ui\ui_button.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\ui_main_menu.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui_node_factory.cpp" />
     <ClCompile Include="src\layers\game_over_layer.cpp">
       <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\pause_layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\ui_layer.cpp">
+      <Filter>layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\states\state_pause.cpp">
+      <Filter>states</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,9 +224,6 @@
     <ClInclude Include="src\layers\menu_layer.h">
       <Filter>layers</Filter>
     </ClInclude>
-    <ClInclude Include="src\layers\background_layer.h">
-      <Filter>layers</Filter>
-    </ClInclude>
     <ClInclude Include="src\events\event.h">
       <Filter>events</Filter>
     </ClInclude>
@@ -282,15 +282,21 @@
     <ClInclude Include="src\ui\ui_button.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\ui_main_menu.h">
-      <Filter>ui</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui_node_factory.h" />
     <ClInclude Include="src\ui\ui_common.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\layers\game_over_layer.h">
       <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\pause_layer.h">
+      <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\ui_layer.h">
+      <Filter>layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\states\state_pause.h">
+      <Filter>states</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,9 +7,10 @@ public:
     LayerStack(int renderWidth, int renderHeight, int windowWidth, int windowHeight);
     ~LayerStack();
 
-    void PushLayer(std::unique_ptr<Layer>&& layer);
-    std::unique_ptr<Layer> PopLayer();
+    void PushLayer(std::shared_ptr<Layer>&& layer);
+    std::shared_ptr<Layer> PopLayer();
     void RemoveLayer(Layer* layer);
+    void ClearLayers();
 
     bool OnEvent(moth_ui::Event const& event) override;
     void Update(uint32_t ticks);
@@ -22,7 +23,7 @@ public:
     int GetWindowHeight() const { return m_windowHeight; }
 
 private:
-    std::vector<std::unique_ptr<Layer>> m_layers;
+    std::vector<std::shared_ptr<Layer>> m_layers;
 
     int m_renderWidth = 0;
     int m_renderHeight = 0;

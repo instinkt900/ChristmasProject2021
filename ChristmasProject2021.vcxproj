@@ -162,15 +162,17 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     </ClCompile>
     <ClCompile Include="src\image.cpp" />
     <ClCompile Include="src\image_factory.cpp" />
-    <ClCompile Include="src\layers\background_layer.cpp" />
     <ClCompile Include="src\layers\game_layer.cpp" />
     <ClCompile Include="src\layers\game_over_layer.cpp" />
     <ClCompile Include="src\layers\layer.cpp" />
     <ClCompile Include="src\layers\layer_stack.cpp" />
     <ClCompile Include="src\layers\loading_layer.cpp" />
     <ClCompile Include="src\layers\menu_layer.cpp" />
+    <ClCompile Include="src\layers\pause_layer.cpp" />
     <ClCompile Include="src\layers\splash_layer.cpp" />
+    <ClCompile Include="src\layers\ui_layer.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\states\state_pause.cpp" />
     <ClCompile Include="src\ui_node_factory.cpp" />
     <ClCompile Include="src\SDL_FontCache.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -190,7 +192,6 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\states\state_pre_game.cpp" />
     <ClCompile Include="src\tile_map.cpp" />
     <ClCompile Include="src\ui\ui_button.cpp" />
-    <ClCompile Include="src\ui\ui_main_menu.cpp" />
     <ClCompile Include="src\ui_renderer.cpp" />
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
@@ -227,14 +228,16 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\game_pch.h" />
     <ClInclude Include="src\image.h" />
     <ClInclude Include="src\image_factory.h" />
-    <ClInclude Include="src\layers\background_layer.h" />
     <ClInclude Include="src\layers\game_layer.h" />
     <ClInclude Include="src\layers\game_over_layer.h" />
     <ClInclude Include="src\layers\layer.h" />
     <ClInclude Include="src\layers\layer_stack.h" />
     <ClInclude Include="src\layers\loading_layer.h" />
     <ClInclude Include="src\layers\menu_layer.h" />
+    <ClInclude Include="src\layers\pause_layer.h" />
     <ClInclude Include="src\layers\splash_layer.h" />
+    <ClInclude Include="src\layers\ui_layer.h" />
+    <ClInclude Include="src\states\state_pause.h" />
     <ClInclude Include="src\ui\ui_common.h" />
     <ClInclude Include="src\ui_node_factory.h" />
     <ClInclude Include="src\random.h" />
@@ -248,7 +251,6 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\states\state_pre_game.h" />
     <ClInclude Include="src\tile_map.h" />
     <ClInclude Include="src\ui\ui_button.h" />
-    <ClInclude Include="src\ui\ui_main_menu.h" />
     <ClInclude Include="src\ui_renderer.h" />
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\vec2.h" />

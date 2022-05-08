@@ -1,7 +1,6 @@
 #include "game_pch.h"
 #include "game.h"
 #include "layers/splash_layer.h"
-#include "layers/background_layer.h"
 #include "image_factory.h"
 #include "ui_renderer.h"
 #include "moth_ui/context.h"
@@ -140,9 +139,6 @@ bool Game::Initialise() {
     moth_ui::Context::SetCurrentContext(uiContext);
 
     m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight, m_windowWidth, m_windowHeight);
-
-    auto backgroundLayer = std::make_unique<BackgroundLayer>(*GetRenderer());
-    m_layerStack->PushLayer(std::move(backgroundLayer));
 
     auto menuLayer = std::make_unique<SplashLayer>(*this);
     m_layerStack->PushLayer(std::move(menuLayer));

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "layer.h"
+#include "ui_layer.h"
 #include "states/state_machine.h"
 #include "random.h"
 #include "game.h"
@@ -62,10 +62,10 @@ struct WorldState {
 
 class AudioFactory;
 
-class GameLayer : public Layer {
+class GameLayer : public UILayer {
 public:
     GameLayer(Game& game);
-    virtual ~GameLayer();
+    virtual ~GameLayer() = default;
 
     bool OnEvent(moth_ui::Event const& event) override;
     void Update(uint32_t ticks) override;
@@ -85,6 +85,7 @@ public:
     auto GetPlayerEntity() const { return m_playerEntity; }
     auto GetCameraEntity() const { return m_cameraEntity; }
     auto& GetTileMap() const { return *m_tileMap; }
+    StateMachine& GetStateMachine() { return m_stateMachine; }
 
     entt::entity SpawnCamera(int x, int y);
     entt::entity SpawnPlayer(int x, int y);
@@ -93,9 +94,13 @@ public:
     void SetupLevel();
     void SaveScore();
 
+    std::shared_ptr<moth_ui::NodeText> GetCountText() { return m_countNode; }
+
 private:
     void LoadScore();
     void DrawDebugUI();
+
+    bool OnKey(moth_ui::EventKey const& event);
 
     Game& m_game;
     StateMachine m_stateMachine;
@@ -113,5 +118,7 @@ private:
     TextureRef m_backgroundTexture;
     TextureRef m_explosionTexture;
 
-    CachedFontRef m_scoreFont;
+    std::shared_ptr<moth_ui::NodeText> m_scoreNode;
+    std::shared_ptr<moth_ui::NodeText> m_highScoreNode;
+    std::shared_ptr<moth_ui::NodeText> m_countNode;
 };

@@ -1,26 +1,18 @@
 #pragma once
 
-#include "layer.h"
-#include "moth_ui/ui_fwd.h"
+#include "ui_layer.h"
 
 class Game;
 
-class MenuLayer : public Layer {
+class MenuLayer : public UILayer {
 public:
     MenuLayer(Game& game);
-    virtual ~MenuLayer();
+    virtual ~MenuLayer() = default;
 
-    bool OnEvent(moth_ui::Event const& event) override;
-    void Update(uint32_t ticks) override;
-    void Draw(SDL_Renderer& renderer) override;
     void DebugDraw() override;
 
     void OnAddedToStack(LayerStack* stack) override;
-    void OnRemovedFromStack() override;
 
 private:
     Game& m_game;
-    std::unique_ptr<moth_ui::Group> m_root;
-
-    bool OnAnimEvent(moth_ui::EventAnimation const& event);
 };

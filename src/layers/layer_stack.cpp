@@ -12,12 +12,12 @@ LayerStack::LayerStack(int renderWidth, int renderHeight, int windowWidth, int w
 LayerStack::~LayerStack() {
 }
 
-void LayerStack::PushLayer(std::unique_ptr<Layer>&& layer) {
+void LayerStack::PushLayer(std::shared_ptr<Layer>&& layer) {
     m_layers.push_back(std::move(layer));
     m_layers.back()->OnAddedToStack(this);
 }
 
-std::unique_ptr<Layer> LayerStack::PopLayer() {
+std::shared_ptr<Layer> LayerStack::PopLayer() {
     auto oldLayer = std::move(m_layers.back());
     m_layers.pop_back();
     oldLayer->OnRemovedFromStack();
@@ -31,6 +31,12 @@ void LayerStack::RemoveLayer(Layer* layer) {
     if (std::end(m_layers) != it) {
         (*it)->OnRemovedFromStack();
         m_layers.erase(it);
+    }
+}
+
+void LayerStack::ClearLayers() {
+    while (!m_layers.empty()) {
+        PopLayer();
     }
 }
 
@@ -74,7 +80,8 @@ bool LayerStack::OnEvent(moth_ui::Event const& event) {
 }
 
 void LayerStack::Update(uint32_t ticks) {
-    for (auto&& layer : m_layers) {
+    auto layersCopy = m_layers;
+    for (auto&& layer : layersCopy) {
         layer->Update(ticks);
     }
 }
