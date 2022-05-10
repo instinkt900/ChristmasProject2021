@@ -102,7 +102,6 @@
     <ClCompile Include="src\ui\ui_button.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui_node_factory.cpp" />
     <ClCompile Include="src\layers\game_over_layer.cpp">
       <Filter>layers</Filter>
     </ClCompile>
@@ -114,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="src\states\state_pause.cpp">
       <Filter>states</Filter>
+    </ClCompile>
+    <ClCompile Include="src\layers\scores_layer.cpp">
+      <Filter>layers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -282,10 +284,6 @@
     <ClInclude Include="src\ui\ui_button.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui_node_factory.h" />
-    <ClInclude Include="src\ui\ui_common.h">
-      <Filter>ui</Filter>
-    </ClInclude>
     <ClInclude Include="src\layers\game_over_layer.h">
       <Filter>layers</Filter>
     </ClInclude>
@@ -297,6 +295,9 @@
     </ClInclude>
     <ClInclude Include="src\states\state_pause.h">
       <Filter>states</Filter>
+    </ClInclude>
+    <ClInclude Include="src\layers\scores_layer.h">
+      <Filter>layers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

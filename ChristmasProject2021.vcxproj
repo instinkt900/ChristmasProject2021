@@ -52,8 +52,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(SDL_PATH)\lib\x64;$(SDL_IMAGE_PATH)\lib\x64;$(SDL_TTF_PATH)\lib\x64;$(SDL_MIXER_PATH)\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SDL_PATH)\include;$(SDL_IMAGE_PATH)\include;$(SDL_TTF_PATH)\include;$(SDL_MIXER_PATH)\include;external\imgui;external\entt\single_include;external\spdlog\include;external\json\single_include;external\glm;external\imgui-filebrowser;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SDL_PATH)\lib\x64;$(SDL_IMAGE_PATH)\lib\x64;$(SDL_TTF_PATH)\lib\x64;$(SDL_MIXER_PATH)\lib\x64;$(MOTHUI_PATH)\lib\win\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SDL_PATH)\include;$(SDL_IMAGE_PATH)\include;$(SDL_TTF_PATH)\include;$(SDL_MIXER_PATH)\include;$(MOTHUI_PATH)\include;external\imgui;external\entt\single_include;external\spdlog\include;external\json\single_include;external\glm;external\imgui-filebrowser;external\ImGuizmo;external\magic_enum\include;external\range-v3\include;external\moth_ui\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -101,24 +101,35 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;moth_ui.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y $(SDL_PATH)\lib\x64\SDL2.dll $(OutDirFullPath)
+xcopy /y $(SDL_IMAGE_PATH)\lib\x64\*.dll $(OutDirFullPath)
+xcopy /y $(SDL_TTF_PATH)\lib\x64\*.dll $(OutDirFullPath)
+xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="external\ImGuizmo\GraphEditor.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="external\ImGuizmo\ImCurveEdit.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="external\ImGuizmo\ImGradient.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="external\ImGuizmo\ImGuizmo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="external\ImGuizmo\ImSequencer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="external\imgui\backends\imgui_impl_sdl.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -169,11 +180,11 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClCompile Include="src\layers\loading_layer.cpp" />
     <ClCompile Include="src\layers\menu_layer.cpp" />
     <ClCompile Include="src\layers\pause_layer.cpp" />
+    <ClCompile Include="src\layers\scores_layer.cpp" />
     <ClCompile Include="src\layers\splash_layer.cpp" />
     <ClCompile Include="src\layers\ui_layer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\states\state_pause.cpp" />
-    <ClCompile Include="src\ui_node_factory.cpp" />
     <ClCompile Include="src\SDL_FontCache.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
@@ -235,11 +246,10 @@ xcopy /y $(SDL_MIXER_PATH)\lib\x64\*.dll $(OutDirFullPath)</Command>
     <ClInclude Include="src\layers\loading_layer.h" />
     <ClInclude Include="src\layers\menu_layer.h" />
     <ClInclude Include="src\layers\pause_layer.h" />
+    <ClInclude Include="src\layers\scores_layer.h" />
     <ClInclude Include="src\layers\splash_layer.h" />
     <ClInclude Include="src\layers\ui_layer.h" />
     <ClInclude Include="src\states\state_pause.h" />
-    <ClInclude Include="src\ui\ui_common.h" />
-    <ClInclude Include="src\ui_node_factory.h" />
     <ClInclude Include="src\random.h" />
     <ClInclude Include="src\SDL_FontCache.h" />
     <ClInclude Include="src\simplex_noise.h" />

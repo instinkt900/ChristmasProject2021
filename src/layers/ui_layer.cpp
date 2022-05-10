@@ -2,6 +2,7 @@
 #include "ui_layer.h"
 #include "moth_ui/group.h"
 #include "moth_ui/context.h"
+#include "moth_ui/node_factory.h"
 
 UILayer::UILayer(std::filesystem::path const& layoutPath) {
     LoadLayout(layoutPath);
@@ -43,5 +44,5 @@ void UILayer::OnRemovedFromStack() {
 }
 
 void UILayer::LoadLayout(std::filesystem::path const& path) {
-    m_root = moth_ui::Context::GetCurrentContext()->GetNodeFactory().Create(path, GetWidth(), GetHeight());
+    m_root = moth_ui::NodeFactory::Get().Create(path, GetWidth(), GetHeight());
 }

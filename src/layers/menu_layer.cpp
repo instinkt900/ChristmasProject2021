@@ -4,6 +4,7 @@
 #include "moth_ui/group.h"
 #include "ui/ui_button.h"
 #include "loading_layer.h"
+#include "scores_layer.h"
 
 MenuLayer::MenuLayer(Game& game)
     : UILayer("layouts/menu_screen.mothui")
@@ -19,6 +20,12 @@ MenuLayer::MenuLayer(Game& game)
             });
         }
         if (auto scoresButton = m_root->FindChild<UIButton>("btn_scores")) {
+            scoresButton->SetClickAction([&]() {
+                auto layerStack = m_layerStack;
+                auto scoresLayer = std::make_unique<ScoresLayer>(m_game);
+                layerStack->PopLayer(); // removes 'this'
+                layerStack->PushLayer(std::move(scoresLayer));
+            });
         }
         if (auto startButton = m_root->FindChild<UIButton>("btn_exit")) {
             startButton->SetClickAction([&]() {

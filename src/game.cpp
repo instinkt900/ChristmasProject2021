@@ -6,7 +6,6 @@
 #include "moth_ui/context.h"
 #include "event_factory.h"
 #include "font_factory.h"
-#include "ui_node_factory.h"
 
 // TODO needed a few places but we dont want to pass this around
 // not strictly needed as we can remove its use by being smarter
@@ -134,8 +133,7 @@ bool Game::Initialise() {
     m_imageFactory = std::make_unique<ImageFactory>(*m_renderer);
     m_fontFactory = std::make_unique<FontFactory>(*m_renderer);
     m_uiRenderer = std::make_unique<UIRenderer>(*m_renderer);
-    auto& nodeFactory = UINodeFactory::Get();
-    auto uiContext = std::make_shared<moth_ui::Context>(m_imageFactory.get(), m_fontFactory.get(), m_uiRenderer.get(), &nodeFactory);
+    auto uiContext = std::make_shared<moth_ui::Context>(m_imageFactory.get(), m_fontFactory.get(), m_uiRenderer.get());
     moth_ui::Context::SetCurrentContext(uiContext);
 
     m_layerStack = std::make_unique<LayerStack>(m_renderWidth, m_renderHeight, m_windowWidth, m_windowHeight);

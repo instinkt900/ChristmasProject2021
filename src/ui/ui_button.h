@@ -1,9 +1,11 @@
 #pragma once
 
-#include "moth_ui/group.h"
+#include "moth_ui/widget.h"
 
-class UIButton : public moth_ui::Group {
+class UIButton : public moth_ui::Widget<UIButton> {
 public:
+    inline static char const* ClassName = "button";
+
     enum class State {
         Idle,
         Hovered,

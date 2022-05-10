@@ -1,11 +1,8 @@
 #include "game_pch.h"
 #include "ui_button.h"
-#include "ui_common.h"
-
-DEFINE_WIDGET(button, UIButton)
 
 UIButton::UIButton(std::shared_ptr<moth_ui::LayoutEntityGroup> entity)
-    : Group(entity) {}
+    : Widget<UIButton>(entity) {}
 
 void UIButton::Update(uint32_t ticks) {
     Group::Update(ticks);
