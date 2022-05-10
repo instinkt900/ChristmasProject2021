@@ -11,26 +11,26 @@ MenuLayer::MenuLayer(Game& game)
     , m_game(game) {
 
     if (m_root) {
-        if (auto startButton = m_root->FindChild<UIButton>("btn_play")) {
-            startButton->SetClickAction([&]() {
-                auto layerStack = m_layerStack;
-                auto loadingLayer = std::make_unique<LoadingLayer>(m_game);
-                layerStack->PopLayer(); // removes 'this'
-                layerStack->PushLayer(std::move(loadingLayer));
-            });
-        }
-        if (auto scoresButton = m_root->FindChild<UIButton>("btn_scores")) {
-            scoresButton->SetClickAction([&]() {
-                auto layerStack = m_layerStack;
-                auto scoresLayer = std::make_unique<ScoresLayer>(m_game);
-                layerStack->PopLayer(); // removes 'this'
-                layerStack->PushLayer(std::move(scoresLayer));
-            });
-        }
-        if (auto startButton = m_root->FindChild<UIButton>("btn_exit")) {
-            startButton->SetClickAction([&]() {
-                m_game.Stop();
-            });
+        m_root->SetEventHandler([this](moth_ui::Node*, moth_ui::Event const& event) { return OnUIEvent(event); });
+        if (auto menu = m_root->FindChild("menu")) {
+            if (auto startButton = m_root->FindChild<UIButton>("btn_play")) {
+                startButton->SetClickAction([&, menu]() {
+                    m_exitDestination = ExitDestination::Play;
+                    menu->SetAnimation("out");
+                });
+            }
+            if (auto scoresButton = m_root->FindChild<UIButton>("btn_scores")) {
+                scoresButton->SetClickAction([&, menu]() {
+                    m_exitDestination = ExitDestination::Scores;
+                    menu->SetAnimation("out");
+                });
+            }
+            if (auto startButton = m_root->FindChild<UIButton>("btn_exit")) {
+                startButton->SetClickAction([&, menu]() {
+                    m_exitDestination = ExitDestination::Exit;
+                    menu->SetAnimation("out");
+                });
+            }
         }
     }
 }
@@ -51,4 +51,33 @@ void MenuLayer::OnAddedToStack(LayerStack* stack) {
             menu->SetAnimation("in");
         }
     }
+}
+
+bool MenuLayer::OnUIEvent(moth_ui::Event const& event) {
+    moth_ui::EventDispatch dispatch(event);
+    dispatch.Dispatch(this, &MenuLayer::OnAnimationEnd);
+    return dispatch.GetHandled();
+}
+
+bool MenuLayer::OnAnimationEnd(moth_ui::EventAnimationStopped const& event) {
+    if (event.GetClipName() == "out") {
+        auto layerStack = m_layerStack;
+        switch (m_exitDestination) {
+        case ExitDestination::Play: {
+            auto loadingLayer = std::make_unique<LoadingLayer>(m_game);
+            layerStack->PopLayer(); // removes 'this'
+            layerStack->PushLayer(std::move(loadingLayer));
+        } break;
+        case ExitDestination::Scores: {
+            auto scoresLayer = std::make_unique<ScoresLayer>(m_game);
+            layerStack->PopLayer(); // removes 'this'
+            layerStack->PushLayer(std::move(scoresLayer));
+        } break;
+        case ExitDestination::Exit: {
+            m_game.Stop();
+        } break;
+        }
+        return true;
+    }
+    return false;
 }

@@ -15,4 +15,15 @@ public:
 
 private:
     Game& m_game;
+
+    enum class ExitDestination {
+        Unknown,
+        Play,
+        Scores,
+        Exit
+    };
+    ExitDestination m_exitDestination = ExitDestination::Unknown;
+
+    bool OnUIEvent(moth_ui::Event const& event);
+    bool OnAnimationEnd(moth_ui::EventAnimationStopped const& event);
 };
