@@ -7,7 +7,7 @@
 #include "scores_layer.h"
 
 MenuLayer::MenuLayer(Game& game)
-    : UILayer("layouts/menu_screen.mothui")
+    : UILayer("resources/layouts/menu_screen.mothui")
     , m_game(game) {
 
     if (m_root) {

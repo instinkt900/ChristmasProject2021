@@ -5,7 +5,7 @@
 #include "layer_stack.h"
 
 SplashLayer::SplashLayer(Game& game)
-    : UILayer("layouts/title.mothui")
+    : UILayer("resources/layouts/title.mothui")
     , m_game(game) {
 }
 

@@ -6,7 +6,7 @@
 #include "game.h"
 
 LoadingLayer::LoadingLayer(Game& game)
-    : UILayer("layouts/loading.mothui")
+    : UILayer("resources/layouts/loading.mothui")
     , m_game(game) {
 }
 

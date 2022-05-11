@@ -4,11 +4,11 @@
 
 FontFactory::FontFactory(SDL_Renderer& renderer)
     : m_renderer(renderer) {
-    m_fontPaths["Pilot Command"] = "pilotcommand.ttf";
-    m_fontPaths["Daniel Davis"] = "Daniel Davis.ttf";
-    m_fontPaths["Game of Squids"] = "Game Of Squids.ttf";
-    m_fontPaths["Southern Aire"] = "SouthernAire_Personal_Use_Only.ttf";
-    m_fontPaths["28 Days Later"] = "28 Days Later.ttf";
+    m_fontPaths["Pilot Command"] = "resources/fonts/pilotcommand.ttf";
+    m_fontPaths["Daniel Davis"] = "resources/fonts/Daniel Davis.ttf";
+    m_fontPaths["Game of Squids"] = "resources/fonts/Game Of Squids.ttf";
+    m_fontPaths["Southern Aire"] = "resources/fonts/SouthernAire_Personal_Use_Only.ttf";
+    m_fontPaths["28 Days Later"] = "resources/fonts/28 Days Later.ttf";
 }
 
 std::unique_ptr<moth_ui::IFont> FontFactory::GetDefaultFont(int size) {

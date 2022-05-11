@@ -6,7 +6,7 @@
 #include "states/state_game.h"
 
 PauseLayer::PauseLayer(GameLayer& gameLayer)
-    : UILayer("layouts/pause.mothui")
+    : UILayer("resources/layouts/pause.mothui")
     , m_gameLayer(gameLayer) {
     if (m_root) {
         m_root->SetEventHandler([&](moth_ui::Node* node, moth_ui::Event const& event) {

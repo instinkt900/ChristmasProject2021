@@ -11,17 +11,16 @@ struct WorldParameters {
     uint32_t m_seed = 0xF00DF00D;
 
     std::string m_dataFile = "data.bin";
-    std::string m_gameFontPath = "pilotcommand.ttf";
 
     float m_levelSpeedInit = 100.0f;
     float m_levelSpeedIncrease = 1.0f;
 
-    std::string m_playerSpritePath = "ship003.png";
+    std::string m_playerSpritePath = "resources/images/ship003.png";
     int m_playerSpriteWidth = 62;
     int m_playerSpriteHeight = 32;
     int m_playerCollisionWidth = 50;
     int m_playerCollisionHeight = 19;
-    std::string m_playerBulletSpritePath = "laser.png";
+    std::string m_playerBulletSpritePath = "resources/images/laser.png";
     int m_playerBulletSpriteWidth = 42;
     int m_playerBulletSpriteHeight = 40;
     int m_playerBulletCollisionWidth = 15;
@@ -30,7 +29,7 @@ struct WorldParameters {
     uint32_t m_playerFireDelay = 300;
     float m_playerBulletSpeed = 600.0f;
 
-    std::string m_enemySpritePath = "l0_SpaceShip0011.png";
+    std::string m_enemySpritePath = "resources/images/l0_SpaceShip0011.png";
     int m_enemySpriteWidth = 32;
     int m_enemySpriteHeight = 32;
     int m_enemyCollisionWidth = 32;

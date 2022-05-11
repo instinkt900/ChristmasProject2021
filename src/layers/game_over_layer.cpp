@@ -9,7 +9,7 @@
 #include "loading_layer.h"
 
 GameOverLayer::GameOverLayer(Game& game)
-    :UILayer("layouts/game_over.mothui")
+    :UILayer("resources/layouts/game_over.mothui")
     , m_game(game) {
 
     if (m_root) {

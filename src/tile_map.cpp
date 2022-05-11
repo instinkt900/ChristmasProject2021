@@ -8,7 +8,7 @@ TileMap::TileMap(SDL_Renderer& renderer, int tileSizeX, int tileSizeY)
     , m_noise(1 / 16.0f, 10000.0f)
     , m_tileSizeX(tileSizeX)
     , m_tileSizeY(tileSizeY) {
-    m_tileset = CreateTextureRef(&m_renderer, "tileset.png");
+    m_tileset = CreateTextureRef(&m_renderer, "resources/images/tileset.png");
 }
 
 TileMap::~TileMap() {
@@ -59,6 +59,9 @@ bool TileMap::Collides(int x, int y, int width, int height) const {
     return false;
 }
 
+// TODO generate chunks instead of on demand per tile
+// then we can do clever things like sampling around each
+// tile and building a better looking map using wang tiling or something
 bool TileMap::GetTile(int x, int y, SDL_Rect* tilesetRect) const {
     float const mapHeight = 480.0f / m_tileSizeY;
 

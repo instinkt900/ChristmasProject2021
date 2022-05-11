@@ -14,12 +14,12 @@
 #include "moth_ui/node_text.h"
 
 GameLayer::GameLayer(Game& game)
-    : UILayer("layouts/hud.mothui")
+    : UILayer("resources/layouts/hud.mothui")
     , m_game(game)
     , m_random(0) {
     auto renderer = m_game.GetRenderer();
-    m_backgroundTexture = CreateTextureRef(renderer, "background.jpg");
-    m_explosionTexture = CreateTextureRef(renderer, "exp2_0.png");
+    m_backgroundTexture = CreateTextureRef(renderer, "resources/images/background.jpg");
+    m_explosionTexture = CreateTextureRef(renderer, "resources/images/exp2_0.png");
 
     m_tileMap = std::make_unique<TileMap>(*renderer, 8, 8);
 
