@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChristmasProject2021", "ChristmasProject2021.vcxproj", "{09549AD2-6F02-4B5A-86C6-C5164103C9CA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "moth_ui", "..\moth_ui\project\vs\moth_ui.vcxproj", "{56A8DBD3-13C7-4EBF-A3BD-28F9F530FA86}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "editor", "..\moth_ui\project\vs\editor.vcxproj", "{D0569F1A-3C7C-45C8-937F-50CE6D01F9B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +19,14 @@ Global
 		{09549AD2-6F02-4B5A-86C6-C5164103C9CA}.Debug|x64.Build.0 = Debug|x64
 		{09549AD2-6F02-4B5A-86C6-C5164103C9CA}.Release|x64.ActiveCfg = Release|x64
 		{09549AD2-6F02-4B5A-86C6-C5164103C9CA}.Release|x64.Build.0 = Release|x64
+		{56A8DBD3-13C7-4EBF-A3BD-28F9F530FA86}.Debug|x64.ActiveCfg = Debug|x64
+		{56A8DBD3-13C7-4EBF-A3BD-28F9F530FA86}.Debug|x64.Build.0 = Debug|x64
+		{56A8DBD3-13C7-4EBF-A3BD-28F9F530FA86}.Release|x64.ActiveCfg = Release|x64
+		{56A8DBD3-13C7-4EBF-A3BD-28F9F530FA86}.Release|x64.Build.0 = Release|x64
+		{D0569F1A-3C7C-45C8-937F-50CE6D01F9B1}.Debug|x64.ActiveCfg = Debug|x64
+		{D0569F1A-3C7C-45C8-937F-50CE6D01F9B1}.Debug|x64.Build.0 = Debug|x64
+		{D0569F1A-3C7C-45C8-937F-50CE6D01F9B1}.Release|x64.ActiveCfg = Release|x64
+		{D0569F1A-3C7C-45C8-937F-50CE6D01F9B1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
